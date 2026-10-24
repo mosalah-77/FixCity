@@ -1,0 +1,38 @@
+name: fixcity
+description: A problem reporting multi-platform project.
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+
+# dependencies
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # supabase
+  supabase_flutter: ^2.5.0
+  
+  # map
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.0
+  url_launcher: ^6.2.5
+  geolocator: ^14.0.2
+  
+  # utils
+  http: ^1.5.0
+  image_picker: ^1.0.4
+  random_string: ^2.3.1
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+# dev dependencies
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+    
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true

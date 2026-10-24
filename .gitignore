@@ -1,0 +1,17 @@
+# Local configuration and generated artifacts
+.DS_Store
+.env
+.env.*
+!.env.example
+**/.dart_tool/
+**/build/
+**/.flutter-plugins*
+**/local.properties
+**/key.properties
+**/*.jks
+**/*.keystore
+**/google-services.json
+**/GoogleService-Info.plist
+**/*.db
+**/*.sqlite*
+**/__pycache__/
