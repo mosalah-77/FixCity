@@ -27,3 +27,7 @@ Use “I directed and reviewed this with AI assistance” where that reflects yo
 No real citizen information, contact requests or government endorsement. Up to 20 reports per visitor, seven-day expiry, 100 new identities per rolling 24 hours and 500 retained anonymous identities globally. Clearing app/browser storage loses access to the anonymous session. Free hosting and public map tiles can be unavailable; this prototype has no uptime guarantee.
 
 If the demo cannot load, retry once and check the Supabase project status before sharing its link. Do not enter real incident data as a test. Keep a short screen recording of the walkthrough after verifying the published version; a recording is supporting evidence and does not prove live availability.
+
+## Offline visual summary
+
+[Watch the 26-second captured-screen walkthrough](evidence/2026-11-04/visual-walkthrough.mp4). It shows the published entry screen, synthetic repair evidence, a resolution after reloading and the saved timeline. This is a sequence of actual captured screens, not a continuous interaction recording. The live demo and the test record provide the functional evidence.

@@ -47,12 +47,12 @@
 
 **Interfaces:** Existing page constructors/routes remain. If tests require injection, accept an optional SupabaseClient parameter and default to the existing client; do not create a general state framework.
 
-- [ ] Install an officially verified compatible Flutter SDK in a task-local tooling directory; run pub get with the existing lockfile, flutter analyze and a baseline web build. Record exact failures before editing.
-- [ ] Add failing tests that password whitespace is preserved, confirmation-required signup sends profile metadata without a session-dependent upsert, and leaving an async login does not throw.
-- [ ] Fix the auth paths and profile-trigger contract using the existing client API.
-- [ ] Add a failing test that mounting the home tab does not mark notifications read; visit notifications and assert only successfully displayed IDs are marked read. Repair page activation and badge refresh.
-- [ ] Add a failing tracking test: a slow earlier request cannot overwrite a later code; a transport failure is distinguishable from a genuinely absent report.
-- [ ] Run the focused tests and analyzer, record passing results and commit this repair set.
+- [x] Install an officially verified compatible Flutter SDK in a task-local tooling directory; run pub get with the existing lockfile, flutter analyze and a baseline web build. Record exact failures before editing.
+- [x] Add failing tests that password whitespace is preserved, confirmation-required signup sends profile metadata without a session-dependent upsert, and leaving an async login does not throw.
+- [x] Fix the auth paths and profile-trigger contract using the existing client API.
+- [x] Add a failing test that mounting the home tab does not mark notifications read; visit notifications and assert only successfully displayed IDs are marked read. Repair page activation and badge refresh.
+- [x] Add a failing tracking test: a slow earlier request cannot overwrite a later code; a transport failure is distinguishable from a genuinely absent report.
+- [x] Run the focused tests and analyzer, record passing results and commit this repair set.
 
 ### Task 2: Database rules and atomic writes
 
@@ -60,11 +60,11 @@
 
 **Interfaces:** Preserve fields consumed by existing reports/profiles/status_updates/notifications screens. Add workspace ownership and per-user request IDs. SQL functions: create_report(p_request_id uuid, p_report jsonb) returns jsonb; transition_report(p_request_id uuid, p_report_id uuid, p_status text, p_note text, p_fix_photo_url text default null) returns void; start_demo() returns uuid; reset_demo() returns uuid. Only these functions may write workflow status/points/history. Profile updates may change name/phone/preferences, never roles or points.
 
-- [ ] Write SQL assertions covering owner/staff/district access, role escalation denial, cross-workspace report/history/notification/media denial, atomic failure, retries and required repair evidence. Confirm they fail against the absent schema.
-- [ ] Create versioned schema and auth-profile trigger. Keep role assignment privileged. Normal citizens own their reports; staff may operate across districts; district accounts are restricted to their district. Anonymous identities access only their own demo workspace.
-- [ ] Implement the transactional RPCs with validation and retry keys. Enforce pending -> in_progress -> resolved, with nonblank note and repair evidence for resolution. Reject conflicting reuse of a request ID.
-- [ ] Implement bounded start/reset: one workspace per identity, max 20 reports per workspace, 7-day retention, only owned records reset. Add cleanup instructions and provision-time rate/CAPTCHA checks. No public shared admin credential.
-- [ ] Run the SQL assertions on a disposable local database/stack; do not access the old team backend. Record which environment was used and commit migrations/tests.
+- [x] Write SQL assertions covering owner/staff/district access, role escalation denial, cross-workspace report/history/notification/media denial, atomic failure, retries and required repair evidence. Confirm they fail against the absent schema.
+- [x] Create versioned schema and auth-profile trigger. Keep role assignment privileged. Normal citizens own their reports; staff may operate across districts; district accounts are restricted to their district. Anonymous identities access only their own demo workspace.
+- [x] Implement the transactional RPCs with validation and retry keys. Enforce pending -> in_progress -> resolved, with nonblank note and repair evidence for resolution. Reject conflicting reuse of a request ID.
+- [x] Implement bounded start/reset: one workspace per identity, max 20 reports per workspace, 7-day retention, only owned records reset. Add cleanup instructions and provision-time rate/CAPTCHA checks. No public shared admin credential.
+- [x] Run the SQL assertions on a disposable local database/stack; do not access the old team backend. Record which environment was used and commit migrations/tests.
 
 ### Task 3: Connect existing report screens to reliable operations
 
@@ -72,11 +72,11 @@
 
 **Interfaces:** ReportActions(SupabaseClient client); Future<Map<String,dynamic>> createReport({required String requestId, required Map<String,dynamic> report}); Future<void> transitionReport({required String requestId, required String reportId, required String status, required String note, String? fixPhotoUrl}). Request IDs remain stable across retries of the same operation.
 
-- [ ] Write failing RPC/widget tests for failed report saves, duplicate taps, delayed responses, failed transitions and resolving without evidence. Assert no optimistic success side effects.
-- [ ] Replace separate client writes with the Task 2 functions. Display success only from the persisted result. Remove manual notification/points award controls that bypass the transaction.
-- [ ] Keep entered form values after failure. Handle media separately; use sample assets in demo, and validate/clean up any retained non-demo upload path. Prevent old page contexts from showing success after navigation.
-- [ ] Ensure details/history refresh after updates and invalid/absent records have readable error states. Keep unavailable SMS/phone/reward actions hidden or explicitly unavailable in demo.
-- [ ] Run the focused tests, analyze and build web. Update the bug log with evidence; commit.
+- [x] Write failing RPC/widget tests for failed report saves, duplicate taps, delayed responses, failed transitions and resolving without evidence. Assert no optimistic success side effects.
+- [x] Replace separate client writes with the Task 2 functions. Display success only from the persisted result. Remove manual notification/points award controls that bypass the transaction.
+- [x] Keep entered form values after failure. Handle media separately; use sample assets in demo, and validate/clean up any retained non-demo upload path. Prevent old page contexts from showing success after navigation.
+- [x] Ensure details/history refresh after updates and invalid/absent records have readable error states. Keep unavailable SMS/phone/reward actions hidden or explicitly unavailable in demo.
+- [x] Run the focused tests, analyze and build web. Update the bug log with evidence; commit.
 
 ### Task 4: Isolated public demo through the existing app
 
@@ -84,19 +84,19 @@
 
 **Interfaces:** const bool demoMode = bool.fromEnvironment('DEMO_MODE'); enum DemoPersona { citizen, staff, district }; demo persona is UI-only and never authorizes ordinary rows. Future<String> ensureDemoWorkspace(SupabaseClient client); Future<String> resetDemoWorkspace(SupabaseClient client). Task 2 owns all authorization.
 
-- [ ] Test demo bootstrap/reload, reset failure, expired identity, sample-media selection and persona routing. Assert a forged persona cannot grant access to ordinary rows through the SQL tests.
-- [ ] Add an explicit synthetic/no-government-affiliation entry and visible persona controls. Anonymous sign-in then start_demo creates/reuses an owned workspace. Explain session loss and reset behaviour.
-- [ ] Seed fictional district/report examples; remove real official contacts from the demo. Select report and repair samples from app assets. Do not request location permission automatically on opening the demo.
-- [ ] Preserve map attribution, deny unsupported actions clearly, handle unavailable backend and verify mobile/RTL layouts. Pin demo session to its own data and preserve state across reload.
-- [ ] Run widget/SQL tests and a local interactive web smoke check through the whole cycle; commit.
+- [x] Test demo bootstrap/reload, reset failure, expired identity, sample-media selection and persona routing. Assert a forged persona cannot grant access to ordinary rows through the SQL tests.
+- [x] Add an explicit synthetic/no-government-affiliation entry and visible persona controls. Anonymous sign-in then start_demo creates/reuses an owned workspace. Explain session loss and reset behaviour.
+- [x] Seed fictional district/report examples; remove real official contacts from the demo. Select report and repair samples from app assets. Do not request location permission automatically on opening the demo.
+- [x] Preserve map attribution, deny unsupported actions clearly, handle unavailable backend and verify mobile/RTL layouts. Pin demo session to its own data and preserve state across reload.
+- [x] Run widget/SQL tests and a local interactive web smoke check through the whole cycle; commit.
 
 ### Task 5: Build, deployment and release evidence
 
 **Files:** .github/workflows/checks.yml, .github/workflows/pages.yml, app/android/app/build.gradle.kts, app/web/index.html, README.md, ATTRIBUTION.md, BACKEND-SETUP.md, docs/DEMO.md, docs/BUG-REVIEW.md.
 
-- [ ] Add formatting/analyzer/tests/web and Android build checks with pinned tooling/actions. Fix application identity to dev.mosalah.fixcity and document private release signing; never commit keys.
-- [ ] Run local checks and release builds using a separate synthetic Supabase project. If account access/terms are needed, prepare the exact account step for Mohamed while completing independent checks.
-- [ ] Verify the two-visitor security scenario, browser reload, Arabic/English, mobile viewport, full workflow and backend failure against the separate project. Save results without credentials or personal data.
-- [ ] Publish the tested web build with /FixCity/ base path and APK release asset only after a fresh branch review. Verify the actual published URL and downloadable artifact. Use no paid service without a new decision.
-- [ ] Check Android on an emulator and request a real-device smoke check if hardware is unavailable. Record any unverified platform explicitly.
-- [ ] Complete setup/architecture/known-limits and a short walkthrough. Preserve original attribution; distinguish new AI-assisted work and Mohamed's explainability checkpoints. Commit and report exact tests, releases and remaining user actions.
+- [x] Add formatting/analyzer/tests/web and Android build checks with pinned tooling/actions. Fix application identity to dev.mosalah.fixcity and document private release signing; never commit keys.
+- [x] Run local checks and release builds using a separate synthetic Supabase project. If account access/terms are needed, prepare the exact account step for Mohamed while completing independent checks.
+- [x] Verify the two-visitor security scenario, browser reload, Arabic/English, mobile viewport, full workflow and backend failure against the separate project. Save results without credentials or personal data.
+- [x] Publish the tested web build with /FixCity/ base path and APK release asset only after a fresh branch review. Verify the actual published URL and downloadable artifact. Use no paid service without a new decision.
+- [x] Check Android on an emulator and request a real-device smoke check if hardware is unavailable. Record any unverified platform explicitly.
+- [x] Complete setup/architecture/known-limits and a short walkthrough. Preserve original attribution; distinguish new AI-assisted work and Mohamed's explainability checkpoints. Commit and report exact tests, releases and remaining user actions.

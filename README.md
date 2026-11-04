@@ -20,7 +20,7 @@ I present this project as evidence of product thinking and collaborative prototy
 
 ## Try the reporting workflow
 
-[Browser demo](https://mosalah-77.github.io/FixCity/) · [Android releases](https://github.com/mosalah-77/FixCity/releases) · [Two-minute walkthrough](docs/DEMO.md)
+[Browser demo](https://mosalah-77.github.io/FixCity/) · [Android releases](https://github.com/mosalah-77/FixCity/releases) · [Two-minute walkthrough](docs/DEMO.md) · [Captured-screen video](docs/evidence/2026-11-04/visual-walkthrough.mp4)
 
 Start a demo workspace, submit a fictional report, review it as staff, add repair evidence as the district team, then return to the citizen's tracking page. The report, status history and in-app notifications are saved in a separate Supabase project. Each visitor sees only their own synthetic workspace.
 
