@@ -1,7 +1,7 @@
 # FixCity: working Android and browser demonstration
 
 Date: 4 November 2026
-Status: proposed design for review; Android APK plus browser delivery selected by Mohamed. No product changes or deployments made in this pass.
+Status: approved by Mohamed on 4 November 2026. Android APK plus browser delivery selected. Mohamed additionally authorised finding and fixing bugs in the main Flutter app. Implementation and verification follow; approval does not claim that deployment already works.
 
 ## Purpose
 
@@ -114,7 +114,7 @@ The release should provide: a working browser link, downloadable APK, source, se
 
 ## Decisions still needing the user or account access
 
-- Approval of this first-release scope, including synthetic isolated demo workspaces and sample media.
+- First-release scope approved, including synthetic isolated demo workspaces and sample media.
 - Later: sign in to/choose the Supabase account and approve any new terms or security-sensitive access. Do not paste keys into chat.
 - Later: confirm an Android device is available for the final hardware check; an emulator can support initial development.
 - Any paid service or billing change requires a separate, specific decision. The proposal assumes no new spending.
