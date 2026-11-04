@@ -53,3 +53,9 @@ These fixes target the new isolated schema. Pointing this version at the old tea
 - The old map provider returned “API KEY REQUIRED.” Maps now use standard OpenStreetMap tiles, visible linked attribution and flutter_map's normal HTTP caching; no bulk/offline download feature is included.
 - “Track this report” previously lost the selected code. It now passes the full code and loads that report; report cards wrap long codes on small screens. Stale ten-character hints were removed.
 - Analyzer: no errors or warnings; informational style/deprecation findings remain. Normal email-auth/private-upload integration and Android hardware are not yet verified against the hosted backend.
+
+## Release preparation
+
+The database suite now passes 67 checks, including simultaneous signups at the final daily slot, total identity bounds and cleanup that retains active workspaces. The hosted daily-cap test failed before the new migration and passed afterwards; both runs rolled back test identities. Real Auth/REST workflow checks still pass after email signup was disabled.
+
+Normal app mode passes 27 tests (two demo-only suites are skipped). Its narrow-screen regression also exposed the original language-selector row overflowing by 51 pixels; flexible text width repairs it. The signed Android release compiles successfully; device and published-host checks are recorded separately from compilation.

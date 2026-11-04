@@ -30,3 +30,34 @@ do $$ begin
  raise notice 'PASS: concurrent duplicate requests persist once';
 end $$;
 SQL
+
+# One remaining signup slot must be claimed by only one of two connections.
+psql_test <<'SQL'
+insert into auth.users(id,is_anonymous,created_at)
+select gen_random_uuid(),true,now() from generate_series(1,99-(select count(*)::int from auth.users where is_anonymous));
+SQL
+create_visitor() {
+  psql_test <<'SQL'
+begin;
+insert into auth.users(id,is_anonymous,created_at) values(gen_random_uuid(),true,now());
+select pg_sleep(1);
+commit;
+SQL
+}
+create_visitor & first=$!
+create_visitor & second=$!
+first_result=0; second_result=0
+wait "$first" || first_result=$?
+wait "$second" || second_result=$?
+if [[ "$first_result" -eq 0 && "$second_result" -eq 0 ]] || [[ "$first_result" -ne 0 && "$second_result" -ne 0 ]]; then
+  echo 'FAIL: exactly one concurrent signup must succeed' >&2
+  exit 1
+fi
+psql_test <<'SQL'
+do $$ begin
+ if (select count(*) from auth.users where is_anonymous)<>100 then
+   raise exception 'Concurrent signups exceeded the daily budget';
+ end if;
+ raise notice 'PASS: concurrent signups respect the final daily slot';
+end $$;
+SQL

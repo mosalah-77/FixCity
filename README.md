@@ -18,43 +18,52 @@ I helped develop the concept and planned the reporting flow. With five colleague
 
 I present this project as evidence of product thinking and collaborative prototyping. I do not claim sole authorship of its code.
 
-## What is in the source
+## Try the reporting workflow
 
-- Arabic and English interfaces, with right-to-left layout support.
-- Photo upload, map-based location selection, report submission and tracking codes.
-- Citizen accounts, report history, notifications and points.
-- Admin and district-official screens for reviewing reports, updating status and attaching repair photos.
-- A Gemini category-suggestion integration in the original source, with a local keyword fallback.
+[Browser demo](https://mosalah-77.github.io/FixCity/) · [Android releases](https://github.com/mosalah-77/FixCity/releases) · [Two-minute walkthrough](docs/DEMO.md)
 
-The main stack is Flutter/Dart, Supabase Auth and database/storage APIs, flutter_map, geolocator and image_picker. The map uses CARTO tiles based on OpenStreetMap data. The app sends latitude and longitude values; the repository does not contain a PostGIS schema or migrations that establish geospatial database behaviour.
+Start a demo workspace, submit a fictional report, review it as staff, add repair evidence as the district team, then return to the citizen's tracking page. The report, status history and in-app notifications are saved in a separate Supabase project. Each visitor sees only their own synthetic workspace.
 
-## Status of this portfolio copy
+The demo keeps the team's Flutter interface and Arabic/English flow. Sample illustrations replace camera uploads. There is no government affiliation, real incident delivery, SMS service or cash value attached to points. Data expires after seven days. The free backend can pause after inactivity; check the link before sharing it in an application.
 
-This is a source snapshot for review, not a production municipal service. The current copy has not been built or tested against a live backend. No government adoption or endorsement is claimed.
+## Work added to this portfolio copy
 
-- Original service credentials and Firebase project configuration are excluded.
-- Supabase configuration must be supplied for a separate development project.
-- Live Gemini requests are disabled. The category button uses the local keyword fallback and labels its result accordingly. A server-side proxy is needed before restoring live AI use.
-- Admin login now denies access when its role lookup fails. Backend access policies still need to be supplied and tested.
-- Archived websites, databases, binaries, build output and old repository history are excluded.
+In November 2026, I used Codex to help turn the source snapshot into a reproducible demo and investigate bugs in the existing app. The work adds:
 
-See [PORTFOLIO-CHANGES.md](PORTFOLIO-CHANGES.md) and [BACKEND-SETUP.md](BACKEND-SETUP.md). The original source remains linked above for comparison.
+- Database migrations and row-level access policies for citizens, staff, districts and isolated demo visitors.
+- Transactional report creation and status updates. A retried request does not award points or create history twice.
+- Required repair evidence, private media rules for the separate normal-app path, and bounded demo accounts with expiry cleanup.
+- Fixes for password handling, confirmation signup, unread notifications, stale tracking results, failed saves and small-screen layouts.
+- A test suite, pinned builds and release documentation.
 
-## Local setup
+The [bug review](docs/BUG-REVIEW.md) separates reproduced defects, tests and remaining checks. The [backend guide](BACKEND-SETUP.md) describes access rules and limits. This is project experience developed with AI assistance; it does not establish production municipal use or sole authorship of the original app.
 
-Use Flutter 3.35 or later with a compatible Dart SDK. The checked-in lockfile requires Dart 3.9 or later. Flutter and Dart were not available in the review environment, so these commands have not been run here.
+## Run locally
+
+Use **Flutter 3.35.7 / Dart 3.9.2** and the checked-in lockfile.
 
 ```sh
 git clone https://github.com/mosalah-77/FixCity.git
 cd FixCity/app
-flutter pub get
-flutter analyze
-flutter run -d chrome \
-  --dart-define=SUPABASE_URL=https://YOUR_PROJECT.supabase.co \
-  --dart-define=SUPABASE_ANON_KEY=YOUR_PUBLIC_CLIENT_KEY
+flutter pub get --enforce-lockfile
+flutter run -d chrome --dart-define-from-file=demo-config.json
 ```
 
-Use a development Supabase project containing only synthetic data. The original database schema, access policies and RPC definitions are not included in this repository, so supplying a URL and key alone does not reproduce the backend. Never place a Supabase service-role key or Gemini secret in the Flutter client.
+`demo-config.json` contains only a public client key and the isolated portfolio backend URL. For your own backend, follow [BACKEND-SETUP.md](BACKEND-SETUP.md), copy the config and change those public values. Never put a service-role key, database password or AI secret into the Flutter client.
+
+```sh
+flutter test --dart-define=DEMO_MODE=true
+flutter test
+flutter analyze --no-fatal-infos
+flutter build web --release --base-href /FixCity/ --pwa-strategy=none \
+  --dart-define-from-file=demo-config.json
+```
+
+See [release instructions](docs/RELEASE.md) for Android signing, database checks and deployment. The normal citizen/staff application remains in the codebase and needs its own configured backend and privately assigned roles. The public demo backend permits anonymous sign-in only.
+
+## Stack and limits
+
+Flutter/Dart, Supabase Auth/PostgreSQL/Storage, flutter_map, OpenStreetMap tiles, geolocator and image_picker. Map coordinates are ordinary latitude/longitude fields; no PostGIS behaviour is claimed. Category suggestions use a labelled local keyword fallback. The original Gemini integration is disabled, and old project credentials, archived data and binaries remain excluded.
 
 ## Licensing
 

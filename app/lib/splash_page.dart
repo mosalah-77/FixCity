@@ -263,11 +263,11 @@ class _LangButton extends StatelessWidget {
         child: Row(children: [
           Text(flag, style: const TextStyle(fontSize: 26)),
           const SizedBox(width: 14),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kDark)),
             Text(sublabel, style: const TextStyle(fontSize: 12, color: kGrey)),
-          ]),
-          const Spacer(),
+          ])),
+          const SizedBox(width: 8),
           const Icon(Icons.arrow_forward_ios, color: kGrey, size: 14),
         ]),
       ),

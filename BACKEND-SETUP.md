@@ -5,11 +5,11 @@ The versioned schema in `supabase/migrations/202611040001_fixcity.sql` reconstru
 ## Provisioning
 
 1. Create a free Supabase project. Keep the database password outside Git. Disable automatic table exposure and enable automatic row security; the migration grants only the permissions needed by the app.
-2. Apply the migration with the Supabase CLI or SQL editor. `platform-stub.sql` is **only for the disposable PostgreSQL test container**; never upload it to Supabase.
-3. Enable anonymous sign-in for the demo. Set the anonymous sign-in limit to 10 per hour per IP. The checked-in `config.toml` describes local settings; it does not change a hosted project's dashboard settings.
+2. Apply both numbered migrations in order with the Supabase CLI or SQL editor. `platform-stub.sql` is **only for the disposable PostgreSQL test container**; never upload it to Supabase.
+3. Enable anonymous sign-in for the demo. Disable the Email provider and leave every other sign-in provider off in this demo-only project. Anonymous sign-in remains enabled. The hosted free-project dashboard shows a read-only anonymous limit of 30 per hour per IP; the separate database guard adds 100 new anonymous identities per rolling 24 hours and 500 retained anonymous identities globally. The checked-in `config.toml` describes local settings; it does not change a hosted project's dashboard settings.
 4. Set the site URL to the published demo URL and keep redirects restricted to the actual demo and local development URL. Public builds use only the project URL and publishable/anon client key. Never embed a service-role key, database password or management token.
-5. Before public release, verify anonymous abuse controls and quotas. Supabase recommends CAPTCHA for anonymous sign-in; if enabled, wire its challenge token into the app before release. API rate limits are not a substitute for CAPTCHA or a total resource budget. Review usage while sharing the demo; stop anonymous signup if abusive traffic appears.
-6. Schedule `select public.prune_demo_workspaces();` hourly through Supabase Cron (or a trusted server task). Only the database owner/service role can call it. It deletes expired workspaces and their report/history/notification/request rows; never normal reports. Expired rows are inaccessible immediately, even before cleanup runs. Anonymous Auth accounts require separate periodic cleanup using the Admin API; do not blindly delete all anonymous users while sessions remain active.
+5. Before public release, verify anonymous abuse controls and quotas. Supabase recommends CAPTCHA for anonymous sign-in; if enabled, wire its challenge token into the app before release. API rate limits are not a substitute for CAPTCHA or a total resource budget. The first release uses database caps and the platform IP limit; it has no CAPTCHA challenge. These bounds limit stored data, not all request/egress abuse. Review usage while sharing the demo; stop anonymous signup if abusive traffic appears.
+6. Schedule `select public.prune_demo_accounts();` hourly through Supabase Cron (or a trusted server task). Only the database owner/service role can call it. It deletes expired workspaces and their report/history/notification/request rows; never normal reports. Expired rows are inaccessible immediately, even before cleanup runs. The account cleanup additionally removes anonymous Auth identities older than seven days only when they have no active workspace. It preserves ordinary accounts and active demo sessions. Never run it over a production project.
 7. Test with two independent anonymous sessions and ordinary citizen/staff/district accounts before claiming the backend is verified. Privileged test accounts are created privately; no shared admin login belongs in the public demo.
 
 The public demo uses synthetic sample illustrations, not uploads or real official contacts. Each anonymous identity owns one workspace, with two starting reports and a maximum of 20 total reports. Data expires after seven days. Reset removes only that visitor's workspace and is limited to once per minute. Signing out or clearing app/browser storage loses access to the old anonymous identity.
@@ -47,3 +47,22 @@ The script recreates only `fixcity_test` inside that named disposable container.
 The exposed Gemini key in the original source still needs owner-side rotation/revocation if not already done. It was removed from this portfolio copy, never tested and never reused. The demo's category suggestion runs locally; it makes no live Gemini call.
 
 References: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [anonymous sign-in](https://supabase.com/docs/guides/auth/auth-anonymous), [rate limits](https://supabase.com/docs/guides/auth/rate-limits), [local configuration](https://supabase.com/docs/guides/local-development/cli/config).
+
+## Hosted project verified on 4 November 2026
+
+Project `goohgkzuggxxqpcnikjn` is a new free project in Paris. `app/demo-config.json` contains its public URL and publishable client key. These values identify the backend; they do not bypass access policies. No privileged key is in the app.
+
+The local suite has 67 checks, including concurrency at the final signup slot and cleanup that preserves active demo sessions. The separate `python3 supabase/tests/hosted-smoke.py --run` check uses two real anonymous Auth sessions and the public REST API. It deliberately creates only synthetic demo records, refuses any other project URL, keeps tokens in memory, and lets its records expire normally.
+
+Cron setup for this dedicated project:
+
+```sql
+create extension if not exists pg_cron;
+select cron.schedule('fixcity-expired-demos', '17 * * * *',
+  $$select public.prune_demo_accounts();
+    delete from cron.job_run_details where jobid in
+      (select jobid from cron.job where jobname='fixcity-expired-demos')
+      and end_time < now()-interval '7 days';$$);
+```
+
+Supabase documents [SQL cleanup for anonymous users](https://supabase.com/docs/guides/auth/auth-anonymous) and [Cron scheduling](https://supabase.com/docs/guides/cron/quickstart). The extra active-workspace condition prevents deleting a visitor who renewed their demo. Check Cron history after enabling it. Free projects may pause after inactivity; no always-on availability is promised.

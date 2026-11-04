@@ -1,4 +1,4 @@
-package com.example.fixcity
+package dev.mosalah.fixcity
 
 import io.flutter.embedding.android.FlutterActivity
 

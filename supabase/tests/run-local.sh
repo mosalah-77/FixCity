@@ -7,6 +7,9 @@ database=fixcity_test
 docker exec "$container" dropdb -U postgres --if-exists "$database"
 docker exec "$container" createdb -U postgres "$database"
 docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/tests/platform-stub.sql
-docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/migrations/202611040001_fixcity.sql
+for migration in supabase/migrations/*.sql; do
+  docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < "$migration"
+done
 docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/tests/workflow.sql
 bash supabase/tests/concurrency.sh
+docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/tests/demo-budget.sql

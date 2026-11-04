@@ -5,7 +5,7 @@ do $$ begin
   if not exists(select 1 from pg_roles where rolname='service_role') then create role service_role nologin bypassrls; end if;
 end $$;
 create schema auth;
-create table auth.users (id uuid primary key, raw_user_meta_data jsonb default '{}', is_anonymous boolean default false);
+create table auth.users (id uuid primary key, raw_user_meta_data jsonb default '{}', is_anonymous boolean default false, created_at timestamptz default now());
 create function auth.jwt() returns jsonb language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb
 $$;

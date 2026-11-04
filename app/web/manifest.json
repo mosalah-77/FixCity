@@ -1,11 +1,11 @@
 {
-    "name": "fixcity",
-    "short_name": "fixcity",
+    "name": "FixCity Demo",
+    "short_name": "FixCity Demo",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#315F9F",
+    "theme_color": "#315F9F",
+    "description": "Synthetic report-to-resolution demo from a team graduation project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

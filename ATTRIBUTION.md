@@ -19,6 +19,10 @@ Most codework was AI-assisted. The team used a shared GitHub account and made li
 
 ## This repository
 
-This is an attributed portfolio snapshot, not a claim that Mohamed wrote the original repository alone. It preserves the current Flutter source with the limited configuration and safety changes described in PORTFOLIO-CHANGES.md. Import and documentation work on 24 October 2026 was completed with Codex assistance.
+This is an attributed portfolio snapshot, not a claim that Mohamed wrote the original repository alone. It preserves the current Flutter source with the configuration changes described in PORTFOLIO-CHANGES.md and the subsequent demo repairs documented in docs/BUG-REVIEW.md. Import and documentation work on 24 October 2026 was completed with Codex assistance.
 
 The upstream README states MIT licensing. No standalone LICENSE file was present at the reviewed revision. No new ownership or licensing claim is made here.
+
+## November 2026 demo extension
+
+Mohamed directed the portfolio demonstration work with Codex assistance: a new synthetic Supabase schema, isolated visitor workspaces, atomic report operations, app bug fixes, regression tests, and Android/web build preparation. These additions are recorded separately in the `codex/fixcity-demo` commits. They do not replace the original developer credits or establish sole authorship of the graduation project.
