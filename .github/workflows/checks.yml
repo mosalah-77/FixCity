@@ -46,7 +46,19 @@ jobs:
       - name: Check isolation, consistency and demo limits
         run: |
           docker run --rm -d --name fixcity-demo-test-db -e POSTGRES_HOST_AUTH_METHOD=trust postgres@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
-          for n in $(seq 1 30); do docker exec fixcity-demo-test-db pg_isready -U postgres && break; sleep 1; done
+          # TCP stays closed while the image's temporary initialization server runs.
+          ready=false
+          for n in $(seq 1 30); do
+            if docker exec fixcity-demo-test-db pg_isready -h 127.0.0.1 -U postgres; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" != true ]; then
+            docker logs fixcity-demo-test-db
+            exit 1
+          fi
           bash supabase/tests/run-local.sh
       - if: always()
         run: docker stop fixcity-demo-test-db || true
