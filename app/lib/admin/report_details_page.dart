@@ -1,11 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../models/problem.dart';
-import '../login_page.dart';
 import '../main.dart';
 import '../theme.dart';
+import '../report_actions.dart';
+import '../report_media.dart';
 
 class ReportDetailsPage extends StatefulWidget {
   final String reportId;
@@ -15,357 +17,343 @@ class ReportDetailsPage extends StatefulWidget {
 }
 
 class _ReportDetailsPageState extends State<ReportDetailsPage> {
-  final supabase      = Supabase.instance.client;
-  final _updateCtrl   = TextEditingController();
-  final _scrollCtrl   = ScrollController();
-  final List<String> _statuses = ['pending', 'in_progress', 'resolved'];
-  String? _selectedStatus;
-  bool _isLoading = false;
-  Map<String, dynamic>? _reportData;
-
-  String _statusLabel(String s, String lang) {
-    final isAr = lang == 'ar';
-    switch (s) {
-      case 'pending':     return isAr ? 'قيد الانتظار' : 'Pending';
-      case 'in_progress': return isAr ? 'جارٍ العمل'   : 'In Progress';
-      case 'resolved':    return isAr ? 'تم الحل'       : 'Resolved';
-      default:            return s;
-    }
-  }
-
-  Color _statusColor(String s) {
-    switch (s) {
-      case 'pending':     return const Color(0xFFF59E0B);
-      case 'in_progress': return kBlue;
-      case 'resolved':    return kSuccess;
-      default:            return kGrey;
-    }
-  }
-
-  Future<void> _addStatusUpdate(String lang) async {
-    final isAr = lang == 'ar';
-    if (_updateCtrl.text.isEmpty || _selectedStatus == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isAr ? 'الرجاء كتابة تحديث واختيار حالة' : 'Please write an update and select a status'),
-        behavior: SnackBarBehavior.floating,
-      ));
-      return;
-    }
-    setState(() => _isLoading = true);
-    try {
-      await supabase.from('status_updates').insert({
-        'report_id':  widget.reportId,
-        'text':       _updateCtrl.text,
-        'updated_at': DateTime.now().toIso8601String(),
-        'updated_by': 'admin',
-      });
-      await supabase.from('reports')
-          .update({'status': _selectedStatus})
-          .eq('id', widget.reportId);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isAr ? 'تم تحديث الحالة ✓' : 'Status updated ✓'),
-        backgroundColor: kSuccess,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
-      await Future.delayed(const Duration(milliseconds: 800));
-      if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('${isAr ? 'فشل التحديث' : 'Update failed'}: $e'),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _notifyCitizen(String userId, String reportCode, String lang) async {
-    final isAr = lang == 'ar';
-    try {
-      await supabase.from('notifications').insert({
-        'user_id':    userId,
-        'title':      isAr ? 'تحديث على بلاغك' : 'Update on your report',
-        'body':       isAr
-            ? 'تم تحديث حالة بلاغك رقم $reportCode'
-            : 'Your report $reportCode has been updated',
-        'report_id':  widget.reportId,
-        'is_read':    false,
-        'created_at': DateTime.now().toIso8601String(),
-      });
-      try { await supabase.rpc('increment_points', params: {'user_id': userId, 'pts': 10}); } catch (_) {}
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isAr ? '✅ تم إشعار المواطن' : '✅ Citizen notified'),
-        backgroundColor: kSuccess, behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
-    } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('${isAr ? 'فشل الإشعار' : 'Notify failed'}: $e'),
-        backgroundColor: Colors.red, behavior: SnackBarBehavior.floating,
-      ));
-    }
-  }
-
-  void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 300), () {
-      if (_scrollCtrl.hasClients) {
-        _scrollCtrl.animateTo(_scrollCtrl.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-      }
-    });
+  final _client = Supabase.instance.client;
+  final _note = TextEditingController();
+  Map<String, dynamic>? _report;
+  List<Map<String, dynamic>> _history = [];
+  bool _loading = true, _busy = false;
+  String? _error, _repairMedia, _lastPayload;
+  String _requestId = newRequestId();
+  bool get _ar => appLocale.value.languageCode == 'ar';
+  String label(String status) => switch (status) {
+    'pending' => _ar ? 'قيد الانتظار' : 'Pending',
+    'in_progress' => _ar ? 'جارٍ العمل' : 'In Progress',
+    'resolved' => _ar ? 'تم الحل' : 'Resolved',
+    _ => status,
+  };
+  String? get _next => switch (_report?['status']) {
+    'pending' => 'in_progress',
+    'in_progress' => 'resolved',
+    _ => null,
+  };
+  @override
+  void initState() {
+    super.initState();
+    _load();
   }
 
   @override
-  void dispose() { _updateCtrl.dispose(); _scrollCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _note.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load() async {
+    try {
+      final row = await _client
+          .from('reports')
+          .select()
+          .eq('id', widget.reportId)
+          .maybeSingle();
+      if (!mounted) return;
+      if (row == null) {
+        setState(() {
+          _report = null;
+          _loading = false;
+          _error = _ar
+              ? 'البلاغ غير متاح لهذا الحساب'
+              : 'Report unavailable for this account';
+        });
+        return;
+      }
+      final history = await _client
+          .from('status_updates')
+          .select()
+          .eq('report_id', widget.reportId)
+          .order('updated_at');
+      if (!mounted) return;
+      setState(() {
+        _report = row;
+        _history = List<Map<String, dynamic>>.from(history);
+        _loading = false;
+        _error = null;
+      });
+    } catch (_) {
+      if (mounted)
+        setState(() {
+          _loading = false;
+          _error = _ar
+              ? 'تعذر تحميل البلاغ. حاول مجدداً.'
+              : 'Could not load this report. Please retry.';
+        });
+    }
+  }
+
+  Future<void> _pickRepair() async {
+    if (_busy) return;
+    if (_report?['workspace_id'] != null) {
+      final chosen = await showDialog<String>(
+        context: context,
+        builder: (ctx) => SimpleDialog(
+          title: Text(
+            _ar ? 'اختر دليلاً تجريبياً' : 'Choose synthetic repair evidence',
+          ),
+          children: sampleMedia.entries
+              .where((e) => e.key.startsWith('sample:repaired-'))
+              .map(
+                (e) => SimpleDialogOption(
+                  onPressed: () => Navigator.pop(ctx, e.key),
+                  child: Text(e.value),
+                ),
+              )
+              .toList(),
+        ),
+      );
+      if (mounted && chosen != null) setState(() => _repairMedia = chosen);
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      final file = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 2048,
+        imageQuality: 85,
+      );
+      if (file == null || !mounted) return;
+      final bytes = await file.readAsBytes();
+      if (!mounted) return;
+      final media = await uploadReportImage(_client, bytes);
+      if (!mounted) {
+        await discardUnusedMedia(_client, media);
+        return;
+      }
+      final old = _repairMedia;
+      setState(() => _repairMedia = media);
+      await discardUnusedMedia(_client, old);
+    } catch (_) {
+      if (mounted)
+        setState(
+          () => _error = _ar
+              ? 'تعذر رفع الصورة. اختر JPEG أو PNG أقل من 5 ميجابايت.'
+              : 'Could not upload. Choose a JPEG or PNG smaller than 5 MiB.',
+        );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _submit() async {
+    if (_busy || _next == null) return;
+    final status = _next!;
+    final note = _note.text.trim();
+    if (note.isEmpty || note.length > 2000) {
+      setState(
+        () => _error = _ar
+            ? 'اكتب تحديثاً بين 1 و2000 حرف.'
+            : 'Write an update of 1–2000 characters.',
+      );
+      return;
+    }
+    if (status == 'resolved' && _repairMedia == null) {
+      setState(
+        () => _error = _ar
+            ? 'أرفق صورة الإصلاح أولاً.'
+            : 'Please attach a repair photo first.',
+      );
+      return;
+    }
+    final payload = jsonEncode([
+      status,
+      note,
+      status == 'resolved' ? _repairMedia : null,
+    ]);
+    if (payload != _lastPayload) {
+      _requestId = newRequestId();
+      _lastPayload = payload;
+    }
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await ReportActions(_client).transitionReport(
+        requestId: _requestId,
+        reportId: widget.reportId,
+        status: status,
+        note: note,
+        fixPhotoUrl: status == 'resolved' ? _repairMedia : null,
+      );
+      if (!mounted) return;
+      _note.clear();
+      _repairMedia = null;
+      _lastPayload = null;
+      // Keep the confirmed status even if the subsequent refresh fails.
+      setState(() => _report = {..._report!, 'status': status});
+      await _load();
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_ar ? 'تم تحديث الحالة' : 'Status updated')),
+        );
+    } catch (_) {
+      if (mounted)
+        setState(
+          () => _error = _ar
+              ? 'تعذر تأكيد الحفظ. النص محفوظ؛ أعد المحاولة.'
+              : 'Could not confirm the update. Your note is kept; retry safely.',
+        );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final lang = appLocale.value.languageCode;
-    final isAr = lang == 'ar';
-
+    final row = _report;
     return Scaffold(
       backgroundColor: kBg,
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: kDark,
-        foregroundColor: kWhite,
-        elevation: 0,
-        title: Text(isAr ? 'تفاصيل البلاغ' : 'Report Details',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        centerTitle: true,
+        title: Text(_ar ? 'تفاصيل البلاغ' : 'Report Details'),
+        actions: [
+          IconButton(
+            tooltip: _ar ? 'تحديث' : 'Refresh',
+            onPressed: _busy ? null : _load,
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
-      body: _reportData == null
-          ? FutureBuilder<Map<String, dynamic>>(
-              future: supabase.from('reports').select().eq('id', widget.reportId).single(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  return const Center(child: CircularProgressIndicator(color: kRed));
-                if (!snapshot.hasData)
-                  return Center(child: Text(isAr ? 'لم يتم العثور على البلاغ' : 'Report not found'));
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) setState(() => _reportData = snapshot.data!);
-                });
-                return const Center(child: CircularProgressIndicator(color: kRed));
-              },
-            )
-          : Builder(builder: (context) {
-          final data    = _reportData!;
-          final problem = Problem.fromSupabase(data);
-          _selectedStatus ??= problem.status;
-          final sc       = _statusColor(problem.status);
-
-          return SingleChildScrollView(
-            controller: _scrollCtrl,
-            padding: const EdgeInsets.all(20),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              // Status badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  color: sc.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: sc.withValues(alpha: 0.3)),
-                ),
-                child: Text(_statusLabel(problem.status, lang),
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: sc)),
-              ),
-              const SizedBox(height: 16),
-
-              // Details card
-              Container(
-                decoration: BoxDecoration(color: kWhite, borderRadius: BorderRadius.circular(16)),
-                child: Column(children: [
-                  _Row(icon: Icons.tag,                  label: isAr ? 'الكود'   : 'Code',        value: problem.reportCode),
-                  _Div(), _Row(icon: Icons.title_outlined,       label: isAr ? 'العنوان' : 'Title',       value: problem.title),
-                  _Div(), _Row(icon: Icons.description_outlined, label: isAr ? 'الوصف'   : 'Description', value: problem.description),
-                  _Div(), _Row(icon: Icons.category_outlined,    label: isAr ? 'الفئة'   : 'Category',    value: problem.category),
-                  if ((data['district'] ?? '').toString().isNotEmpty) ...[
-                    _Div(), _Row(icon: Icons.location_city_outlined, label: isAr ? 'الحي' : 'District', value: data['district']),
-                  ],
-                  _Div(), _Row(icon: Icons.calendar_today_outlined, label: isAr ? 'التاريخ' : 'Date',
-                      value: '${problem.createdAt.year}/${problem.createdAt.month}/${problem.createdAt.day}'),
-                ]),
-              ),
-
-              // Before photo
-              if (problem.photoUrl != null) ...[
-                const SizedBox(height: 16),
-                Text(isAr ? 'صورة المشكلة' : 'Problem Photo',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: kDark)),
-                const SizedBox(height: 8),
-                ClipRRect(borderRadius: BorderRadius.circular(16),
-                    child: Image.network(problem.photoUrl!, height: 200, width: double.infinity, fit: BoxFit.cover)),
-              ],
-
-              // After fix photo
-              if ((data['fix_photo_url'] ?? '').toString().isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Text(isAr ? 'صورة بعد الإصلاح' : 'After Fix Photo',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: kSuccess)),
-                const SizedBox(height: 8),
-                ClipRRect(borderRadius: BorderRadius.circular(16),
-                    child: Image.network(data['fix_photo_url'], height: 200, width: double.infinity, fit: BoxFit.cover)),
-              ],
-
-              // Map
-              const SizedBox(height: 16),
-              Text(isAr ? 'الموقع' : 'Location',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: kDark)),
-              const SizedBox(height: 8),
-              ClipRRect(borderRadius: BorderRadius.circular(16),
-                child: SizedBox(height: 180, child: FlutterMap(
-                  options: MapOptions(
-                    initialCenter: LatLng(problem.location.latitude, problem.location.longitude),
-                    initialZoom: 15,
-                  ),
-                  children: [
-                    TileLayer(urlTemplate: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-                        subdomains: const ['a','b','c','d'], userAgentPackageName: 'com.fixcity.app'),
-                    MarkerLayer(markers: [Marker(
-                      point: LatLng(problem.location.latitude, problem.location.longitude),
-                      child: const Icon(Icons.location_pin, color: kRed, size: 36),
-                    )]),
-                  ],
-                )),
-              ),
-
-              const SizedBox(height: 24),
-
-              // ── Update section ──────────────────────────────────────
-              Text(isAr ? 'إضافة تحديث' : 'Add Update',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: kDark)),
-              const SizedBox(height: 16),
-
-              FixField(
-                controller: _updateCtrl,
-                label: isAr ? 'نص التحديث' : 'Update text',
-                hint: isAr ? 'مثال: تم إرسال فريق للموقع' : 'e.g. Maintenance team dispatched',
-                icon: Icons.edit_note_outlined,
-                maxLines: 3,
-                onTap: _scrollToBottom,
-              ),
-              const SizedBox(height: 16),
-
-              Text(isAr ? 'تغيير الحالة إلى' : 'Change status to',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kDark)),
-              const SizedBox(height: 7),
-              DropdownButtonFormField<String>(
-                value: _selectedStatus,
-                items: _statuses.map((s) => DropdownMenuItem(value: s,
-                    child: Text(_statusLabel(s, lang)))).toList(),
-                onChanged: (v) => setState(() => _selectedStatus = v),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.swap_horiz_outlined, size: 18, color: kGrey),
-                  filled: true, fillColor: kWhite,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  border:        OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: kRed, width: 2)),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: kRed))
-                  : FixGreenButton(
-                      label: isAr ? 'إضافة التحديث' : 'Submit Update',
-                      onPressed: () => _addStatusUpdate(lang),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
                     ),
-              const SizedBox(height: 12),
-
-              // Notify citizen button
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    final report = await supabase.from('reports')
-                        .select('user_id, report_code').eq('id', widget.reportId).single();
-                    final userId = report['user_id']?.toString() ?? '';
-                    final code   = report['report_code']?.toString() ?? '';
-                    if (userId.isNotEmpty) await _notifyCitizen(userId, code, lang);
-                  },
-                  icon: const Icon(Icons.notifications_active_outlined, size: 18),
-                  label: Text(isAr ? '🔔 إشعار المواطن' : '🔔 Notify Citizen'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: kBlue, side: const BorderSide(color: kBlue),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(vertical: 13),
-                  ),
-                ),
+                  if (row == null)
+                    TextButton(
+                      onPressed: _load,
+                      child: Text(_ar ? 'إعادة المحاولة' : 'Retry'),
+                    ),
+                  if (row != null) ...[
+                    Text(
+                      row['title'] ?? '',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SelectableText(row['report_code'] ?? ''),
+                    Text(label(row['status'])),
+                    Text(row['district'] ?? ''),
+                    const SizedBox(height: 12),
+                    Text(row['description'] ?? ''),
+                    const SizedBox(height: 12),
+                    if (row['photo_url'] != null) ReportMedia(row['photo_url']),
+                    if (row['fix_photo_url'] != null) ...[
+                      const SizedBox(height: 12),
+                      ReportMedia(row['fix_photo_url']),
+                    ],
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 200,
+                      child: FlutterMap(
+                        options: MapOptions(
+                          initialCenter: LatLng(
+                            (row['latitude'] as num).toDouble(),
+                            (row['longitude'] as num).toDouble(),
+                          ),
+                          initialZoom: 14,
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                            subdomains: const ['a', 'b', 'c', 'd'],
+                            userAgentPackageName: 'dev.mosalah.fixcity',
+                          ),
+                          MarkerLayer(
+                            markers: [
+                              Marker(
+                                point: LatLng(
+                                  (row['latitude'] as num).toDouble(),
+                                  (row['longitude'] as num).toDouble(),
+                                ),
+                                child: const Icon(
+                                  Icons.location_pin,
+                                  color: kRed,
+                                  size: 36,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Text(
+                      '© OpenStreetMap contributors · © CARTO',
+                      style: TextStyle(fontSize: 11),
+                    ),
+                    const SizedBox(height: 20),
+                    if (_next != null) ...[
+                      Text(
+                        '${_ar ? 'الخطوة التالية' : 'Next step'}: ${label(_next!)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: _note,
+                        enabled: !_busy,
+                        maxLines: 3,
+                        maxLength: 2000,
+                        decoration: InputDecoration(
+                          labelText: _ar ? 'نص التحديث' : 'Update text',
+                        ),
+                      ),
+                      if (_next == 'resolved') ...[
+                        if (_repairMedia != null) ReportMedia(_repairMedia!),
+                        OutlinedButton.icon(
+                          onPressed: _busy ? null : _pickRepair,
+                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                          label: Text(
+                            _ar ? 'إرفاق صورة الإصلاح' : 'Attach repair photo',
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: _busy ? null : _submit,
+                        child: Text(
+                          _busy
+                              ? (_ar ? 'جارٍ الحفظ...' : 'Saving…')
+                              : (_ar ? 'إضافة التحديث' : 'Submit Update'),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    Text(
+                      _ar ? 'سجل التحديثات' : 'Update History',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    for (final item in _history)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(item['text'] ?? ''),
+                        subtitle: Text(
+                          '${item['updated_by']} · ${DateTime.parse(item['updated_at']).toLocal()}',
+                        ),
+                      ),
+                  ],
+                ],
               ),
-
-              const SizedBox(height: 24),
-              Text(isAr ? 'سجل التحديثات' : 'Update History',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: kDark)),
-              const SizedBox(height: 12),
-
-              StreamBuilder<List<Map<String, dynamic>>>(
-                stream: supabase.from('status_updates')
-                    .stream(primaryKey: ['id'])
-                    .eq('report_id', widget.reportId)
-                    .order('updated_at', ascending: false),
-                builder: (context, snap) {
-                  if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: kRed));
-                  final updates = snap.data!;
-                  if (updates.isEmpty) return Text(
-                    isAr ? 'لا توجد تحديثات بعد.' : 'No updates yet.',
-                    style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                  );
-                  return Column(children: updates.map((u) {
-                    final date = DateTime.parse(u['updated_at']);
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(color: kWhite, borderRadius: BorderRadius.circular(12)),
-                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Container(width: 8, height: 8, margin: const EdgeInsets.only(top: 5),
-                            decoration: const BoxDecoration(color: kRed, shape: BoxShape.circle)),
-                        const SizedBox(width: 10),
-                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(u['text'] ?? '', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: kDark)),
-                          const SizedBox(height: 3),
-                          Text('${date.year}/${date.month}/${date.day}',
-                              style: TextStyle(fontSize: 11, color: Colors.grey.shade400)),
-                        ])),
-                      ]),
-                    );
-                  }).toList());
-                },
-              ),
-              const SizedBox(height: 32),
-            ]),
-          );
-        }),
+            ),
     );
   }
-}
-
-class _Row extends StatelessWidget {
-  final IconData icon; final String label, value;
-  const _Row({required this.icon, required this.label, required this.value});
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(14),
-    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Icon(icon, size: 16, color: kGrey),
-      const SizedBox(width: 10),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: kGrey)),
-        const SizedBox(height: 2),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 100),
-          child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kDark)),
-        ),
-      ]),
-    ]),
-  );
-}
-
-class _Div extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Divider(height: 1, color: Colors.grey.shade100, indent: 14, endIndent: 14);
 }

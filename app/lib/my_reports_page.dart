@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models/problem.dart';
 import 'translations.dart';
 import 'main.dart';
+import 'report_media.dart';
+import 'demo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyReportsPage extends StatefulWidget {
@@ -48,34 +50,6 @@ class _MyReportsPageState extends State<MyReportsPage> {
       case 'in_progress': return Icons.construction_outlined;
       case 'resolved':    return Icons.check_circle_outline;
       default:            return Icons.help_outline;
-    }
-  }
-
-  // ── Ping report ──────────────────────────────────────────────────────────
-  Future<void> _pingReport(String reportId, int currentPingCount, String lang) async {
-    final isAr = lang == 'ar';
-    try {
-      await _supabase.from('reports').update({
-        'pinged_at':  DateTime.now().toIso8601String(),
-        'ping_count': currentPingCount + 1,
-      }).eq('id', reportId);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(isAr ? '🔔 تم إرسال تنبيه للمسؤول' : '🔔 Reminder sent to the responsible team'),
-          backgroundColor: Colors.orange.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ));
-        setState(() {});
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(isAr ? 'فشل إرسال التنبيه' : 'Failed to send reminder'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
     }
   }
 
@@ -349,7 +323,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14),
-                    child: Image.network(problem.photoUrl!, height: 180, width: double.infinity, fit: BoxFit.cover),
+                    child: ReportMedia(problem.photoUrl!,height:180),
                   ),
                 ],
 
@@ -370,38 +344,13 @@ class _MyReportsPageState extends State<MyReportsPage> {
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14),
-                    child: Image.network(fixPhotoUrl, height: 180, width: double.infinity, fit: BoxFit.cover),
+                    child: ReportMedia(fixPhotoUrl,height:180),
                   ),
                 ],
 
                 const SizedBox(height: 16),
-                // Ping button (only for pending/in_progress)
-                if (problem.status != 'resolved') ...[
-                  SizedBox(
-                    width: double.infinity, height: 48,
-                    child: OutlinedButton.icon(
-                      onPressed: () async {
-                        final pingCount = (data['ping_count'] ?? 0) as int;
-                        await _pingReport(problem.id!, pingCount, lang);
-                        if (mounted) Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.notifications_outlined, size: 18, color: Colors.orange),
-                      label: Text(
-                        isAr ? '🔔 تنبيه المسؤول (لم يتم الحل بعد)' : '🔔 Ping — Report still unresolved',
-                        style: const TextStyle(color: Colors.orange),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.orange,
-                        side: const BorderSide(color: Colors.orange),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-
-                // WhatsApp share
-                SizedBox(
+                // External sharing is unavailable for the synthetic demo.
+                if(!demoMode)SizedBox(
                   width: double.infinity, height: 48,
                   child: ElevatedButton.icon(
                     onPressed: () => _shareOnWhatsApp(problem, data, lang),

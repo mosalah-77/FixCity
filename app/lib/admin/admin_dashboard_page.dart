@@ -39,7 +39,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   void _logout() async {
     await supabase.auth.signOut();
-    if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
+    if (context.mounted) Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
   }
 
   Color _statusColor(String s) {
@@ -89,7 +89,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       onPopInvokedWithResult: (didPop, _) async {
         if (!didPop) {
           await supabase.auth.signOut();
-          if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
+          if (context.mounted) Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
         }
       },
       child: Scaffold(

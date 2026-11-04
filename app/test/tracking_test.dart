@@ -12,10 +12,16 @@ import 'support/backend.dart';
 
 Map<String, dynamic> report(String code, String title) => {
   'id': '22222222-2222-4222-8222-222222222222',
-  'report_code': code, 'title': title, 'category': 'cat_trash',
-  'description': 'A synthetic report for testing.', 'photo_url': null,
-  'latitude': 30.0, 'longitude': 31.0, 'status': 'pending',
-  'created_at': '2026-01-01T00:00:00Z', 'user_id': testUserId,
+  'report_code': code,
+  'title': title,
+  'category': 'cat_trash',
+  'description': 'A synthetic report for testing.',
+  'photo_url': null,
+  'latitude': 30.0,
+  'longitude': 31.0,
+  'status': 'pending',
+  'created_at': '2026-01-01T00:00:00Z',
+  'user_id': testUserId,
 };
 
 Future<void> openTracking(WidgetTester tester) async {
@@ -37,7 +43,9 @@ void main() {
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());
 
-  testWidgets('an older search cannot overwrite the latest tracking result', (tester) async {
+  testWidgets('an older search cannot overwrite the latest tracking result', (
+    tester,
+  ) async {
     final oldResponse = Completer<http.Response>();
     var oldStarted = false;
     var oldWantsArray = false;
@@ -49,9 +57,12 @@ void main() {
           return oldResponse.future;
         }
         final row = report('NEW0000002', 'Latest result');
-        return jsonResponse(request.headers['accept'] == 'application/json' ? [row] : row);
+        return jsonResponse(
+          request.headers['accept'] == 'application/json' ? [row] : row,
+        );
       }
-      if (request.url.path == '/rest/v1/status_updates') return jsonResponse([]);
+      if (request.url.path == '/rest/v1/status_updates')
+        return jsonResponse([]);
       return unexpectedRequest(request);
     });
     await openTracking(tester);
@@ -67,10 +78,17 @@ void main() {
     expect(find.text('Stale result'), findsNothing);
   });
 
-  testWidgets('database failure is not reported as an unknown tracking code', (tester) async {
-    await initializeBackend((request) => jsonResponse({
-      'code': '08006', 'message': 'Database unavailable', 'details': null, 'hint': null,
-    }, 503));
+  testWidgets('database failure is not reported as an unknown tracking code', (
+    tester,
+  ) async {
+    await initializeBackend(
+      (request) => jsonResponse({
+        'code': '08006',
+        'message': 'Database unavailable',
+        'details': null,
+        'hint': null,
+      }, 503),
+    );
     await openTracking(tester);
     await search(tester, 'CODE000001');
     await tester.pumpAndSettle();
@@ -80,8 +98,14 @@ void main() {
 
   testWidgets('an absent report has a clear not-found state', (tester) async {
     await initializeBackend((request) {
-      if (request.headers['accept'] == 'application/json') return jsonResponse([]);
-      return jsonResponse({'code': 'PGRST116', 'message': 'No rows returned', 'details': 'The result contains 0 rows', 'hint': null}, 406);
+      if (request.headers['accept'] == 'application/json')
+        return jsonResponse([]);
+      return jsonResponse({
+        'code': 'PGRST116',
+        'message': 'No rows returned',
+        'details': 'The result contains 0 rows',
+        'hint': null,
+      }, 406);
     });
     await openTracking(tester);
     await search(tester, 'CODE000001');

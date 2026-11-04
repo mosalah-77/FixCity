@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme.dart';
 import 'main.dart';
+import 'demo.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,7 +14,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final _supabase = Supabase.instance.client;
   Map<String, dynamic>? _profile;
   bool _loading = true;
-  bool _smsEnabled = true;
 
   @override
   void initState() {
@@ -38,7 +38,6 @@ class _ProfilePageState extends State<ProfilePage> {
           'email': user.email,
           'report_count': (reports as List).length,
         };
-        _smsEnabled = p['sms_enabled'] ?? true;
         _loading = false;
       });
     } catch (_) {
@@ -48,69 +47,33 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String _initials(String? name, String? email) {
     if (name != null && name.isNotEmpty) {
-      final parts = name.trim().split(' ');
+      final parts = name.trim().split(RegExp(r'\s+')).where((p)=>p.isNotEmpty).toList();
+      if(parts.isEmpty)return '?';
       if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
       return name[0].toUpperCase();
     }
     return email?.isNotEmpty == true ? email![0].toUpperCase() : '?';
   }
 
-  Future<void> _editPhone(BuildContext context, bool isAr) async {
-    final ctrl = TextEditingController(text: _profile?['phone'] ?? '');
-    final result = await showDialog<String>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(isAr ? 'تعديل رقم الهاتف' : 'Edit Phone Number'),
-        content: TextField(
-          controller: ctrl,
-          keyboardType: TextInputType.phone,
-          autofocus: true,
-          decoration: InputDecoration(hintText: '01012345678'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(isAr ? 'إلغاء' : 'Cancel')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, ctrl.text.trim()),
-            style: ElevatedButton.styleFrom(backgroundColor: kRed),
-            child: Text(isAr ? 'حفظ' : 'Save'),
-          ),
-        ],
-      ),
-    );
-    if (result != null && result.isNotEmpty) {
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
-      await _supabase.from('profiles').upsert({'id': user.id, 'phone': result});
-      setState(() => _profile = {...?_profile, 'phone': result});
-    }
-  }
-
-  Future<void> _editFullName(BuildContext context, bool isAr) async {
-    final ctrl = TextEditingController(text: _profile?['full_name'] ?? '');
-    final result = await showDialog<String>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(isAr ? 'تعديل الاسم' : 'Edit Name'),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          decoration: InputDecoration(hintText: isAr ? 'الاسم الكامل' : 'Full name'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(isAr ? 'إلغاء' : 'Cancel')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, ctrl.text.trim()),
-            style: ElevatedButton.styleFrom(backgroundColor: kRed),
-            child: Text(isAr ? 'حفظ' : 'Save'),
-          ),
-        ],
-      ),
-    );
-    if (result != null && result.isNotEmpty) {
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
-      await _supabase.from('profiles').upsert({'id': user.id, 'full_name': result});
-      setState(() => _profile = {...?_profile, 'full_name': result});
+  Future<void> _editProfile(String field,bool isAr) async {
+    final isPhone=field=='phone';
+    var edited=(_profile?[field]??'').toString();
+    final result=await showDialog<String>(context:context,builder:(ctx)=>AlertDialog(
+      title:Text(isPhone?(isAr?'تعديل رقم الهاتف':'Edit Phone Number'):(isAr?'تعديل الاسم':'Edit Name')),
+      content:TextFormField(initialValue:edited,onChanged:(v)=>edited=v,
+        maxLength:isPhone?40:160,keyboardType:isPhone?TextInputType.phone:TextInputType.name,autofocus:true),
+      actions:[
+        TextButton(onPressed:()=>Navigator.pop(ctx),child:Text(isAr?'إلغاء':'Cancel')),
+        ElevatedButton(onPressed:()=>Navigator.pop(ctx,edited.trim()),child:Text(isAr?'حفظ':'Save')),
+      ],
+    ));
+    if(!mounted || result==null || result.isEmpty)return;
+    final user=_supabase.auth.currentUser;if(user==null)return;
+    try {
+      await _supabase.from('profiles').update({field:result}).eq('id',user.id);
+      if(mounted)setState(()=>_profile={...?_profile,field:result});
+    } catch(_) {
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(isAr?'تعذر حفظ التغيير. حاول مجدداً.':'Could not save the change. Please retry.')));
     }
   }
 
@@ -132,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
             icon: const Icon(Icons.logout_outlined, color: kWhite, size: 20),
             onPressed: () async {
               await _supabase.auth.signOut();
-              if (mounted) Navigator.of(context).pushReplacementNamed('/login');
+              if (context.mounted) Navigator.of(context).pushReplacementNamed('/login');
             },
           ),
         ],
@@ -176,42 +139,21 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Icons.person_outline,
                         label: isAr ? 'الاسم' : 'Name',
                         value: _profile?['full_name'] ?? '-',
-                        onTap: () => _editFullName(context, isAr),
+                        onTap: () => _editProfile('full_name',isAr),
                       ),
-                      _EditableRow(
+                      if(!demoMode)_EditableRow(
                         icon: Icons.phone_outlined,
                         label: isAr ? 'رقم الهاتف' : 'Phone',
                         value: _profile?['phone'] ?? (isAr ? 'اضغط للإضافة' : 'Tap to add'),
-                        onTap: () => _editPhone(context, isAr),
+                        onTap: () => _editProfile('phone',isAr),
                       ),
                       _InfoRow(icon: Icons.email_outlined,  label: isAr ? 'الإيميل' : 'Email', value: user.email ?? '-'),
                       _InfoRow(icon: Icons.report_outlined, label: isAr ? 'البلاغات'   : 'Reports', value: '${_profile?['report_count'] ?? 0}'),
                     ]),
                     const SizedBox(height: 16),
 
-                    // Settings card
-                    _Card(children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Row(children: [
-                          const Icon(Icons.sms_outlined, color: kBlue, size: 20),
-                          const SizedBox(width: 12),
-                          Expanded(child: Text(isAr ? 'إشعارات SMS' : 'SMS Notifications',
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: kDark))),
-                          Switch(
-                            value: _smsEnabled,
-                            activeColor: kRed,
-                            onChanged: (v) async {
-                              setState(() => _smsEnabled = v);
-                              try {
-                                await _supabase.from('profiles').update({'sms_enabled': v}).eq('id', user.id);
-                              } catch (_) {}
-                            },
-                          ),
-                        ]),
-                      ),
-                    ]),
-                    const SizedBox(height: 16),
+                    const Text('SMS delivery is not connected / خدمة الرسائل النصية غير متصلة'),
+                    const SizedBox(height:16),
 
                     // Logout button
                     SizedBox(
@@ -219,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: OutlinedButton.icon(
                         onPressed: () async {
                           await _supabase.auth.signOut();
-                          if (mounted) Navigator.of(context).pushReplacementNamed('/login');
+                          if (context.mounted) Navigator.of(context).pushReplacementNamed('/login');
                         },
                         icon: const Icon(Icons.logout_outlined, color: kRed, size: 18),
                         label: Text(isAr ? 'تسجيل الخروج' : 'Logout', style: const TextStyle(color: kRed)),

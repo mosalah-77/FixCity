@@ -2,16 +2,17 @@ import 'theme.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:random_string/random_string.dart';
 import 'login_page.dart';
 import 'translations.dart';
 import 'main.dart';
+import 'demo.dart';
+import 'report_actions.dart';
+import 'report_media.dart';
 
 // ── District model ─────────────────────────────────────────────────────────
 
@@ -22,6 +23,12 @@ class District {
   final String governorPhone;
   const District({required this.nameAr, required this.nameEn, required this.governorName, required this.governorPhone});
 }
+
+const List<District> kDemoDistricts = [
+  District(nameAr:'الحي التجريبي الشمالي',nameEn:'Demo North',governorName:'فريق تجريبي / Demo team',governorPhone:''),
+  District(nameAr:'الحي التجريبي الجنوبي',nameEn:'Demo South',governorName:'فريق تجريبي / Demo team',governorPhone:''),
+];
+List<District> get availableDistricts => demoMode ? kDemoDistricts : kDistricts;
 
 const List<District> kDistricts = [
   // ── التجمع الأول ──
@@ -69,8 +76,8 @@ class ReportPageState extends State<ReportPage> {
   final _descriptionController = TextEditingController();
   final _mapController = MapController();
 
-  // Disabled in this portfolio snapshot. Production Gemini calls need a server proxy.
-  static const _geminiKey = '';
+  String? _samplePhoto, _uploadedMedia, _lastPayload, _submitError;
+  String _requestId = newRequestId();
 
   final List<String> _categories = ['cat_pothole', 'cat_trash', 'cat_lighting', 'cat_sewage', 'cat_water', 'cat_other'];
   String?   _selectedCategory;
@@ -79,13 +86,12 @@ class ReportPageState extends State<ReportPage> {
   LatLng _selectedLocation = const LatLng(30.0444, 31.2357);
   bool _isLoading       = false;
   bool _locationLoading = false;
-  bool _aiLoading       = false;
+  final bool _aiLoading = false;
   String? _aiSuggestion;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
     // Pre-select category if passed from home grid
     if (widget.initialCategory != null) {
       _selectedCategory = widget.initialCategory;
@@ -129,82 +135,18 @@ class ReportPageState extends State<ReportPage> {
       return;
     }
 
-    // Keep category suggestions usable without exposing a provider key.
-    // This is a local keyword fallback, not a live Gemini request.
-    if (_geminiKey.isEmpty) {
-      final matched = _keywordClassify(description);
-      setState(() {
-        _aiSuggestion = matched;
-        _selectedCategory = matched;
-        _aiLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(isAr
-            ? 'اقتراح محلي للفئة: ${t(matched, lang: lang)}'
-            : 'Local category suggestion: ${t(matched, lang: lang)}'),
-      ));
-      return;
-    }
+    final matched = _keywordClassify(description);
+    setState(() {_aiSuggestion=matched;_selectedCategory=matched;});
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(isAr
+      ? 'اقتراح محلي للفئة: ${t(matched,lang:lang)}'
+      : 'Local category suggestion: ${t(matched,lang:lang)}')));
+  }
 
-    setState(() => _aiLoading = true);
-    String matched = 'cat_other';
-
-    try {
-      final prompt = '''
-You are a municipal issue classifier. Classify this report into ONE category:
-- cat_pothole: road damage, potholes, cracks, broken pavement
-- cat_trash: garbage, waste, littering, dump, cleanliness
-- cat_lighting: street lights, lamp, electricity, dark roads
-- cat_sewage: sewage, drain, overflow
-- cat_water: water pipe, leak, flood
-- cat_other: anything else
-
-Report: "$description"
-
-Respond with ONLY the category key. Example: cat_pothole
-''';
-
-      final response = await http.post(
-        Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_geminiKey'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'contents': [{'parts': [{'text': prompt}]}],
-          'generationConfig': {'maxOutputTokens': 20, 'temperature': 0.1},
-        }),
-      ).timeout(const Duration(seconds: 8));
-
-      if (response.statusCode == 200) {
-        final data    = jsonDecode(response.body);
-        final rawText = (data['candidates'][0]['content']['parts'][0]['text'] as String).trim().toLowerCase();
-        for (final cat in _categories) {
-          if (rawText.contains(cat)) { matched = cat; break; }
-        }
-      } else {
-        matched = _keywordClassify(description);
-      }
-    } catch (_) {
-      matched = _keywordClassify(description);
-    }
-
-    if (mounted) {
-      setState(() {
-        _aiSuggestion     = matched;
-        _selectedCategory = matched;
-        _aiLoading        = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: [
-          const Icon(Icons.auto_awesome, color: Colors.white, size: 16),
-          const SizedBox(width: 8),
-          Expanded(child: Text(isAr
-              ? 'اقتراح الذكاء الاصطناعي: ${t(matched, lang: lang)}'
-              : 'AI suggested: ${t(matched, lang: lang)}')),
-        ]),
-        backgroundColor: kRed,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
-    }
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _mapController.dispose();
+    super.dispose();
   }
 
   // ── Image & Location ──────────────────────────────────────────────────────
@@ -212,6 +154,14 @@ Respond with ONLY the category key. Example: cat_pothole
   Future<void> _pickImage() async {
     final lang = appLocale.value.languageCode;
     final isAr = lang == 'ar';
+    if(demoMode) {
+      final selected=await showDialog<String>(context:context,builder:(ctx)=>SimpleDialog(
+        title:Text(isAr?'اختر صورة تجريبية':'Choose a synthetic illustration'),
+        children:sampleMedia.entries.where((e)=>!e.key.startsWith('sample:repaired-')).map((e)=>SimpleDialogOption(onPressed:()=>Navigator.pop(ctx,e.key),child:Text(e.value))).toList(),
+      ));
+      if(mounted && selected!=null)setState(()=>_samplePhoto=selected);
+      return;
+    }
     // Show camera vs gallery choice
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
@@ -270,34 +220,39 @@ Respond with ONLY the category key. Example: cat_pothole
         ]),
       ),
     );
-    if (source == null) return;
-    final picker     = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source, imageQuality: 85);
-    if (pickedFile != null) {
-      _selectedImageData = await pickedFile.readAsBytes();
-      setState(() {});
+    if (source == null || !mounted) return;
+    try {
+      final pickedFile = await ImagePicker().pickImage(source:source,maxWidth:2048,imageQuality:85);
+      if(pickedFile==null || !mounted)return;
+      final bytes=await pickedFile.readAsBytes();
+      imageContentType(bytes);
+      if(!mounted)return;
+      final old=_uploadedMedia;
+      setState((){_selectedImageData=bytes;_uploadedMedia=null;});
+      await discardUnusedMedia(supabase,old);
+    } catch(_) {
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(isAr?'اختر JPEG أو PNG أقل من 5 ميجابايت.':'Choose a JPEG or PNG smaller than 5 MiB.')));
     }
   }
 
   Future<void> _getCurrentLocation() async {
-    setState(() => _locationLoading = true);
+    if(_locationLoading)return;
+    setState(()=>_locationLoading=true);
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
-      }
-      if (permission == LocationPermission.deniedForever) return;
-      final position = await Geolocator.getCurrentPosition();
-      setState(() {
-        _selectedLocation = LatLng(position.latitude, position.longitude);
-        _mapController.move(_selectedLocation, 15.0);
-      });
-    } catch (_) {} finally {
-      if (mounted) setState(() => _locationLoading = false);
-    }
+      if(!await Geolocator.isLocationServiceEnabled())throw StateError('Location disabled');
+      if(!mounted)return;
+      var permission=await Geolocator.checkPermission();
+      if(!mounted)return;
+      if(permission==LocationPermission.denied)permission=await Geolocator.requestPermission();
+      if(!mounted)return;
+      if(permission==LocationPermission.denied || permission==LocationPermission.deniedForever)throw StateError('Permission denied');
+      final position=await Geolocator.getCurrentPosition(locationSettings:const LocationSettings(timeLimit:Duration(seconds:15)));
+      if(!mounted)return;
+      setState(()=>_selectedLocation=LatLng(position.latitude,position.longitude));
+      _mapController.move(_selectedLocation,15);
+    } catch(_) {
+      if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(appLocale.value.languageCode=='ar'?'الموقع غير متاح؛ حدد النقطة على الخريطة.':'Location unavailable; choose a point on the map.')));
+    } finally {if(mounted)setState(()=>_locationLoading=false);}
   }
 
   // ── SMS confirmation ──────────────────────────────────────────────────────
@@ -305,9 +260,13 @@ Respond with ONLY the category key. Example: cat_pothole
   // ── Submit ────────────────────────────────────────────────────────────────
 
   Future<void> _submitReport() async {
+    if(_isLoading)return;
     final lang = appLocale.value.languageCode;
     final isAr = lang == 'ar';
     if (!_formKey.currentState!.validate()) return;
+    if(_descriptionController.text.trim().length<5 || _descriptionController.text.trim().length>2000){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(isAr?'اكتب وصفاً بين 5 و2000 حرف.':'Write a description of 5–2000 characters.')));return;
+    }
 
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -327,7 +286,7 @@ Respond with ONLY the category key. Example: cat_pothole
       ));
       return;
     }
-    if (_selectedImageData == null) {
+    if (_selectedImageData == null && _samplePhoto == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(isAr ? 'الرجاء إرفاق صورة' : 'Please attach a photo'),
         backgroundColor: Colors.red.shade700,
@@ -337,6 +296,7 @@ Respond with ONLY the category key. Example: cat_pothole
       return;
     }
 
+    setState((){_isLoading=true;_submitError=null;});
     // Confirm dialog
     final confirmed = await showDialog<bool>(
       context: context,
@@ -403,66 +363,37 @@ Respond with ONLY the category key. Example: cat_pothole
       ),
     );
 
-    if (confirmed != true) return;
-    setState(() => _isLoading = true);
+    if(!mounted)return;
+    if(confirmed!=true){setState(()=>_isLoading=false);return;}
 
     try {
-      final reportCode = randomAlphaNumeric(10).toUpperCase();
-      final fileName   = 'reports/$reportCode/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      await supabase.storage.from('files').uploadBinary(fileName, _selectedImageData!,
-          fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
-      final photoUrl = supabase.storage.from('files').getPublicUrl(fileName);
-      // Add points for submitting a report
-      try {
-        final userId = supabase.auth.currentUser?.id;
-        if (userId != null) {
-          await supabase.rpc('increment_points', params: {'user_id': userId, 'pts': 10});
-          // Insert notification
-          await supabase.from('notifications').insert({
-            'user_id':    userId,
-            'title':      isAr ? 'تم تقديم بلاغك!' : 'Report Submitted!',
-            'body':       isAr ? 'تم تسجيل بلاغك بنجاح. ستصلك تحديثات عبر هذا القسم.' : 'Your report has been received. You will get updates here.',
-            'is_read':    false,
-            'created_at': DateTime.now().toIso8601String(),
-          });
-        }
-      } catch (_) {}
-      await supabase.from('reports').insert({
-        'report_code':     reportCode,
-        'title':           isAr ? _selectedDistrict!.nameAr : _selectedDistrict!.nameEn,
-        'category':        _selectedCategory!,
-        'description':     _descriptionController.text,
-        'photo_url':       photoUrl,
-        'latitude':        _selectedLocation.latitude,
-        'longitude':       _selectedLocation.longitude,
-        'status':          'pending',
-        'created_at':      DateTime.now().toIso8601String(),
-        'user_id':         supabase.auth.currentUser?.id,
-        'district':        _selectedDistrict!.nameAr,
-        'governor_name':   _selectedDistrict!.governorName,
-        'governor_phone':  _selectedDistrict!.governorPhone,
-      });
-      if (!mounted) return;
-
-      Navigator.of(context).pop();
-      _showSuccessDialog(reportCode, lang);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('${t('error_message', lang: lang)} $e'),
-        backgroundColor: Colors.red.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ));
+      if(!demoMode)_uploadedMedia ??= await uploadReportImage(supabase,_selectedImageData!);
+      if(!mounted)return;
+      final report={
+        'title':isAr?_selectedDistrict!.nameAr:_selectedDistrict!.nameEn,
+        'description':_descriptionController.text.trim(),'category':_selectedCategory!,
+        'district':demoMode?_selectedDistrict!.nameEn:_selectedDistrict!.nameAr,
+        'photo_url':demoMode?_samplePhoto!:_uploadedMedia!,
+        'latitude':_selectedLocation.latitude,'longitude':_selectedLocation.longitude,
+      };
+      final payload=jsonEncode(report);
+      if(payload!=_lastPayload){_requestId=newRequestId();_lastPayload=payload;}
+      final saved=await ReportActions(supabase).createReport(requestId:_requestId,report:report);
+      if(!mounted)return;
+      await _showSuccessDialog(saved['report_code'] as String,lang);
+      if(mounted)Navigator.of(context).pop(true);
+    } catch (_) {
+      if(mounted)setState(()=>_submitError=isAr?'تعذر تأكيد حفظ البلاغ. التفاصيل محفوظة؛ أعد المحاولة.':'Could not confirm the save. Your details are kept; retry safely.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  void _showSuccessDialog(String code, String lang) {
+  Future<void> _showSuccessDialog(String code, String lang) async {
     final isAr = lang == 'ar';
-    showDialog(
+    await showDialog<void>(
       context: context,
+      barrierDismissible:false,
       builder: (ctx) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
@@ -488,7 +419,7 @@ Respond with ONLY the category key. Example: cat_pothole
                 border: Border.all(color: kBlue),
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Text(code, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: kRed, letterSpacing: 2)),
+                Flexible(child:SelectableText(code,style:const TextStyle(fontSize:14,fontWeight:FontWeight.w700,color:kRed))),
                 const SizedBox(width: 12),
                 GestureDetector(
                   onTap: () {
@@ -583,7 +514,10 @@ Respond with ONLY the category key. Example: cat_pothole
                   // ── 3. Photo ───────────────────────────────────────
                   _SectionLabel(label: isAr ? 'إرفاق صورة' : 'Attach Photo'),
                   const SizedBox(height: 8),
-                  GestureDetector(
+                  if(demoMode) ...[
+                    if(_samplePhoto!=null)ReportMedia(_samplePhoto!),
+                    OutlinedButton(onPressed:_pickImage,child:Text(isAr?'استخدام صورة تجريبية':'Use sample photo')),
+                  ] else GestureDetector(
                     onTap: _pickImage,
                     child: Container(
                       height: _selectedImageData != null ? null : 120,
@@ -624,7 +558,7 @@ Respond with ONLY the category key. Example: cat_pothole
                   // ── 4. Location ────────────────────────────────────
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     _SectionLabel(label: t('location_title', lang: lang)),
-                    TextButton.icon(
+                    if(!demoMode)TextButton.icon(
                       onPressed: _locationLoading ? null : _getCurrentLocation,
                       icon: _locationLoading
                           ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: kRed))
@@ -649,7 +583,7 @@ Respond with ONLY the category key. Example: cat_pothole
                           TileLayer(
                             urlTemplate: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
                             subdomains: const ['a', 'b', 'c', 'd'],
-                            userAgentPackageName: 'com.fixcity.app',
+                            userAgentPackageName: 'dev.mosalah.fixcity',
                           ),
                           MarkerLayer(markers: [
                             Marker(
@@ -668,13 +602,14 @@ Respond with ONLY the category key. Example: cat_pothole
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      isAr ? 'اضغط على الخريطة لتحديد الموقع بدقة' : 'Tap the map to pinpoint the exact location',
+                      isAr ? 'حدد الموقع على الخريطة. © OpenStreetMap contributors · © CARTO' : 'Choose a point. © OpenStreetMap contributors · © CARTO',
                       style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
                     ),
                   ),
                   const SizedBox(height: 32),
 
                   // ── Submit ─────────────────────────────────────────
+                  if(_submitError!=null)Padding(padding:const EdgeInsets.only(bottom:12),child:Text(_submitError!,style:const TextStyle(color:Colors.red))),
                   FixGreenButton(label: t('submit_btn', lang: lang), onPressed: _submitReport),
                   const SizedBox(height: 20),
                 ]),
@@ -727,10 +662,10 @@ class _DistrictDropdown extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 controller: scrollController,
-                itemCount: kDistricts.length,
+                itemCount: availableDistricts.length,
                 separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade100, indent: 20, endIndent: 20),
                 itemBuilder: (_, i) {
-                  final d = kDistricts[i];
+                  final d = availableDistricts[i];
                   final isSelected = selected == d;
                   return InkWell(
                     onTap: () {
@@ -746,7 +681,7 @@ class _DistrictDropdown extends StatelessWidget {
                               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,
                                   color: isSelected ? kRed : kDark)),
                           const SizedBox(height: 4),
-                          Row(children: [
+                          if(!demoMode)Row(children: [
                             Icon(Icons.person_outline, size: 12, color: Colors.grey.shade400),
                             const SizedBox(width: 4),
                             Text(d.governorName, style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
@@ -793,7 +728,7 @@ class _DistrictDropdown extends StatelessWidget {
                     Text(isAr ? selected!.nameAr : selected!.nameEn,
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: kDark)),
                     const SizedBox(height: 3),
-                    Row(children: [
+                    if(!demoMode)Row(children: [
                       Icon(Icons.person_outline, size: 11, color: Colors.grey.shade400),
                       const SizedBox(width: 4),
                       Text(selected!.governorName, style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),

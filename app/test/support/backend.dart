@@ -12,19 +12,32 @@ Map<String, dynamic> testUser() => {
   'aud': 'authenticated',
   'role': 'authenticated',
   'email': 'citizen@example.test',
-  'app_metadata': {'provider': 'email', 'providers': ['email']},
+  'app_metadata': {
+    'provider': 'email',
+    'providers': ['email'],
+  },
   'user_metadata': {'full_name': 'Demo Citizen'},
   'created_at': '2026-01-01T00:00:00Z',
 };
 
 http.Response jsonResponse(Object? body, [int status = 200]) => http.Response(
-  jsonEncode(body), status, headers: {'content-type': 'application/json'},
+  jsonEncode(body),
+  status,
+  headers: {'content-type': 'application/json'},
 );
 
 http.Response sessionResponse() {
-  final payload = base64Url.encode(utf8.encode(jsonEncode({
-    'sub': testUserId, 'exp': 4102444800, 'role': 'authenticated',
-  }))).replaceAll('=', '');
+  final payload = base64Url
+      .encode(
+        utf8.encode(
+          jsonEncode({
+            'sub': testUserId,
+            'exp': 4102444800,
+            'role': 'authenticated',
+          }),
+        ),
+      )
+      .replaceAll('=', '');
   return jsonResponse({
     'access_token': 'eyJhbGciOiJIUzI1NiJ9.$payload.test',
     'refresh_token': 'synthetic-refresh-token',
@@ -43,8 +56,12 @@ Future<void> initializeBackend(
     anonKey: 'synthetic-test-key',
     httpClient: MockClient((request) async {
       final response = await handle(request);
-      return http.Response.bytes(response.bodyBytes, response.statusCode,
-        headers: response.headers, request: request);
+      return http.Response.bytes(
+        response.bodyBytes,
+        response.statusCode,
+        headers: response.headers,
+        request: request,
+      );
     }),
     authOptions: FlutterAuthClientOptions(
       authFlowType: AuthFlowType.implicit,
@@ -65,6 +82,7 @@ class _MemoryStorage extends GotrueAsyncStorage {
   Future<void> setItem({required String key, required String value}) async {
     _items[key] = value;
   }
+
   @override
   Future<void> removeItem({required String key}) async {
     _items.remove(key);

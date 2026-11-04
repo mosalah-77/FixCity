@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models/problem.dart';
 import 'translations.dart';
 import 'main.dart';
+import 'report_media.dart';
 
 class TrackPage extends StatefulWidget {
   const TrackPage({super.key});
@@ -240,7 +241,7 @@ class _ResultView extends StatelessWidget {
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.network(problem.photoUrl!, width: double.infinity, height: 200, fit: BoxFit.cover),
+            child: ReportMedia(problem.photoUrl!,height:200),
           ),
         ],
 
@@ -266,10 +267,7 @@ class _ResultView extends StatelessWidget {
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              problem.data!['fix_photo_url'].toString(),
-              width: double.infinity, height: 200, fit: BoxFit.cover,
-            ),
+            child: ReportMedia(problem.data!['fix_photo_url'].toString(),height:200),
           ),
         ],
 

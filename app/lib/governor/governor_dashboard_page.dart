@@ -14,6 +14,7 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
   String? _district;
   String _filter = 'all';
   bool _profileLoading = true;
+  String? _loadError;
   List<Map<String, dynamic>> _reports = [];
   bool _reportsLoading = true;
 
@@ -27,14 +28,15 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
   }
 
   Future<void> _loadProfile() async {
-    final user = supabase.auth.currentUser;
-    if (user == null) return;
-    final p = await supabase.from('profiles').select('governor_district').eq('id', user.id).single();
-    setState(() {
-      _district       = p['governor_district'];
-      _profileLoading = false;
-    });
-    await _loadReports();
+    if(mounted)setState((){_profileLoading=true;_loadError=null;});
+    try {
+      final user=supabase.auth.currentUser;
+      if(user==null)throw const AuthException('Sign in first');
+      final p=await supabase.from('profiles').select('governor_district').eq('id',user.id).single();
+      if(!mounted)return;
+      setState((){_district=p['governor_district'];_profileLoading=false;});
+      await _loadReports();
+    } catch(_) {if(mounted)setState((){_profileLoading=false;_loadError='Could not load this account / تعذر تحميل الحساب';});}
   }
 
   Future<void> _loadReports() async {
@@ -87,6 +89,7 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    if(_loadError!=null)return Scaffold(appBar:AppBar(title:const Text('FixCity')),body:Center(child:Column(mainAxisSize:MainAxisSize.min,children:[Text(_loadError!),TextButton(onPressed:_loadProfile,child:Text(appLocale.value.languageCode=='ar'?'إعادة المحاولة':'Retry'))])));
     if (_profileLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator(color: kRed)));
     }
@@ -103,7 +106,7 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
       onPopInvokedWithResult: (didPop, _) async {
         if (!didPop) {
           await supabase.auth.signOut();
-          if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
+          if (context.mounted) Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
         }
       },
       child: Scaffold(
