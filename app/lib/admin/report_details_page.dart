@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../main.dart';
 import '../theme.dart';
 import '../report_actions.dart';
 import '../report_media.dart';
@@ -24,7 +24,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage> {
   bool _loading = true, _busy = false;
   String? _error, _repairMedia, _lastPayload;
   String _requestId = newRequestId();
-  bool get _ar => appLocale.value.languageCode == 'ar';
+  bool get _ar => Localizations.localeOf(context).languageCode == 'ar';
   String label(String status) => switch (status) {
     'pending' => _ar ? 'قيد الانتظار' : 'Pending',
     'in_progress' => _ar ? 'جارٍ العمل' : 'In Progress',
@@ -275,8 +275,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage> {
                         children: [
                           TileLayer(
                             urlTemplate:
-                                'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-                            subdomains: const ['a', 'b', 'c', 'd'],
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+
                             userAgentPackageName: 'dev.mosalah.fixcity',
                           ),
                           MarkerLayer(
@@ -297,9 +297,14 @@ class _ReportDetailsPageState extends State<ReportDetailsPage> {
                         ],
                       ),
                     ),
-                    const Text(
-                      '© OpenStreetMap contributors · © CARTO',
-                      style: TextStyle(fontSize: 11),
+                    TextButton(
+                      onPressed: () => launchUrl(
+                        Uri.parse('https://www.openstreetmap.org/copyright'),
+                      ),
+                      child: const Text(
+                        '© OpenStreetMap contributors',
+                        style: TextStyle(fontSize: 11),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     if (_next != null) ...[

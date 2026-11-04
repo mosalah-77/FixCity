@@ -7,8 +7,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 const testUserId = '11111111-1111-4111-8111-111111111111';
 
-Map<String, dynamic> testUser() => {
+Map<String, dynamic> testUser({bool anonymous = false}) => {
   'id': testUserId,
+  'is_anonymous': anonymous,
   'aud': 'authenticated',
   'role': 'authenticated',
   'email': 'citizen@example.test',
@@ -26,7 +27,7 @@ http.Response jsonResponse(Object? body, [int status = 200]) => http.Response(
   headers: {'content-type': 'application/json'},
 );
 
-http.Response sessionResponse() {
+http.Response sessionResponse({bool anonymous = false}) {
   final payload = base64Url
       .encode(
         utf8.encode(
@@ -44,7 +45,7 @@ http.Response sessionResponse() {
     'expires_in': 3600,
     'expires_at': 4102444800,
     'token_type': 'bearer',
-    'user': testUser(),
+    'user': testUser(anonymous: anonymous),
   });
 }
 

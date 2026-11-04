@@ -43,6 +43,63 @@ void main() {
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());
 
+  testWidgets('tracking from a narrow report card opens its exact code', (
+    tester,
+  ) async {
+    const code = '71274C974678474BBC2315642096C212';
+    var lookedUp = false;
+    await initializeBackend((request) {
+      if (request.url.path == '/auth/v1/token')
+        return sessionResponse(anonymous: true);
+      if (request.url.path == '/rest/v1/rpc/start_demo')
+        return jsonResponse('22222222-2222-4222-8222-222222222222');
+      if (request.url.path == '/rest/v1/profiles')
+        return jsonResponse({'points': 30});
+      if (request.url.path == '/rest/v1/reports') {
+        lookedUp |= request.url.queryParameters['report_code'] == 'eq.$code';
+        final row = report(code, 'Selected road report')
+          ..['status'] = 'resolved'
+          ..['fix_photo_url'] = 'sample:repaired-road';
+        return jsonResponse(
+          request.headers['accept'] == 'application/vnd.pgrst.object+json'
+              ? row
+              : [row],
+        );
+      }
+      return jsonResponse([]);
+    });
+    await Supabase.instance.client.auth.signInWithPassword(
+      email: 'test@example.test',
+      password: 'test',
+    );
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle();
+    appNavigatorKey.currentState!.pushNamed('/my_reports');
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Selected road report'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Track this report'),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Track this report'));
+    await tester.pumpAndSettle();
+    expect(lookedUp, isTrue);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      code,
+    );
+    expect(find.text('Selected road report'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('an older search cannot overwrite the latest tracking result', (
     tester,
   ) async {

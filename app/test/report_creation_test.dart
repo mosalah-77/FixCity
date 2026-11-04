@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:fixcity/main.dart';
+import 'package:fixcity/demo.dart';
 import 'package:fixcity/report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,6 +44,10 @@ Future<void> submit(WidgetTester tester) async {
 }
 
 void main() {
+  if (!demoMode) {
+    test('Synthetic form tests run with DEMO_MODE=true', () {}, skip: true);
+    return;
+  }
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());

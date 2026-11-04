@@ -12,7 +12,7 @@ Review started 4 November 2026 on branch `codex/fixcity-demo`, from portfolio sn
 | Admin login has asynchronous setState paths without a mounted guard | admin/admin_login_page.dart after sign-out/auth failure | Leaving the page while a request completes can throw | Delayed response after disposal widget test | Fixed; regression passes |
 | Tracking requests can overwrite each other | track_page.dart mutates shared state after each request, without an operation generation | Older request can replace the latest search result | Controlled out-of-order responses | Fixed; regression passes |
 | Tracking conflates database/permission failure with absence | track_page.dart catches every PostgrestException as not_found | Backend problems appear as an invalid tracking code | Distinct absent/transport/permission fixtures | Fixed; regression passes |
-| Async image/position paths need lifecycle review | report_page.dart and governor/governor_report_page.dart | Navigating away during permission/upload may use a disposed state/context | Pending-operation disposal tests | Review pending |
+| Async image/position paths need lifecycle review | report_page.dart and governor/governor_report_page.dart | Navigating away during permission/upload may use a disposed state/context | Pending-operation disposal tests | Fixed lifecycle guards; OS permission checks pending |
 | Report success uses the popped route's context | report_page.dart pops then opens its success dialog | Fragile navigation; result may disappear or use stale context | Submit flow/navigation widget test | Fixed; SQL/widget regressions pass |
 
 Backend access policies, role assignment, private media and idempotency are release requirements in the approved design. The original repository does not contain the backend definitions needed to verify them. Client role checks alone do not establish database access control.
@@ -42,3 +42,14 @@ These tests mock the HTTP boundary; database authorization and cross-user isolat
 - Image-picker and geolocation paths gained mounted guards; location is now requested explicitly. OS camera/location permissions and real-device behaviour still need platform checks.
 
 These fixes target the new isolated schema. Pointing this version at the old team backend is unsupported; no old data or service was modified.
+
+## Interactive demo verification
+
+- The separate hosted Supabase project completed 19 REST/Auth checks: two isolated visitors, bootstrap/reload reuse, simultaneous duplicate submissions, cross-visitor reads and writes denied, full resolution/history/notification persistence, and role-escalation rejection. Only a public client key was used; access tokens stayed in memory.
+- Chrome completed citizen submission → staff review → district repair → citizen report, tracking timeline and alerts. Three persisted history entries and labelled before/after illustrations were visible. A reload retained the visitor's workspace.
+- 37 Flutter tests pass in demo mode. Added bootstrap/reload, failed setup/reset, explicit expired-session recovery, persona routing, immediate Arabic/English switching with an unfinished draft, failed dashboard retry, narrow Arabic layouts with larger text, and report-to-tracking navigation tests.
+- Fixed duplicate demo initialization caused by an initial `/demo` route on top of `/`; banners now wrap routes so screen readers can reach their controls.
+- Dashboard request failures now show retry states instead of empty/zero results. Flexible home and filter layouts repair narrow-screen Arabic overflow.
+- The old map provider returned “API KEY REQUIRED.” Maps now use standard OpenStreetMap tiles, visible linked attribution and flutter_map's normal HTTP caching; no bulk/offline download feature is included.
+- “Track this report” previously lost the selected code. It now passes the full code and loads that report; report cards wrap long codes on small screens. Stale ten-character hints were removed.
+- Analyzer: no errors or warnings; informational style/deprecation findings remain. Normal email-auth/private-upload integration and Android hardware are not yet verified against the hosted backend.
