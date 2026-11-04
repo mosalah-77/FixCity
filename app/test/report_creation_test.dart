@@ -5,6 +5,7 @@ import 'package:fixcity/demo.dart';
 import 'package:fixcity/report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'support/backend.dart';
@@ -51,6 +52,52 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());
+
+  testWidgets(
+    'lost save response then language switch retries the same committed operation',
+    (tester) async {
+      final requests = <Map<String, dynamic>>[];
+      final persisted = <String>{};
+      await initializeBackend((request) {
+        if (request.url.path == '/rest/v1/rpc/create_report') {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          requests.add(body);
+          persisted.add(body['p_request_id'] as String);
+          if (requests.length == 1)
+            return jsonResponse({
+              'code': '08006',
+              'message': 'Response lost after commit',
+            }, 503);
+          return jsonResponse({
+            'report_code': '0123456789ABCDEF0123456789ABCDEF',
+          });
+        }
+        return unexpectedRequest(request);
+      });
+      await fillReport(tester);
+      await submit(tester);
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('ar'),
+          supportedLocales: [Locale('ar'), Locale('en')],
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          home: ReportPage(initialCategory: 'cat_pothole'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('إرسال البلاغ'));
+      await tester.tap(find.text('إرسال البلاغ'));
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.text('إرسال').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(requests, hasLength(2));
+      expect(requests[1], requests[0]);
+      expect(persisted, hasLength(1));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'failed save keeps form and retries one atomic request with the same key',

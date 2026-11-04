@@ -717,7 +717,10 @@ class ReportPageState extends State<ReportPage> {
         );
       if (!mounted) return;
       final report = {
-        'title': isAr ? _selectedDistrict!.nameAr : _selectedDistrict!.nameEn,
+        // Language changes must not create a new operation after an uncertain save.
+        'title': demoMode
+            ? _selectedDistrict!.nameEn
+            : _selectedDistrict!.nameAr,
         'description': _descriptionController.text.trim(),
         'category': _selectedCategory!,
         'district': demoMode

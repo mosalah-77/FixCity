@@ -59,3 +59,13 @@ These fixes target the new isolated schema. Pointing this version at the old tea
 The database suite now passes 67 checks, including simultaneous signups at the final daily slot, total identity bounds and cleanup that retains active workspaces. The hosted daily-cap test failed before the new migration and passed afterwards; both runs rolled back test identities. Real Auth/REST workflow checks still pass after email signup was disabled.
 
 Normal app mode passes 27 tests (two demo-only suites are skipped). Its narrow-screen regression also exposed the original language-selector row overflowing by 51 pixels; flexible text width repairs it. The signed Android release compiles successfully; device and published-host checks are recorded separately from compilation.
+
+## Final review repairs
+
+An independent whole-branch review found an uncertain-save retry defect: switching interface language changed the generated report title and therefore its retry identity. The new regression first produced two request IDs, then passed with a stable persisted title and one report. A second regression reproduced a 522-pixel overflow for long desktop tracking descriptions; flexible width now keeps the text inside the demo layout.
+
+The final suites pass 39 demo tests and 28 normal-mode tests (two demo-only suites skipped in normal mode). Analyzer reports no errors or warnings; informational style/deprecation diagnostics remain. The development-only Flutter integration-test dependency adds no changes to existing package versions.
+
+The final web build renders OpenStreetMap tiles in Chrome. Reset confirmation restored exactly two starter reports for that browser session. Hosted cleanup history records a successful scheduled run at 18:17 UTC on 4 November 2026. Browser viewport emulation did not change the actual viewport, so narrow-browser testing is not claimed; narrow Arabic layouts are covered by widget regressions and Android checks recorded below.
+
+Android API 35 arm64 emulator: the opt-in integration test passed the full live-backend cycle in 37 seconds after compilation. It entered a fictional report through the UI, submitted staff and district updates, and checked the saved resolved status, three history entries and three notifications. It then displayed the persisted repair note on the citizen tracking page and switched to Arabic without a Flutter exception. This tests a debug integration build on an emulator; it is distinct from signed-release compilation and physical-device testing.

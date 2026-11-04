@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fixcity/main.dart';
+import 'package:fixcity/demo_page.dart';
 import 'package:fixcity/track_page.dart';
 import 'package:fixcity/translations.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,36 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());
+
+  testWidgets('long descriptions wrap inside the desktop demo boundary', (
+    tester,
+  ) async {
+    await initializeBackend((request) {
+      if (request.url.path == '/rest/v1/reports') {
+        final row = report('LONG', 'Long report')
+          ..['description'] = List.filled(
+            30,
+            'A longer synthetic report description.',
+          ).join(' ');
+        return jsonResponse(
+          request.headers['accept'] == 'application/vnd.pgrst.object+json'
+              ? row
+              : [row],
+        );
+      }
+      return jsonResponse([]);
+    });
+    tester.view.physicalSize = const Size(1440, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      const MaterialApp(home: DemoBanner(child: TrackPage())),
+    );
+    await search(tester, 'LONG');
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('tracking from a narrow report card opens its exact code', (
     tester,

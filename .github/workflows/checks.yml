@@ -24,7 +24,7 @@ jobs:
         run: |
           flutter config --no-analytics
           flutter pub get --enforce-lockfile
-          dart format --output=none --set-exit-if-changed lib/demo.dart lib/demo_page.dart lib/report_actions.dart lib/report_media.dart test
+          dart format --output=none --set-exit-if-changed lib/demo.dart lib/demo_page.dart lib/report_actions.dart lib/report_media.dart test integration_test
           flutter analyze --no-fatal-infos
           flutter test --dart-define=DEMO_MODE=true
           flutter test

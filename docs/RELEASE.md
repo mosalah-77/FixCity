@@ -8,7 +8,7 @@ From `app/`:
 
 ```sh
 flutter pub get --enforce-lockfile
-dart format --output=none --set-exit-if-changed lib/demo.dart lib/demo_page.dart lib/report_actions.dart lib/report_media.dart test
+dart format --output=none --set-exit-if-changed lib/demo.dart lib/demo_page.dart lib/report_actions.dart lib/report_media.dart test integration_test
 flutter analyze --no-fatal-infos
 flutter test --dart-define=DEMO_MODE=true
 flutter test
@@ -48,6 +48,13 @@ apksigner verify --verbose --print-certs build/app/outputs/flutter-apk/app-relea
 shasum -a 256 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-Check the entire report-to-resolution cycle on an Android emulator and then a real device. Verify launch, network access, Arabic layout, back navigation, session persistence and retry handling. Do not describe camera/GPS or real-device support as verified from compilation alone.
+The opt-in Android integration test uses the allowlisted synthetic backend. It creates one report, reviews it as staff, resolves it as the district team, and checks persisted history, notifications and Arabic tracking. It does not run in ordinary CI or touch the original team's backend:
+
+```sh
+flutter test integration_test/demo_flow_test.dart -d YOUR_ANDROID_DEVICE \
+  --dart-define-from-file=demo-config.json --dart-define=RUN_HOSTED_SMOKE=true
+```
+
+Also check the signed release on a real device. Verify launch, network access, Arabic layout, back navigation, session persistence and retry handling. Do not describe camera/GPS or real-device support as verified from compilation alone.
 
 Upload the signed APK and its SHA-256 checksum to a versioned GitHub Release. Record its source commit and the checks that actually ran. The demo APK uses synthetic illustrations and does not request location or camera access through its demo flow.

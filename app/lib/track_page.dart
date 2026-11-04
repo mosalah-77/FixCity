@@ -580,23 +580,20 @@ class _DetailTile extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: Colors.grey.shade400),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade400,
-                  fontWeight: FontWeight.w500,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width - 120,
-                ),
-                child: Text(
+                const SizedBox(height: 2),
+                Text(
                   value,
                   style: const TextStyle(
                     fontSize: 14,
@@ -604,8 +601,8 @@ class _DetailTile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

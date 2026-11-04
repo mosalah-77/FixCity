@@ -26,7 +26,7 @@ final ValueNotifier<Locale> appLocale = ValueNotifier(const Locale('ar'));
 final appNavigatorKey = GlobalKey<NavigatorState>();
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
     throw StateError(
