@@ -76,7 +76,6 @@ class ReportPageState extends State<ReportPage> {
   String?   _selectedCategory;
   District? _selectedDistrict;
   Uint8List? _selectedImageData;
-  XFile?     _selectedImageFile;
   LatLng _selectedLocation = const LatLng(30.0444, 31.2357);
   bool _isLoading       = false;
   bool _locationLoading = false;
@@ -275,7 +274,6 @@ Respond with ONLY the category key. Example: cat_pothole
     final picker     = ImagePicker();
     final pickedFile = await picker.pickImage(source: source, imageQuality: 85);
     if (pickedFile != null) {
-      _selectedImageFile = pickedFile;
       _selectedImageData = await pickedFile.readAsBytes();
       setState(() {});
     }

@@ -35,7 +35,10 @@ class _MainScaffoldState extends State<MainScaffold> with RouteAware {
   }
 
   @override
-  void didPopNext() => setState(() {});
+  void didPopNext() {
+    _loadUnread();
+    setState(() {});
+  }
 
   @override
   void dispose() {
@@ -67,7 +70,7 @@ class _MainScaffoldState extends State<MainScaffold> with RouteAware {
         final pages = [
           const HomePage(),
           const MyReportsPage(),
-          const NotificationsPage(),
+          NotificationsPage(onRead: _loadUnread),
           const AchievementsPage(),
           const ProfilePage(),
           const SettingsPage(),
@@ -78,7 +81,7 @@ class _MainScaffoldState extends State<MainScaffold> with RouteAware {
           builder: (context, dark, _) {
             return Scaffold(
               extendBody: true,
-              body: IndexedStack(key: ValueKey(lang), index: _currentIndex, children: pages),
+              body: KeyedSubtree(key: ValueKey('$lang-$_currentIndex'), child: pages[_currentIndex]),
               bottomNavigationBar: Container(
                 decoration: BoxDecoration(
                   color: dark ? const Color(0xFF1E1E1E) : Colors.white,
@@ -91,7 +94,7 @@ class _MainScaffoldState extends State<MainScaffold> with RouteAware {
                       children: [
                         _NavItem(icon: Icons.home_outlined,          activeIcon: Icons.home,             label: isAr ? 'الرئيسية'  : 'Home',     index: 0, current: _currentIndex, dark: dark, onTap: (i) => setState(() => _currentIndex = i)),
                         _NavItem(icon: Icons.folder_outlined,        activeIcon: Icons.folder,           label: isAr ? 'بلاغاتي'   : 'Reports',  index: 1, current: _currentIndex, dark: dark, onTap: (i) => setState(() => _currentIndex = i)),
-                        _NavItem(icon: Icons.notifications_outlined, activeIcon: Icons.notifications,    label: isAr ? 'الإشعارات' : 'Alerts',   index: 2, current: _currentIndex, dark: dark, badge: _unreadCount, onTap: (i) { setState(() { _currentIndex = i; _unreadCount = 0; }); }),
+                        _NavItem(icon: Icons.notifications_outlined, activeIcon: Icons.notifications,    label: isAr ? 'الإشعارات' : 'Alerts',   index: 2, current: _currentIndex, dark: dark, badge: _unreadCount, onTap: (i) => setState(() => _currentIndex = i)),
                         _NavItem(icon: Icons.emoji_events_outlined,  activeIcon: Icons.emoji_events,     label: isAr ? 'الإنجازات' : 'Badges',   index: 3, current: _currentIndex, dark: dark, onTap: (i) => setState(() => _currentIndex = i)),
                         _NavItem(icon: Icons.person_outline,         activeIcon: Icons.person,           label: isAr ? 'حسابي'     : 'Profile',  index: 4, current: _currentIndex, dark: dark, onTap: (i) => setState(() => _currentIndex = i)),
                         _NavItem(icon: Icons.settings_outlined,      activeIcon: Icons.settings,         label: isAr ? 'الإعدادات' : 'Settings', index: 5, current: _currentIndex, dark: dark, onTap: (i) => setState(() => _currentIndex = i)),

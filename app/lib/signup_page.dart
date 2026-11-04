@@ -37,18 +37,11 @@ class _SignupPageState extends State<SignupPage> {
     }
     setState(() => _isLoading = true);
     try {
-      final res = await _supabase.auth.signUp(
+      await _supabase.auth.signUp(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        data: {'full_name': _nameController.text.trim()},
+        password: _passwordController.text,
+        data: {'full_name': _nameController.text.trim(), 'phone': phone},
       );
-      // Store phone in profiles table
-      if (res.user != null) {
-        await _supabase.from('profiles').upsert({
-          'id':    res.user!.id,
-          'phone': phone,
-        });
-      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(isAr
@@ -175,7 +168,7 @@ class _SignupPageState extends State<SignupPage> {
                       ? const Center(child: CircularProgressIndicator(color: kRed))
                       : FixGreenButton(label: isAr ? 'إنشاء حسابي' : 'Create My Account', onPressed: _signup),
                   const SizedBox(height: 20),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Wrap(alignment: WrapAlignment.center, children: [
                     Text(isAr ? 'لديك حساب بالفعل؟ ' : 'Already have an account? ',
                         style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
                     GestureDetector(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme.dart';
 import 'main.dart';
-import 'translations.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

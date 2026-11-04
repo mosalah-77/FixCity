@@ -4,7 +4,8 @@ import 'theme.dart';
 import 'main.dart';
 
 class NotificationsPage extends StatefulWidget {
-  const NotificationsPage({super.key});
+  final VoidCallback? onRead;
+  const NotificationsPage({super.key, this.onRead});
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
@@ -22,12 +23,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<List<Map<String, dynamic>>> _fetchNotifications() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return [];
-    // Mark all as read
-    await _supabase.from('notifications').update({'is_read': true}).eq('user_id', user.id);
     final res = await _supabase.from('notifications').select()
         .eq('user_id', user.id)
         .order('created_at', ascending: false)
         .limit(50);
+    if (!mounted) return res;
+    final unreadIds = res.where((n) => n['is_read'] != true).map((n) => n['id'] as String).toList();
+    if (unreadIds.isNotEmpty) {
+      await _supabase.from('notifications').update({'is_read': true})
+          .eq('user_id', user.id).inFilter('id', unreadIds);
+      if (mounted) widget.onRead?.call();
+    }
     return res.cast<Map<String, dynamic>>();
   }
 
@@ -53,6 +59,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
               builder: (context, snap) {
                 if (snap.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator(color: kRed));
+                }
+                if (snap.hasError) {
+                  return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Text(isAr ? 'تعذر تحميل الإشعارات. حاول مرة أخرى.' : 'Could not load notifications. Please try again.'),
+                    TextButton(
+                      onPressed: () => setState(() => _notifsFuture = _fetchNotifications()),
+                      child: Text(isAr ? 'إعادة المحاولة' : 'Retry'),
+                    ),
+                  ]));
                 }
                 final notifs = snap.data ?? [];
                 if (notifs.isEmpty) {

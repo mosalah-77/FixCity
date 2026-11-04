@@ -1,7 +1,6 @@
 import '../theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/problem.dart';
 import '../main.dart';
 
 class GovernorDashboardPage extends StatefulWidget {
@@ -18,8 +17,6 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
   List<Map<String, dynamic>> _reports = [];
   bool _reportsLoading = true;
 
-  static const _red   = Color(0xFFCC0000);
-  static const _dark  = Color(0xFF1A1A2E);
 
   final _filters = ['all', 'pending', 'in_progress', 'resolved'];
 

@@ -60,7 +60,7 @@ class _GovernorLoginPageState extends State<GovernorLoginPage> {
     setState(() => _loading = true);
     try {
       final res = await Supabase.instance.client.auth.signInWithPassword(
-        email: _email.text.trim(), password: _password.text.trim(),
+        email: _email.text.trim(), password: _password.text,
       );
       if (res.user == null) throw Exception('Login failed');
       final profile = await Supabase.instance.client

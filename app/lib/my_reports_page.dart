@@ -4,7 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models/problem.dart';
 import 'translations.dart';
 import 'main.dart';
-import 'login_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyReportsPage extends StatefulWidget {

@@ -19,16 +19,13 @@ class _LoginPageState extends State<LoginPage> {
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 
-  static const _red   = Color(0xFFCC0000);
-  static const _redLight = Color(0xFF185FA5);
-  static const _dark = Color(0xFF1A1A2E);
 
   Future<void> _login() async {
     setState(() => _isLoading = true);
     try {
       await _supabase.auth.signInWithPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        password: _passwordController.text,
       );
       if (mounted) Navigator.of(context).pushReplacementNamed('/');
     } on AuthException catch (e) {
@@ -124,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                   ? const Center(child: CircularProgressIndicator(color: kRed))
                   : FixGreenButton(label: t('login', lang: lang), onPressed: _login),
               const SizedBox(height: 20),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Wrap(alignment: WrapAlignment.center, children: [
                 Text(isAr ? 'ليس لديك حساب؟ ' : "Don't have an account? ",
                     style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
                 GestureDetector(
@@ -165,9 +162,6 @@ class _LoginPageState extends State<LoginPage> {
 class FixHeroPanel extends StatelessWidget {
   final bool isAr;
   const FixHeroPanel({super.key, required this.isAr});
-  static const _red   = Color(0xFFCC0000);
-  static const _redLight = Color(0xFF185FA5);
-  static const _dark = Color(0xFF1A1A2E);
 
   @override
   Widget build(BuildContext context) {

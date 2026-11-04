@@ -30,19 +30,20 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     super.dispose();
   }
 
-  static const _red   = Color(0xFFCC0000);
-  static const _dark  = Color(0xFF1A1A2E);
 
   Future<void> _login() async {
     // Sign out any existing citizen session first
     try { await supabase.auth.signOut(); } catch (_) {}
+    if (!mounted) return;
     setState(() { _isLoading = true; _errorMessage = ''; });
     try {
       // Step 1: authenticate
       final authResponse = await supabase.auth.signInWithPassword(
         email:    _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        password: _passwordController.text,
       );
+
+      if (!mounted) return;
 
       final user = authResponse.user;
       if (user == null) {
@@ -73,12 +74,14 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       } else {
         // Not an admin — sign them out and show error
         await supabase.auth.signOut();
+        if (!mounted) return;
         setState(() {
           _errorMessage = 'Access denied. This account does not have admin privileges.';
           _isLoading    = false;
         });
       }
     } on AuthException catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.message.contains('Invalid login credentials')
             ? 'Incorrect email or password.'
@@ -86,6 +89,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() { _errorMessage = 'An unexpected error occurred.'; _isLoading = false; });
     }
   }

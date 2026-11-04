@@ -2,7 +2,6 @@ import 'theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models/problem.dart';
-import 'login_page.dart';
 import 'translations.dart';
 import 'main.dart';
 
@@ -20,24 +19,39 @@ class TrackPageState extends State<TrackPage> {
   List<StatusUpdate> _updates = [];
   bool _isLoading = false;
   String? _errorMessage;
+  int _searchGeneration = 0;
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
 
   Future<void> _trackProblem() async {
     final lang = appLocale.value.languageCode;
     if (_codeController.text.trim().isEmpty) return;
+    final generation = ++_searchGeneration;
+    final code = _codeController.text.trim().toUpperCase();
     setState(() { _isLoading = true; _errorMessage = null; _foundProblem = null; _updates = []; });
     try {
-      final reportResponse = await supabase.from('reports').select().eq('report_code', _codeController.text.trim().toUpperCase()).limit(1).single();
-      _foundProblem = Problem.fromSupabase(reportResponse);
-      final updatesResponse = await supabase.from('status_updates').select().eq('report_id', _foundProblem!.id!).order('updated_at', ascending: false);
-      if (updatesResponse.isNotEmpty) {
-        _updates = updatesResponse.map((d) => StatusUpdate.fromSupabase(d)).toList();
+      final reportResponse = await supabase.from('reports').select().eq('report_code', code).limit(1).maybeSingle();
+      if (!mounted || generation != _searchGeneration) return;
+      if (reportResponse == null) {
+        _errorMessage = t('not_found', lang: lang);
+        return;
       }
-    } on PostgrestException {
-      _errorMessage = t('not_found', lang: lang);
-    } catch (e) {
-      _errorMessage = '${t('error_message', lang: lang)} ${e.toString()}';
+      final problem = Problem.fromSupabase(reportResponse);
+      final updatesResponse = await supabase.from('status_updates').select().eq('report_id', problem.id!).order('updated_at', ascending: false);
+      if (!mounted || generation != _searchGeneration) return;
+      _foundProblem = problem;
+      _updates = updatesResponse.map((d) => StatusUpdate.fromSupabase(d)).toList();
+    } catch (_) {
+      if (!mounted || generation != _searchGeneration) return;
+      _errorMessage = lang == 'ar'
+          ? 'تعذر تحميل البلاغ. حاول مرة أخرى.'
+          : 'Could not load this report. Please try again.';
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && generation == _searchGeneration) setState(() => _isLoading = false);
     }
   }
 

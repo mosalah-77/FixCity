@@ -3,15 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'splash_page.dart';
 import 'main_scaffold.dart';
-import 'home_page.dart';
 import 'report_page.dart';
 import 'track_page.dart';
 import 'login_page.dart';
 import 'signup_page.dart';
-import 'my_reports_page.dart';
-import 'notifications_page.dart';
-import 'achievements_page.dart';
-import 'profile_page.dart';
 import 'admin/admin_login_page.dart';
 import 'admin/admin_dashboard_page.dart';
 import 'admin/report_details_page.dart';

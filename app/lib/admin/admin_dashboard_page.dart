@@ -2,7 +2,6 @@ import '../theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/problem.dart';
-import '../login_page.dart';
 import '../main.dart';
 
 class AdminDashboardPage extends StatefulWidget {
@@ -18,8 +17,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   List<Map<String, dynamic>> _allReports = [];
   bool _loading = true;
 
-  static const _red   = Color(0xFFCC0000);
-  static const _dark  = Color(0xFF1A1A2E);
 
   @override
   void initState() {

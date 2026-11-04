@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin, RouteAware {
   final _supabase = Supabase.instance.client;
   User? _user;
+  StreamSubscription<AuthState>? _authSubscription;
 
   int _totalReports    = 0;
   int _resolvedReports = 0;
@@ -45,7 +47,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       }
     });
     _user = _supabase.auth.currentUser;
-    _supabase.auth.onAuthStateChange.listen((data) {
+    _authSubscription = _supabase.auth.onAuthStateChange.listen((data) {
       if (mounted) setState(() => _user = data.session?.user);
     });
     _loadStats();
@@ -67,6 +69,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
+    _authSubscription?.cancel();
     _counterCtrl.dispose();
     super.dispose();
   }
