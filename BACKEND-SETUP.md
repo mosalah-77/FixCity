@@ -1,16 +1,49 @@
-# Backend setup required
+# FixCity's separate demo backend
 
-The frontend alone does not reproduce the original Supabase project. Obtain a schema-only export, storage policies, role model and function definitions from the team. Do not include citizen data, passwords, API secrets or production database exports.
+The versioned schema in `supabase/migrations/202611040001_fixcity.sql` reconstructs the active Flutter workflow. It is new portfolio work, not an export of the original team's Supabase project. Apply it only to a fresh, isolated project. It must never be run over the old backend or real citizen data.
 
-The current Dart code references `reports`, `status_updates`, `profiles` and `notifications`, the storage bucket `files`, and the `increment_points` RPC. Treat that list as a code inventory, not a complete database schema.
+## Provisioning
 
-Before a demo with synthetic data:
+1. Create a free Supabase project. Keep the database password outside Git. Disable automatic table exposure and enable automatic row security; the migration grants only the permissions needed by the app.
+2. Apply the migration with the Supabase CLI or SQL editor. `platform-stub.sql` is **only for the disposable PostgreSQL test container**; never upload it to Supabase.
+3. Enable anonymous sign-in for the demo. Set the anonymous sign-in limit to 10 per hour per IP. The checked-in `config.toml` describes local settings; it does not change a hosted project's dashboard settings.
+4. Set the site URL to the published demo URL and keep redirects restricted to the actual demo and local development URL. Public builds use only the project URL and publishable/anon client key. Never embed a service-role key, database password or management token.
+5. Before public release, verify anonymous abuse controls and quotas. Supabase recommends CAPTCHA for anonymous sign-in; if enabled, wire its challenge token into the app before release. API rate limits are not a substitute for CAPTCHA or a total resource budget. Review usage while sharing the demo; stop anonymous signup if abusive traffic appears.
+6. Schedule `select public.prune_demo_workspaces();` hourly through Supabase Cron (or a trusted server task). Only the database owner/service role can call it. It deletes expired workspaces and their report/history/notification/request rows; never normal reports. Expired rows are inaccessible immediately, even before cleanup runs. Anonymous Auth accounts require separate periodic cleanup using the Admin API; do not blindly delete all anonymous users while sessions remain active.
+7. Test with two independent anonymous sessions and ordinary citizen/staff/district accounts before claiming the backend is verified. Privileged test accounts are created privately; no shared admin login belongs in the public demo.
 
-- Enforce citizen ownership, admin privileges and district scope in database policies. A page route or client-side role check is not an access-control boundary.
-- Restrict changes to privilege-bearing profile columns and points. Check the `increment_points` function's permissions.
-- Decide which report fields are public. A tracking code should not expose private profile details or allow unrestricted report enumeration.
-- Validate uploaded images, limit file size, and control who can read uploaded media.
-- Make report insertion, status history and rewards consistent, including failures and retries.
-- Move Gemini calls to a server function with a secret stored on the server, a supported model, limits and clear handling of fallback results.
+The public demo uses synthetic sample illustrations, not uploads or real official contacts. Each anonymous identity owns one workspace, with two starting reports and a maximum of 20 total reports. Data expires after seven days. Reset removes only that visitor's workspace and is limited to once per minute. Signing out or clearing app/browser storage loses access to the old anonymous identity.
 
-The exposed key in the original source needs owner-side rotation or revocation. Removing it from this copy does not revoke it. No key was tested against a provider, and no requests were made to the original Supabase backend during this review.
+## Permissions and consistency
+
+- Normal citizens can read their own reports. Normal staff can read and transition reports across districts; district accounts can operate only on their assigned district.
+- Anonymous demo users can simulate all three personas only inside their own workspace. Ordinary staff cannot browse demo workspaces. Client routes and persona buttons grant no database privileges.
+- Profile updates are restricted to name, phone and SMS preference columns. Auth signup copies name/phone metadata but ignores any supplied roles or points. Roles and district assignments require a privileged operator; do not expose them through signup or public RPCs.
+- `create_report` saves the report, initial history, notification, ten points and retry result in one transaction. `transition_report` saves status, history and notification together. No client-side points or notification inserts remain once the Flutter migration is complete.
+- Retry IDs are unique per actor. Identical retries return the original result; changed payloads with the same ID are rejected. Per-user row locks serialize report limits and simultaneous retries.
+- Transitions are `pending → in_progress → resolved`. Every change needs a note, and resolution needs repair media. Invalid transitions and failed final writes roll back the operation.
+- Tracking codes are not public credentials. Searching a code still obeys the caller's report permissions.
+
+## Private media outside the demo
+
+The `files` bucket is private, restricted to JPEG/PNG and 5 MiB. Normal users upload under their own user-ID folder with a new filename. Reports store `storage:<path>`, not a public URL; the client obtains short-lived signed URLs only for authorized reads. A user cannot attach another person's upload. Staff may attach their own repair evidence to a report they can manage. Referenced files cannot be deleted, even after the uploader loses staff access. There is no object-update policy: use new immutable names.
+
+Storage upload and SQL are separate operations. Keep a successful upload for a retry when a save response is uncertain. Delete only unreferenced abandoned uploads, using the storage policy; a successful report reference prevents accidental cleanup. Signed URLs remain usable for their short lifetime after access is revoked. Public demo uploads stay disabled.
+
+## Reproduce the SQL checks
+
+Docker must be running. The pinned test image is PostgreSQL 17; no host port or existing volume is mounted:
+
+```sh
+docker run --rm -d --name fixcity-demo-test-db -e POSTGRES_HOST_AUTH_METHOD=trust postgres@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
+bash supabase/tests/run-local.sh
+docker stop fixcity-demo-test-db
+```
+
+The script recreates only `fixcity_test` inside that named disposable container. It tests SQL permissions, owner/district/workspace boundaries, retry conflicts, transaction rollback, media retention and two concurrent duplicate requests. A minimal test-only Auth/Storage schema supplies Supabase's SQL interfaces. This is not a full Supabase Auth, Storage upload, Realtime or REST integration test; those require the separate hosted/local Supabase stack.
+
+## Original source secret
+
+The exposed Gemini key in the original source still needs owner-side rotation/revocation if not already done. It was removed from this portfolio copy, never tested and never reused. The demo's category suggestion runs locally; it makes no live Gemini call.
+
+References: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [anonymous sign-in](https://supabase.com/docs/guides/auth/auth-anonymous), [rate limits](https://supabase.com/docs/guides/auth/rate-limits), [local configuration](https://supabase.com/docs/guides/local-development/cli/config).

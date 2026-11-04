@@ -1,0 +1,28 @@
+project_id = "fixcity-demo"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[auth]
+enabled = true
+site_url = "http://localhost:8080"
+additional_redirect_urls = ["https://mosalah-77.github.io/FixCity/"]
+enable_anonymous_sign_ins = true
+
+[auth.rate_limit]
+anonymous_users = 10
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+
+[storage]
+enabled = true
+file_size_limit = "5MiB"
