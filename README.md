@@ -22,7 +22,7 @@ My contribution was shared with the team. This portfolio copy documents that wor
 
 [Browser demo](https://mosalah-77.github.io/FixCity/) · [Android releases](https://github.com/mosalah-77/FixCity/releases) · [Two-minute walkthrough](docs/DEMO.md)
 
-Start a demo workspace, submit a fictional report, review it as staff, add repair evidence as the district team, then return to the citizen's tracking page. The report, status history and in-app notifications are saved in a separate Supabase project. Each visitor sees only their own synthetic workspace.
+Start a demo workspace, submit a fictional report, review and hand it off as staff, then record progress and repair evidence as the district team, then return to the citizen's tracking page. The report, status history and in-app notifications are saved in a separate Supabase project. Each visitor sees only their own synthetic workspace.
 
 The demo builds on the team's Flutter app and supports Arabic and English. Its revised interface puts reporting and tracking first, with separate screens for staff review and repair updates. Sample illustrations replace camera uploads. There is no government affiliation, real incident delivery, SMS service or cash value attached to points. Data expires after seven days. The free backend can pause after inactivity; check the link before sharing it in an application.
 

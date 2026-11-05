@@ -13,3 +13,4 @@ done
 docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/tests/workflow.sql
 bash supabase/tests/concurrency.sh
 docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/tests/demo-budget.sql
+docker exec -i "$container" psql -U postgres -d "$database" -v ON_ERROR_STOP=1 < supabase/tests/staff-workflow.sql

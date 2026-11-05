@@ -44,6 +44,8 @@ class _MyReportsPageState extends State<MyReportsPage> {
     switch (s) {
       case 'pending':
         return Icons.schedule_outlined;
+      case 'assigned':
+        return Icons.forward_to_inbox_outlined;
       case 'in_progress':
         return Icons.construction_outlined;
       case 'resolved':
@@ -80,6 +82,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
         case 'pending':
           statusText = 'قيد الانتظار ⏳';
           break;
+        case 'assigned':
+          statusText = 'أُحيل إلى الحي';
+          break;
         case 'in_progress':
           statusText = 'جارٍ العمل 🔧';
           break;
@@ -93,6 +98,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
       switch (status) {
         case 'pending':
           statusText = 'Pending ⏳';
+          break;
+        case 'assigned':
+          statusText = 'Sent to district';
           break;
         case 'in_progress':
           statusText = 'In Progress 🔧';

@@ -4,9 +4,9 @@ Open the [browser demo](https://mosalah-77.github.io/FixCity/). Choose English o
 
 1. Select **Start demo**, then **Citizen**. Two example reports are already present.
 2. Choose **Roads**, write a short fictional description, select **Demo North** and the damaged-road illustration, then submit. Keep the tracking code. Success appears only after the backend saves the report.
-3. Open **Demo menu → Staff review**. Select your report, add a review note and move it to **In Progress**.
-4. Open **Demo menu → District team**. Open the same report, add a repair note and a repaired-road illustration, then submit the update. The report becomes **Resolved**.
-5. Return to **Citizen → Reports**. Open the report and choose **Track this report**. You should see the resolution and three history entries. **Alerts** contains the submission and status notifications.
+3. Open **Demo menu → Staff review**. Select your report, add a review note and an optional photo, then choose **Send to district**.
+4. Open **Demo menu → District team**. Open the same report, add a note and choose **Start repair**. Further **Progress update** entries keep it open. When finished, choose **Resolve report**, add a repair note and a repaired-road illustration, then choose **Mark resolved**.
+5. Return to **Citizen → Reports**. Open the report and choose **Track this report**. You should see the resolution, history entries and their photos. **Alerts** contains the submission and status notifications.
 6. Reload. Your session should retain its workspace. **Reset my demo** removes only your own examples and reports; it has a one-minute cooldown.
 
 The district persona handles Demo North. Choose that district for the walkthrough. The staff persona can review both fictional districts. Persona switching changes the demonstration interface; the database still checks ownership on every request.
@@ -24,7 +24,7 @@ Use “I directed and reviewed this with AI assistance” where that reflects yo
 
 ## Availability and privacy
 
-No real citizen information, contact requests or government endorsement. Up to 20 reports per visitor, seven-day expiry, 100 new identities per rolling 24 hours and 500 retained anonymous identities globally. Clearing app/browser storage loses access to the anonymous session. Free hosting and public map tiles can be unavailable; this prototype has no uptime guarantee.
+No real citizen information, contact requests or government endorsement. Up to 20 reports per visitor and 100 history entries per report, seven-day expiry, 100 new identities per rolling 24 hours and 500 retained anonymous identities globally. Clearing app/browser storage loses access to the anonymous session. Free hosting and public map tiles can be unavailable; this prototype has no uptime guarantee.
 
 If the demo cannot load, retry once and check the Supabase project status before sharing its link. Do not enter real incident data as a test. Keep a short screen recording of the walkthrough after verifying the published version; a recording is supporting evidence and does not prove live availability.
 

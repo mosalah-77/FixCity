@@ -35,20 +35,20 @@ class Problem {
 
   factory Problem.fromSupabase(Map<String, dynamic> map) {
     return Problem(
-      id:          map['id']?.toString(),
-      reportCode:  map['report_code'] ?? '',
-      title:       map['title'] ?? '',
-      category:    map['category'] ?? '',
+      id: map['id']?.toString(),
+      reportCode: map['report_code'] ?? '',
+      title: map['title'] ?? '',
+      category: map['category'] ?? '',
       description: map['description'] ?? '',
-      photoUrl:    map['photo_url'],
-      location:    LatLngPoint(
-        (map['latitude']  as num?)?.toDouble() ?? 0.0,
+      photoUrl: map['photo_url'],
+      location: LatLngPoint(
+        (map['latitude'] as num?)?.toDouble() ?? 0.0,
         (map['longitude'] as num?)?.toDouble() ?? 0.0,
       ),
-      status:    map['status'] ?? 'pending',
+      status: map['status'] ?? 'pending',
       createdAt: DateTime.parse(map['created_at']),
-      userId:    map['user_id']?.toString(),
-      data:      map,
+      userId: map['user_id']?.toString(),
+      data: map,
     );
   }
 }
@@ -57,26 +57,30 @@ class StatusUpdate {
   String text;
   DateTime updatedAt;
   String? updatedBy;
+  String? photoUrl;
 
   StatusUpdate({
     required this.text,
     required this.updatedAt,
     this.updatedBy,
+    this.photoUrl,
   });
 
   factory StatusUpdate.fromSupabase(Map<String, dynamic> data) {
     return StatusUpdate(
-      text:      data['text'] ?? '',
+      text: data['text'] ?? '',
       updatedAt: DateTime.parse(data['updated_at']),
       updatedBy: data['updated_by'],
+      photoUrl: data['photo_url'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'text':       text,
+      'text': text,
       'updated_at': updatedAt.toIso8601String(),
       'updated_by': updatedBy,
+      'photo_url': photoUrl,
     };
   }
 }

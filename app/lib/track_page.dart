@@ -93,6 +93,8 @@ class TrackPageState extends State<TrackPage> {
     switch (status) {
       case 'pending':
         return Icons.schedule_outlined;
+      case 'assigned':
+        return Icons.forward_to_inbox_outlined;
       case 'in_progress':
         return Icons.construction_outlined;
       case 'resolved':
@@ -534,6 +536,10 @@ class _ResultView extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
+                            if (update.photoUrl != null) ...[
+                              const SizedBox(height: 8),
+                              ReportMedia(update.photoUrl!),
+                            ],
                             Text(
                               '${date.year}/${date.month}/${date.day}',
                               style: TextStyle(

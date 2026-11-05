@@ -4,6 +4,7 @@ import 'package:fixcity/main.dart';
 import 'package:fixcity/demo_page.dart';
 import 'package:fixcity/track_page.dart';
 import 'package:fixcity/translations.dart';
+import 'package:fixcity/report_media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -183,6 +184,42 @@ void main() {
     expect(find.text(t('not_found', lang: 'en')), findsNothing);
     expect(find.textContaining('try again'), findsOneWidget);
   });
+
+  testWidgets(
+    'citizen tracking shows the photo attached to an earlier update',
+    (tester) async {
+      await initializeBackend((request) {
+        if (request.url.path == '/rest/v1/reports') {
+          final row = report('HISTORY', 'Inspection evidence')
+            ..['status'] = 'assigned';
+          return jsonResponse(
+            request.headers['accept'] == 'application/json' ? [row] : row,
+          );
+        }
+        if (request.url.path == '/rest/v1/status_updates')
+          return jsonResponse([
+            {
+              'text': 'Inspection completed',
+              'updated_at': '2026-11-05T10:00:00Z',
+              'updated_by': 'Staff review',
+              'photo_url': 'sample:pothole',
+            },
+          ]);
+        return unexpectedRequest(request);
+      });
+      await openTracking(tester);
+      await search(tester, 'HISTORY');
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Inspection completed'));
+      expect(
+        tester
+            .widgetList<ReportMedia>(find.byType(ReportMedia))
+            .map((w) => w.media),
+        contains('sample:pothole'),
+      );
+      expect(find.text('Sent to district'), findsWidgets);
+    },
+  );
 
   testWidgets('an absent report has a clear not-found state', (tester) async {
     await initializeBackend((request) {

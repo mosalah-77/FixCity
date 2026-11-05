@@ -223,8 +223,8 @@ class _DemoPageState extends State<DemoPage> {
                 _role(
                   _ar ? 'مراجعة فريق العمل' : 'Staff review',
                   _ar
-                      ? 'راجع البلاغ وابدأ العمل عليه'
-                      : 'Review the report and start the work',
+                      ? 'راجع البلاغ وأحله إلى فريق الحي'
+                      : 'Review the report and send it to the district',
                   Icons.fact_check_outlined,
                   () => _open(DemoPersona.staff, '/admin/dashboard'),
                 ),
@@ -232,8 +232,8 @@ class _DemoPageState extends State<DemoPage> {
                 _role(
                   _ar ? 'فريق الحي' : 'District team',
                   _ar
-                      ? 'أضف نتيجة الإصلاح في الحي التجريبي الشمالي'
-                      : 'Record the repair in Demo North',
+                      ? 'سجّل تقدم الإصلاح وإتمامه في الحي التجريبي الشمالي'
+                      : 'Start, update and complete repairs in Demo North',
                   Icons.construction,
                   () => _open(DemoPersona.district, '/governor/dashboard'),
                 ),

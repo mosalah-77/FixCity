@@ -8,7 +8,7 @@ void main() {
       final surface = fixCityTheme(
         dark ? Brightness.dark : Brightness.light,
       ).colorScheme.surface;
-      for (final status in ['pending', 'in_progress', 'resolved']) {
+      for (final status in ['pending', 'assigned', 'in_progress', 'resolved']) {
         final ink = statusColor(status, dark: dark);
         final badge = Color.alphaBlend(ink.withValues(alpha: .1), surface);
         final a = ink.computeLuminance(), b = badge.computeLuminance();

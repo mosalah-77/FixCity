@@ -98,7 +98,9 @@ void main() {
           'Synthetic staff review completed.',
         );
         FocusManager.instance.primaryFocus?.unfocus();
-        await tap(find.text('Submit Update'));
+        await tap(find.text('Attach photo (optional)'));
+        await tap(find.text('Damaged road / طريق متضرر'));
+        await tap(find.text('Send to district'));
         await waitFor(find.text('Synthetic staff review completed.'));
         expect(
           (await client
@@ -106,7 +108,7 @@ void main() {
               .select('status')
               .eq('id', saved['id'])
               .single())['status'],
-          'in_progress',
+          'assigned',
         );
         await tap(find.text('Demo menu'));
         await tap(find.text('District team'));
@@ -114,12 +116,21 @@ void main() {
         await waitFor(find.byType(TextFormField));
         await tester.enterText(
           find.byType(TextFormField).first,
+          'District crew started work.',
+        );
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tap(find.text('Start repair'));
+        await waitFor(find.text('District crew started work.'));
+        await tap(find.byType(DropdownButtonFormField<bool>));
+        await tap(find.text('Resolve report').last);
+        await tester.enterText(
+          find.byType(TextFormField).first,
           'Synthetic repair verified on Android.',
         );
         FocusManager.instance.primaryFocus?.unfocus();
         await tap(find.text('Attach repair photo'));
         await tap(find.text('Repaired road / طريق تم إصلاحه'));
-        await tap(find.text('Submit Update'));
+        await tap(find.text('Mark resolved'));
         await waitFor(find.text('Resolved'));
         expect(
           (await client
@@ -134,14 +145,14 @@ void main() {
               .from('status_updates')
               .select('id')
               .eq('report_id', saved['id']),
-          hasLength(3),
+          hasLength(4),
         );
         expect(
           await client
               .from('notifications')
               .select('id')
               .eq('report_id', saved['id']),
-          hasLength(3),
+          hasLength(4),
         );
         await tap(find.text('Demo menu'));
         await tap(find.text('Citizen'));

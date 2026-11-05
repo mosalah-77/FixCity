@@ -154,6 +154,7 @@ ThemeData fixCityTheme(Brightness brightness) {
 
 Color statusColor(String status, {bool dark = false}) => switch (status) {
   'pending' => dark ? const Color(0xFFFFD38E) : kWarning,
+  'assigned' => dark ? const Color(0xFFA0CFFF) : kBlue,
   'in_progress' => dark ? const Color(0xFFA0CFFF) : kBlue,
   'resolved' => dark ? const Color(0xFF86DCB5) : kSuccess,
   _ => dark ? const Color(0xFFBAC8CF) : kGrey,
@@ -163,6 +164,7 @@ String statusLabel(String status, String lang) {
   final ar = lang == 'ar';
   return switch (status) {
     'pending' => ar ? 'قيد الانتظار' : 'Pending',
+    'assigned' => ar ? 'أُحيل إلى الحي' : 'Sent to district',
     'in_progress' => ar ? 'جارٍ العمل' : 'In Progress',
     'resolved' => ar ? 'تم الحل' : 'Resolved',
     _ => status,

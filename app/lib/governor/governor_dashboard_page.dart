@@ -18,7 +18,7 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
   List<Map<String, dynamic>> _reports = [];
   bool _reportsLoading = true;
 
-  final _filters = ['all', 'pending', 'in_progress', 'resolved'];
+  final _filters = ['all', 'pending', 'assigned', 'in_progress', 'resolved'];
 
   @override
   void initState() {
@@ -94,6 +94,8 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
           return 'الكل';
         case 'pending':
           return 'قيد الانتظار';
+        case 'assigned':
+          return 'أُحيل إلى الحي';
         case 'in_progress':
           return 'جارٍ العمل';
         case 'resolved':
@@ -107,6 +109,8 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
           return 'All';
         case 'pending':
           return 'Pending';
+        case 'assigned':
+          return 'Sent to district';
         case 'in_progress':
           return 'In Progress';
         case 'resolved':

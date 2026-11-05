@@ -25,13 +25,15 @@ Map<String, dynamic> fixtureReport(String status) => {
   'created_at': '2026-11-04T10:00:00Z',
 };
 
-Future<void> openDetails(WidgetTester tester) async {
+Future<void> openDetails(WidgetTester tester, {bool district = false}) async {
   tester.view.physicalSize = const Size(800, 1600);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
-    const MaterialApp(home: ReportDetailsPage(reportId: reportId)),
+    MaterialApp(
+      home: ReportDetailsPage(reportId: reportId, districtView: district),
+    ),
   );
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 300));
@@ -42,16 +44,15 @@ Future<void> enterUpdate(WidgetTester tester, String status) async {
     find.byType(TextFormField).first,
     'Team reviewed the report',
   );
-  final dropdown = find.byType(DropdownButtonFormField<String>);
-  // The repaired page offers only the next valid step, so no manual selection is needed.
-  if (dropdown.evaluate().isNotEmpty) {
+  if (status == 'Resolved') {
+    final dropdown = find.byType(DropdownButtonFormField<bool>);
     await tester.ensureVisible(dropdown);
     await tester.tap(dropdown);
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.text(status).last);
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Resolve report').last);
+    await tester.pumpAndSettle();
   }
-  await tester.ensureVisible(find.text('Submit Update'));
+  await tester.ensureVisible(find.byType(ElevatedButton));
 }
 
 void main() {
@@ -68,7 +69,7 @@ void main() {
         if (request.method == 'POST') {
           mutations.add(request.url.path);
           if (request.url.path == '/rest/v1/rpc/transition_report') {
-            status = 'in_progress';
+            status = 'assigned';
             return jsonResponse(null);
           }
         }
@@ -85,12 +86,12 @@ void main() {
       });
       await openDetails(tester);
       await enterUpdate(tester, 'In Progress');
-      await tester.tap(find.text('Submit Update'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
       expect(mutations, ['/rest/v1/rpc/transition_report']);
-      expect(find.text('Report Details'), findsOneWidget);
-      expect(find.text('In Progress'), findsWidgets);
+      expect(find.text('Staff review'), findsOneWidget);
+      expect(find.text('Sent to district'), findsWidgets);
       expect(find.textContaining('Notify Citizen'), findsNothing);
     },
   );
@@ -120,13 +121,13 @@ void main() {
     });
     await openDetails(tester);
     await enterUpdate(tester, 'In Progress');
-    await tester.tap(find.text('Submit Update'));
+    await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Team reviewed the report'), findsOneWidget);
     expect(find.textContaining('Status updated'), findsNothing);
-    await tester.ensureVisible(find.text('Submit Update'));
-    await tester.tap(find.text('Submit Update'));
+    await tester.ensureVisible(find.byType(ElevatedButton));
+    await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(requests, hasLength(2));
@@ -150,9 +151,9 @@ void main() {
         return jsonResponse([]);
       return unexpectedRequest(request);
     });
-    await openDetails(tester);
+    await openDetails(tester, district: true);
     await enterUpdate(tester, 'Resolved');
-    await tester.tap(find.text('Submit Update'));
+    await tester.tap(find.byType(ElevatedButton));
     await tester.pump();
     expect(mutations, isEmpty);
     expect(find.textContaining('repair photo'), findsWidgets);
@@ -181,8 +182,8 @@ void main() {
       });
       await openDetails(tester);
       await enterUpdate(tester, 'In Progress');
-      await tester.tap(find.text('Submit Update'));
-      await tester.tap(find.text('Submit Update'));
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       expect(calls, 1);
       await tester.pumpWidget(const MaterialApp(home: Text('Elsewhere')));

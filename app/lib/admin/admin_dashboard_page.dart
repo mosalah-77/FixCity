@@ -69,6 +69,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       switch (s) {
         case 'pending':
           return 'قيد الانتظار';
+        case 'assigned':
+          return 'أُحيل إلى الحي';
         case 'in_progress':
           return 'جارٍ العمل';
         case 'resolved':
@@ -80,6 +82,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       switch (s) {
         case 'pending':
           return 'Pending';
+        case 'assigned':
+          return 'Sent to district';
         case 'in_progress':
           return 'In Progress';
         case 'resolved':
@@ -131,6 +135,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     ];
 
     final pending = _allReports.where((r) => r['status'] == 'pending').length;
+    final assigned = _allReports.where((r) => r['status'] == 'assigned').length;
     final inProgress = _allReports
         .where((r) => r['status'] == 'in_progress')
         .length;
@@ -199,6 +204,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     onTap: () => setState(() => _filterStatus = 'pending'),
                   ),
                   const SizedBox(width: 8),
+                  _StatChip(
+                    value: '$assigned',
+                    label: _statusLabel('assigned'),
+                    color: const Color(0xFF60A5FA),
+                    selected: _filterStatus == 'assigned',
+                    onTap: () => setState(() => _filterStatus = 'assigned'),
+                  ),
                   _StatChip(
                     value: '$inProgress',
                     label: Localizations.localeOf(context).languageCode == 'ar'

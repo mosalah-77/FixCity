@@ -59,6 +59,7 @@ const Map<String, Map<String, String>> _localizedValues = {
 
     // --- Statuses (Database values) ---
     'pending': 'قيد الانتظار',
+    'assigned': 'أُحيل إلى الحي',
     'in_progress': 'جارٍ العمل',
     'resolved': 'تم الحل',
   },
@@ -122,6 +123,7 @@ const Map<String, Map<String, String>> _localizedValues = {
 
     // --- Statuses ---
     'pending': 'Pending',
+    'assigned': 'Sent to district',
     'in_progress': 'In Progress',
     'resolved': 'Resolved',
   },
