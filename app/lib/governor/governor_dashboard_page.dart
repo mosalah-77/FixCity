@@ -117,18 +117,10 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
     }
   }
 
-  Color _statusColor(String s) {
-    switch (s) {
-      case 'pending':
-        return const Color(0xFFF59E0B);
-      case 'in_progress':
-        return const Color(0xFF1A56DB);
-      case 'resolved':
-        return kRed;
-      default:
-        return Colors.grey;
-    }
-  }
+  Color _statusColor(String status) => statusColor(
+    status,
+    dark: Theme.of(context).brightness == Brightness.dark,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +146,7 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
       );
     if (_profileLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: kRed)),
+        body: Center(child: CircularProgressIndicator(color: kPrimary)),
       );
     }
 
@@ -175,16 +167,14 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: kBg,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: kDark,
-          foregroundColor: Colors.white,
           elevation: 0,
           title: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isAr ? 'لوحة رئيس الحي' : 'Governor Dashboard',
+                isAr ? 'فريق الحي' : 'District team',
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -195,19 +185,21 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                   _district!,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
             ],
           ),
-          centerTitle: true,
+          centerTitle: false,
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh_outlined, size: 20),
+              tooltip: isAr ? 'تحديث' : 'Refresh reports',
+              icon: const Icon(Icons.refresh_outlined),
               onPressed: _loadReports,
             ),
             IconButton(
-              icon: const Icon(Icons.logout_outlined, size: 20),
+              tooltip: demoMode ? 'Demo menu' : 'Sign out',
+              icon: const Icon(Icons.logout_outlined),
               onPressed: () async {
                 if (!demoMode) await supabase.auth.signOut();
                 if (!mounted) return;
@@ -222,7 +214,7 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
           children: [
             // Filter chips
             Container(
-              color: kDark,
+              color: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -234,35 +226,13 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                         : _reports.where((r) => r['status'] == f).length;
                     return Padding(
                       padding: const EdgeInsets.only(left: 8),
-                      child: GestureDetector(
-                        onTap: () => setState(() => _filter = f),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? kRed
-                                : Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected
-                                  ? kRed
-                                  : Colors.white.withValues(alpha: 0.2),
-                            ),
-                          ),
-                          child: Text(
-                            '${_filterLabel(f)} ($count)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.7),
-                            ),
-                          ),
+                      child: ChoiceChip(
+                        label: Text('${_filterLabel(f)} ($count)'),
+                        selected: isSelected,
+                        onSelected: (_) => setState(() => _filter = f),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 10,
                         ),
                       ),
                     );
@@ -282,9 +252,11 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                       ),
                     )
                   : _reportsLoading
-                  ? const Center(child: CircularProgressIndicator(color: kRed))
+                  ? const Center(
+                      child: CircularProgressIndicator(color: kPrimary),
+                    )
                   : RefreshIndicator(
-                      color: kRed,
+                      color: kPrimary,
                       onRefresh: _loadReports,
                       child: filtered.isEmpty
                           ? ListView(
@@ -306,7 +278,9 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                           ? 'لا توجد بلاغات في هذا الحي'
                                           : 'No reports in this district',
                                       style: TextStyle(
-                                        color: Colors.grey.shade400,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -316,7 +290,9 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                           ? 'اسحب للأسفل للتحديث'
                                           : 'Pull down to refresh',
                                       style: TextStyle(
-                                        color: Colors.grey.shade300,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                         fontSize: 12,
                                       ),
                                     ),
@@ -357,7 +333,9 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                     margin: const EdgeInsets.only(bottom: 12),
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
                                       borderRadius: BorderRadius.circular(14),
                                       border:
                                           pingCount > 0 && status != 'resolved'
@@ -405,10 +383,12 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                                 description,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w600,
-                                                  color: kDark,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.onSurface,
                                                 ),
                                               ),
                                               const SizedBox(height: 4),
@@ -448,9 +428,10 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                                             vertical: 2,
                                                           ),
                                                       decoration: BoxDecoration(
-                                                        color: kRed.withValues(
-                                                          alpha: 0.1,
-                                                        ),
+                                                        color: kPrimary
+                                                            .withValues(
+                                                              alpha: 0.1,
+                                                            ),
                                                         borderRadius:
                                                             BorderRadius.circular(
                                                               6,
@@ -460,9 +441,11 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                                         isAr
                                                             ? '📷 صورة الإصلاح'
                                                             : '📷 Fix Photo',
-                                                        style: const TextStyle(
+                                                        style: TextStyle(
                                                           fontSize: 10,
-                                                          color: kRed,
+                                                          color: Theme.of(
+                                                            context,
+                                                          ).colorScheme.primary,
                                                           fontWeight:
                                                               FontWeight.w600,
                                                         ),
@@ -505,7 +488,9 @@ class _GovernorDashboardPageState extends State<GovernorDashboardPage> {
                                                 '${date.year}/${date.month}/${date.day}',
                                                 style: TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.grey.shade400,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
                                                 ),
                                               ),
                                             ],

@@ -131,30 +131,33 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = _supabase.auth.currentUser;
 
     return Scaffold(
-      backgroundColor: kBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: kDark,
         title: Text(
           isAr ? 'حسابي' : 'My Profile',
-          style: const TextStyle(color: kWhite, fontWeight: FontWeight.w700),
+          style: const TextStyle(fontWeight: FontWeight.w700),
         ),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
+        centerTitle: false,
+        automaticallyImplyLeading: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout_outlined, color: kWhite, size: 20),
+            icon: const Icon(Icons.logout_outlined, size: 20),
             onPressed: demoMode
-                ? () => Navigator.of(context).pushNamed('/demo')
+                ? () => Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil('/demo', (_) => false)
                 : () async {
                     await _supabase.auth.signOut();
                     if (context.mounted)
-                      Navigator.of(context).pushReplacementNamed('/login');
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/login', (_) => false);
                   },
           ),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: kRed))
+          ? const Center(child: CircularProgressIndicator(color: kPrimary))
           : user == null
           ? _GuestView(
               isAr: isAr,
@@ -195,15 +198,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 12),
                   Text(
                     _profile?['full_name'] ?? user.email ?? '',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
-                      color: kDark,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   Text(
                     user.email ?? '',
-                    style: TextStyle(fontSize: 13, color: kGrey),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Container(
@@ -212,14 +218,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: kRed.withValues(alpha: 0.1),
+                      color: kPrimary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '⭐ ${_profile?['points'] ?? 0} ${isAr ? 'نقطة' : 'Points'}',
-                      style: const TextStyle(
+                      '${_profile?['points'] ?? 0} ${isAr ? 'نقطة' : 'Points'}',
+                      style: TextStyle(
                         fontSize: 13,
-                        color: kRed,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -273,19 +279,21 @@ class _ProfilePageState extends State<ProfilePage> {
                           if (context.mounted)
                             Navigator.of(
                               context,
-                            ).pushReplacementNamed('/login');
+                            ).pushNamedAndRemoveUntil('/login', (_) => false);
                         },
                         icon: const Icon(
                           Icons.logout_outlined,
-                          color: kRed,
+                          color: kPrimary,
                           size: 18,
                         ),
                         label: Text(
                           isAr ? 'تسجيل الخروج' : 'Logout',
-                          style: const TextStyle(color: kRed),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: kRed),
+                          side: const BorderSide(color: kPrimary),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -307,7 +315,7 @@ class _Card extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: double.infinity,
     decoration: BoxDecoration(
-      color: kWhite,
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(16),
     ),
     child: Column(children: children),
@@ -337,13 +345,19 @@ class _EditableRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 10, color: kGrey)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: kDark,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -374,13 +388,19 @@ class _InfoRow extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(fontSize: 10, color: kGrey)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: kDark,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -414,26 +434,30 @@ class _GuestView extends StatelessWidget {
               width: 96,
               height: 96,
               decoration: BoxDecoration(
-                color: kRed.withValues(alpha: 0.08),
+                color: kPrimary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 48, color: kRed),
+              child: Icon(icon, size: 48, color: kPrimary),
             ),
             const SizedBox(height: 24),
             Text(
               isAr ? titleAr : titleEn,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: kDark,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               isAr ? subtitleAr : subtitleEn,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: kGrey, height: 1.6),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                height: 1.6,
+              ),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -441,7 +465,7 @@ class _GuestView extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pushNamed('/login'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kRed,
+                  backgroundColor: kPrimary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(

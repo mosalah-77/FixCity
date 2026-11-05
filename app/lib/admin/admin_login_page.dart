@@ -11,14 +11,14 @@ class AdminLoginPage extends StatefulWidget {
 }
 
 class _AdminLoginPageState extends State<AdminLoginPage> {
-  final _emailController    = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final supabase = Supabase.instance.client;
 
   bool _isLoading = false;
-  bool _obscure   = true;
+  bool _obscure = true;
   String _errorMessage = '';
-  final _emailFocus    = FocusNode();
+  final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 
   @override
@@ -30,16 +30,20 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     super.dispose();
   }
 
-
   Future<void> _login() async {
     // Sign out any existing citizen session first
-    try { await supabase.auth.signOut(); } catch (_) {}
+    try {
+      await supabase.auth.signOut();
+    } catch (_) {}
     if (!mounted) return;
-    setState(() { _isLoading = true; _errorMessage = ''; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
     try {
       // Step 1: authenticate
       final authResponse = await supabase.auth.signInWithPassword(
-        email:    _emailController.text.trim(),
+        email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
@@ -47,7 +51,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
       final user = authResponse.user;
       if (user == null) {
-        setState(() { _errorMessage = 'Login failed. Please try again.'; _isLoading = false; });
+        setState(() {
+          _errorMessage = 'Login failed. Please try again.';
+          _isLoading = false;
+        });
         return;
       }
 
@@ -70,14 +77,17 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       if (!mounted) return;
 
       if (isAdmin) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/admin/dashboard', (_) => false);
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/admin/dashboard', (_) => false);
       } else {
         // Not an admin — sign them out and show error
         await supabase.auth.signOut();
         if (!mounted) return;
         setState(() {
-          _errorMessage = 'Access denied. This account does not have admin privileges.';
-          _isLoading    = false;
+          _errorMessage =
+              'Access denied. This account does not have admin privileges.';
+          _isLoading = false;
         });
       }
     } on AuthException catch (e) {
@@ -90,7 +100,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() { _errorMessage = 'An unexpected error occurred.'; _isLoading = false; });
+      setState(() {
+        _errorMessage = 'An unexpected error occurred.';
+        _isLoading = false;
+      });
     }
   }
 
@@ -108,143 +121,246 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             child: TextButton(
               onPressed: () {
                 appLocale.value = appLocale.value.languageCode == 'ar'
-                    ? const Locale('en') : const Locale('ar');
+                    ? const Locale('en')
+                    : const Locale('ar');
               },
               child: Text(
                 appLocale.value.languageCode == 'ar' ? 'EN' : 'ع',
-                style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
         ],
       ),
-      body: Column(children: [
-        Container(
-          height: 4,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [kRed, Color(0xFF185FA5)]),
+      body: Column(
+        children: [
+          Container(
+            height: 4,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(colors: [kPrimary, Color(0xFF185FA5)]),
+            ),
           ),
-        ),
-        Expanded(child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-            child: Column(children: [
-              // Logo
-              Container(
-                width: 64, height: 64,
-                decoration: BoxDecoration(color: kRed, borderRadius: BorderRadius.circular(16)),
-                child: const Icon(Icons.admin_panel_settings_outlined, color: Colors.white, size: 34),
-              ),
-              const SizedBox(height: 16),
-              const Text('FixCity Admin',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
-              const SizedBox(height: 4),
-              Text('Municipal Staff Portal',
-                  style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.5))),
-              const SizedBox(height: 40),
-
-              // Card
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 30, offset: const Offset(0, 10))],
-                ),
-                padding: const EdgeInsets.all(28),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  const Text('Sign In',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: kDark)),
-                  const SizedBox(height: 4),
-                  Text('Authorized municipal staff only',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
-                  const SizedBox(height: 24),
-
-                  FixField(
-                    controller: _emailController,
-                    label: 'Email Address',
-                    hint: 'staff@municipality.gov',
-                    icon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    focusNode: _emailFocus,
-                    onSubmitted: () => FocusScope.of(context).requestFocus(_passwordFocus),
-                  ),
-                  const SizedBox(height: 16),
-                  FixField(
-                    controller: _passwordController,
-                    label: 'Password',
-                    hint: '••••••••',
-                    icon: Icons.lock_outline,
-                    obscureText: _obscure,
-                    textInputAction: TextInputAction.done,
-                    focusNode: _passwordFocus,
-                    onSubmitted: _login,
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          color: Colors.grey, size: 20),
-                      onPressed: () => setState(() => _obscure = !_obscure),
-                    ),
-                  ),
-
-                  // Error message
-                  if (_errorMessage.isNotEmpty) ...[
-                    const SizedBox(height: 14),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade200),
-                      ),
-                      child: Row(children: [
-                        Icon(Icons.error_outline, size: 16, color: Colors.red.shade400),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(_errorMessage,
-                            style: TextStyle(fontSize: 12, color: Colors.red.shade600))),
-                      ]),
-                    ),
-                  ],
-
-                  const SizedBox(height: 24),
-                  _isLoading
-                      ? const Center(child: CircularProgressIndicator(color: kRed))
-                      : FixGreenButton(label: 'Sign In to Admin Panel', onPressed: _login),
-                  const SizedBox(height: 16),
-
-                  // How it works info
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F7FA),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Icon(Icons.info_outline, size: 14, color: Colors.grey.shade400),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Admin accounts are created and managed by your municipality\'s IT administrator. Contact your supervisor if you need access.',
-                          style: TextStyle(fontSize: 11, color: Colors.grey.shade500, height: 1.5),
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Column(
+                    children: [
+                      // Logo
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: kPrimary,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.admin_panel_settings_outlined,
+                          color: Colors.white,
+                          size: 34,
                         ),
                       ),
-                    ]),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'FixCity Admin',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Municipal Staff Portal',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+
+                      // Card
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 30,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(28),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Sign In',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Authorized municipal staff only',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            FixField(
+                              controller: _emailController,
+                              label: 'Email Address',
+                              hint: 'staff@municipality.gov',
+                              icon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              focusNode: _emailFocus,
+                              onSubmitted: () => FocusScope.of(
+                                context,
+                              ).requestFocus(_passwordFocus),
+                            ),
+                            const SizedBox(height: 16),
+                            FixField(
+                              controller: _passwordController,
+                              label: 'Password',
+                              hint: '••••••••',
+                              icon: Icons.lock_outline,
+                              obscureText: _obscure,
+                              textInputAction: TextInputAction.done,
+                              focusNode: _passwordFocus,
+                              onSubmitted: _login,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscure
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                                onPressed: () =>
+                                    setState(() => _obscure = !_obscure),
+                              ),
+                            ),
+
+                            // Error message
+                            if (_errorMessage.isNotEmpty) ...[
+                              const SizedBox(height: 14),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.red.shade200,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.error_outline,
+                                      size: 16,
+                                      color: Colors.red.shade400,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        _errorMessage,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.red.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+
+                            const SizedBox(height: 24),
+                            _isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: kPrimary,
+                                    ),
+                                  )
+                                : FixGreenButton(
+                                    label: 'Sign In to Admin Panel',
+                                    onPressed: _login,
+                                  ),
+                            const SizedBox(height: 16),
+
+                            // How it works info
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.surface,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 14,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Admin accounts are created and managed by your municipality\'s IT administrator. Contact your supervisor if you need access.',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Center(
+                              child: TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: Text(
+                                  '← Back to App',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text('← Back to App', style: TextStyle(fontSize: 13, color: Colors.grey.shade400)),
-                    ),
-                  ),
-                ]),
+                ),
               ),
-            ]),
+            ),
           ),
-        ),
-      )),
-    ]),
-  );
+        ],
+      ),
+    );
   }
 }

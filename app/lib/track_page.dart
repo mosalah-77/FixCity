@@ -84,18 +84,10 @@ class TrackPageState extends State<TrackPage> {
     }
   }
 
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'pending':
-        return const Color(0xFFF59E0B);
-      case 'in_progress':
-        return const Color(0xFF1A56DB);
-      case 'resolved':
-        return const Color(0xFFCC0000);
-      default:
-        return Colors.grey;
-    }
-  }
+  Color _statusColor(String status) => statusColor(
+    status,
+    dark: Theme.of(context).brightness == Brightness.dark,
+  );
 
   IconData _statusIcon(String status) {
     switch (status) {
@@ -116,16 +108,14 @@ class TrackPageState extends State<TrackPage> {
     final isAr = lang == 'ar';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: kBlue,
-        foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
           t('track_page_title', lang: lang),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: Column(
         children: [
@@ -138,22 +128,22 @@ class TrackPageState extends State<TrackPage> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TextField(
                       controller: _codeController,
                       textCapitalization: TextCapitalization.characters,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: kDark,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1,
                       ),
                       decoration: InputDecoration(
                         hintText: t('enter_code', lang: lang),
                         hintStyle: TextStyle(
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 13,
                           fontWeight: FontWeight.normal,
                           letterSpacing: 0,
@@ -161,7 +151,7 @@ class TrackPageState extends State<TrackPage> {
                         prefixIcon: const Icon(
                           Icons.search,
                           size: 20,
-                          color: Color(0xFFCC0000),
+                          color: kPrimary,
                         ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
@@ -179,7 +169,7 @@ class TrackPageState extends State<TrackPage> {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: kRed,
+                      color: kPrimary,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
@@ -235,7 +225,7 @@ class _EmptyState extends StatelessWidget {
             isAr ? 'أدخل كود البلاغ للبحث' : 'Enter a report code to search',
             style: TextStyle(
               fontSize: 15,
-              color: Colors.grey.shade400,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -243,7 +233,10 @@ class _EmptyState extends StatelessWidget {
             isAr
                 ? 'الصق الكود الكامل من بلاغك'
                 : 'Paste the full code from your report',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade300),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -344,7 +337,7 @@ class _ResultView extends StatelessWidget {
                         problem.reportCode,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade500,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           letterSpacing: 1,
                         ),
                       ),
@@ -360,7 +353,7 @@ class _ResultView extends StatelessWidget {
           // Report details card
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -398,10 +391,10 @@ class _ResultView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               isAr ? 'صورة المشكلة (قبل)' : 'Problem Photo (Before)',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A2E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -417,24 +410,20 @@ class _ResultView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFFCC0000).withValues(alpha: 0.1),
+                color: kPrimary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.check_circle,
-                    color: Color(0xFFCC0000),
-                    size: 16,
-                  ),
+                  const Icon(Icons.check_circle, color: kPrimary, size: 16),
                   const SizedBox(width: 6),
                   Text(
                     isAr ? 'تم الإصلاح' : 'Issue Fixed',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFFCC0000),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
@@ -443,10 +432,10 @@ class _ResultView extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               isAr ? 'صورة بعد الإصلاح' : 'After Fix Photo',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A2E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -464,10 +453,10 @@ class _ResultView extends StatelessWidget {
           // Updates timeline
           Text(
             isAr ? 'سجل التحديثات' : 'Update History',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1A1A2E),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
@@ -476,7 +465,7 @@ class _ResultView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -489,7 +478,10 @@ class _ResultView extends StatelessWidget {
                   const SizedBox(width: 10),
                   Text(
                     isAr ? 'لا توجد تحديثات حتى الآن' : 'No updates yet',
-                    style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
@@ -508,7 +500,7 @@ class _ResultView extends StatelessWidget {
                         width: 10,
                         height: 10,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFCC0000),
+                          color: kPrimary,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -527,7 +519,7 @@ class _ResultView extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -535,10 +527,10 @@ class _ResultView extends StatelessWidget {
                           children: [
                             Text(
                               update.text,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF1A1A2E),
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -546,7 +538,9 @@ class _ResultView extends StatelessWidget {
                               '${date.year}/${date.month}/${date.day}',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Colors.grey.shade400,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -588,16 +582,16 @@ class _DetailTile extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey.shade400,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF1A1A2E),
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

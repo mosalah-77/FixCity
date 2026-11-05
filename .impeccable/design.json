@@ -1,0 +1,555 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-05T15:01:56Z",
+  "title": "Design System: FixCity",
+  "extensions": {
+    "colorMeta": {
+      "action-teal": {
+        "displayName": "Action teal",
+        "tonalRamp": [
+          "oklch(0.15 0.0313 183.3)",
+          "oklch(0.26 0.0542 183.3)",
+          "oklch(0.37 0.0771 183.3)",
+          "oklch(0.48 0.0938 183.3)",
+          "oklch(0.60 0.0938 183.3)",
+          "oklch(0.72 0.0938 183.3)",
+          "oklch(0.84 0.0600 183.3)",
+          "oklch(0.95 0.0188 183.3)"
+        ],
+        "role": "primary"
+      },
+      "report-blue": {
+        "displayName": "Report blue",
+        "tonalRamp": [
+          "oklch(0.15 0.0274 242.5)",
+          "oklch(0.26 0.0474 242.5)",
+          "oklch(0.37 0.0675 242.5)",
+          "oklch(0.48 0.0821 242.5)",
+          "oklch(0.60 0.0821 242.5)",
+          "oklch(0.72 0.0821 242.5)",
+          "oklch(0.84 0.0525 242.5)",
+          "oklch(0.95 0.0164 242.5)"
+        ],
+        "role": "secondary"
+      },
+      "navy": {
+        "displayName": "Identity navy",
+        "tonalRamp": [
+          "oklch(0.15 0.0164 240.3)",
+          "oklch(0.26 0.0284 240.3)",
+          "oklch(0.37 0.0405 240.3)",
+          "oklch(0.48 0.0492 240.3)",
+          "oklch(0.60 0.0492 240.3)",
+          "oklch(0.72 0.0492 240.3)",
+          "oklch(0.84 0.0315 240.3)",
+          "oklch(0.95 0.0098 240.3)"
+        ],
+        "role": "secondary"
+      },
+      "navy-raised": {
+        "displayName": "Raised navy",
+        "tonalRamp": [
+          "oklch(0.15 0.0179 236.7)",
+          "oklch(0.26 0.0310 236.7)",
+          "oklch(0.37 0.0441 236.7)",
+          "oklch(0.48 0.0536 236.7)",
+          "oklch(0.60 0.0536 236.7)",
+          "oklch(0.72 0.0536 236.7)",
+          "oklch(0.84 0.0343 236.7)",
+          "oklch(0.95 0.0107 236.7)"
+        ],
+        "role": "secondary"
+      },
+      "brand-gold": {
+        "displayName": "Muted gold",
+        "tonalRamp": [
+          "oklch(0.15 0.0384 84.7)",
+          "oklch(0.26 0.0666 84.7)",
+          "oklch(0.37 0.0948 84.7)",
+          "oklch(0.48 0.1153 84.7)",
+          "oklch(0.60 0.1153 84.7)",
+          "oklch(0.72 0.1153 84.7)",
+          "oklch(0.84 0.0738 84.7)",
+          "oklch(0.95 0.0231 84.7)"
+        ],
+        "role": "secondary"
+      },
+      "canvas": {
+        "displayName": "Warm canvas",
+        "tonalRamp": [
+          "oklch(0.15 0.0022 97.4)",
+          "oklch(0.26 0.0039 97.4)",
+          "oklch(0.37 0.0055 97.4)",
+          "oklch(0.48 0.0067 97.4)",
+          "oklch(0.60 0.0067 97.4)",
+          "oklch(0.72 0.0067 97.4)",
+          "oklch(0.84 0.0043 97.4)",
+          "oklch(0.95 0.0013 97.4)"
+        ],
+        "role": "neutral"
+      },
+      "surface": {
+        "displayName": "White surface",
+        "tonalRamp": [
+          "oklch(0.15 0.0000 0.0)",
+          "oklch(0.26 0.0000 0.0)",
+          "oklch(0.37 0.0000 0.0)",
+          "oklch(0.48 0.0000 0.0)",
+          "oklch(0.60 0.0000 0.0)",
+          "oklch(0.72 0.0000 0.0)",
+          "oklch(0.84 0.0000 0.0)",
+          "oklch(0.95 0.0000 0.0)"
+        ],
+        "role": "neutral"
+      },
+      "muted": {
+        "displayName": "Muted text",
+        "tonalRamp": [
+          "oklch(0.15 0.0084 235.4)",
+          "oklch(0.26 0.0145 235.4)",
+          "oklch(0.37 0.0206 235.4)",
+          "oklch(0.48 0.0251 235.4)",
+          "oklch(0.60 0.0251 235.4)",
+          "oklch(0.72 0.0251 235.4)",
+          "oklch(0.84 0.0161 235.4)",
+          "oklch(0.95 0.0050 235.4)"
+        ],
+        "role": "neutral"
+      },
+      "pending": {
+        "displayName": "Pending amber",
+        "tonalRamp": [
+          "oklch(0.15 0.0366 72.8)",
+          "oklch(0.26 0.0635 72.8)",
+          "oklch(0.37 0.0904 72.8)",
+          "oklch(0.48 0.1099 72.8)",
+          "oklch(0.60 0.1099 72.8)",
+          "oklch(0.72 0.1099 72.8)",
+          "oklch(0.84 0.0704 72.8)",
+          "oklch(0.95 0.0220 72.8)"
+        ]
+      },
+      "resolved": {
+        "displayName": "Resolved green",
+        "tonalRamp": [
+          "oklch(0.15 0.0342 163.0)",
+          "oklch(0.26 0.0592 163.0)",
+          "oklch(0.37 0.0843 163.0)",
+          "oklch(0.48 0.1025 163.0)",
+          "oklch(0.60 0.1025 163.0)",
+          "oklch(0.72 0.1025 163.0)",
+          "oklch(0.84 0.0656 163.0)",
+          "oklch(0.95 0.0205 163.0)"
+        ]
+      },
+      "error": {
+        "displayName": "Error red",
+        "tonalRamp": [
+          "oklch(0.15 0.0594 28.7)",
+          "oklch(0.26 0.1030 28.7)",
+          "oklch(0.37 0.1466 28.7)",
+          "oklch(0.48 0.1783 28.7)",
+          "oklch(0.60 0.1783 28.7)",
+          "oklch(0.72 0.1783 28.7)",
+          "oklch(0.84 0.1141 28.7)",
+          "oklch(0.95 0.0357 28.7)"
+        ]
+      },
+      "action-teal-dark": {
+        "displayName": "Dark-mode action teal",
+        "tonalRamp": [
+          "oklch(0.15 0.0311 179.9)",
+          "oklch(0.26 0.0538 179.9)",
+          "oklch(0.37 0.0766 179.9)",
+          "oklch(0.48 0.0932 179.9)",
+          "oklch(0.60 0.0932 179.9)",
+          "oklch(0.72 0.0932 179.9)",
+          "oklch(0.84 0.0596 179.9)",
+          "oklch(0.95 0.0186 179.9)"
+        ],
+        "role": "primary"
+      },
+      "canvas-dark": {
+        "displayName": "Dark canvas",
+        "tonalRamp": [
+          "oklch(0.15 0.0105 238.9)",
+          "oklch(0.26 0.0182 238.9)",
+          "oklch(0.37 0.0259 238.9)",
+          "oklch(0.48 0.0315 238.9)",
+          "oklch(0.60 0.0315 238.9)",
+          "oklch(0.72 0.0315 238.9)",
+          "oklch(0.84 0.0201 238.9)",
+          "oklch(0.95 0.0063 238.9)"
+        ],
+        "role": "neutral"
+      },
+      "surface-dark": {
+        "displayName": "Dark surface",
+        "tonalRamp": [
+          "oklch(0.15 0.0126 235.1)",
+          "oklch(0.26 0.0218 235.1)",
+          "oklch(0.37 0.0310 235.1)",
+          "oklch(0.48 0.0377 235.1)",
+          "oklch(0.60 0.0377 235.1)",
+          "oklch(0.72 0.0377 235.1)",
+          "oklch(0.84 0.0241 235.1)",
+          "oklch(0.95 0.0075 235.1)"
+        ],
+        "role": "neutral"
+      },
+      "text-dark": {
+        "displayName": "Dark-mode text",
+        "tonalRamp": [
+          "oklch(0.15 0.0028 225.1)",
+          "oklch(0.26 0.0049 225.1)",
+          "oklch(0.37 0.0070 225.1)",
+          "oklch(0.48 0.0085 225.1)",
+          "oklch(0.60 0.0085 225.1)",
+          "oklch(0.72 0.0085 225.1)",
+          "oklch(0.84 0.0055 225.1)",
+          "oklch(0.95 0.0017 225.1)"
+        ],
+        "role": "neutral"
+      },
+      "pending-dark": {
+        "displayName": "Dark-mode pending amber",
+        "tonalRamp": [
+          "oklch(0.15 0.0332 78.2)",
+          "oklch(0.26 0.0576 78.2)",
+          "oklch(0.37 0.0819 78.2)",
+          "oklch(0.48 0.0996 78.2)",
+          "oklch(0.60 0.0996 78.2)",
+          "oklch(0.72 0.0996 78.2)",
+          "oklch(0.84 0.0638 78.2)",
+          "oklch(0.95 0.0199 78.2)"
+        ]
+      },
+      "in-progress-dark": {
+        "displayName": "Dark-mode progress blue",
+        "tonalRamp": [
+          "oklch(0.15 0.0279 249.4)",
+          "oklch(0.26 0.0484 249.4)",
+          "oklch(0.37 0.0689 249.4)",
+          "oklch(0.48 0.0838 249.4)",
+          "oklch(0.60 0.0838 249.4)",
+          "oklch(0.72 0.0838 249.4)",
+          "oklch(0.84 0.0536 249.4)",
+          "oklch(0.95 0.0168 249.4)"
+        ]
+      },
+      "resolved-dark": {
+        "displayName": "Dark-mode resolved green",
+        "tonalRamp": [
+          "oklch(0.15 0.0336 163.6)",
+          "oklch(0.26 0.0583 163.6)",
+          "oklch(0.37 0.0830 163.6)",
+          "oklch(0.48 0.1009 163.6)",
+          "oklch(0.60 0.1009 163.6)",
+          "oklch(0.72 0.1009 163.6)",
+          "oklch(0.84 0.0646 163.6)",
+          "oklch(0.95 0.0202 163.6)"
+        ]
+      },
+      "muted-dark": {
+        "displayName": "Dark-mode fallback gray",
+        "tonalRamp": [
+          "oklch(0.15 0.0061 229.1)",
+          "oklch(0.26 0.0105 229.1)",
+          "oklch(0.37 0.0150 229.1)",
+          "oklch(0.48 0.0182 229.1)",
+          "oklch(0.60 0.0182 229.1)",
+          "oklch(0.72 0.0182 229.1)",
+          "oklch(0.84 0.0117 229.1)",
+          "oklch(0.95 0.0036 229.1)"
+        ],
+        "role": "neutral"
+      },
+      "error-dark": {
+        "displayName": "Dark-mode error red",
+        "tonalRamp": [
+          "oklch(0.15 0.0297 26.8)",
+          "oklch(0.26 0.0515 26.8)",
+          "oklch(0.37 0.0732 26.8)",
+          "oklch(0.48 0.0891 26.8)",
+          "oklch(0.60 0.0891 26.8)",
+          "oklch(0.72 0.0891 26.8)",
+          "oklch(0.84 0.0570 26.8)",
+          "oklch(0.95 0.0178 26.8)"
+        ]
+      },
+      "primary-container": {
+        "displayName": "Primary container",
+        "tonalRamp": [
+          "oklch(0.15 0.0280 182.7)",
+          "oklch(0.26 0.0486 182.7)",
+          "oklch(0.37 0.0692 182.7)",
+          "oklch(0.48 0.0841 182.7)",
+          "oklch(0.60 0.0841 182.7)",
+          "oklch(0.72 0.0841 182.7)",
+          "oklch(0.84 0.0538 182.7)",
+          "oklch(0.95 0.0168 182.7)"
+        ],
+        "role": "primary"
+      },
+      "on-primary-container": {
+        "displayName": "Primary container text",
+        "tonalRamp": [
+          "oklch(0.15 0.0130 183.2)",
+          "oklch(0.26 0.0225 183.2)",
+          "oklch(0.37 0.0320 183.2)",
+          "oklch(0.48 0.0389 183.2)",
+          "oklch(0.60 0.0389 183.2)",
+          "oklch(0.72 0.0389 183.2)",
+          "oklch(0.84 0.0249 183.2)",
+          "oklch(0.95 0.0078 183.2)"
+        ],
+        "role": "primary"
+      },
+      "secondary-container": {
+        "displayName": "Secondary container",
+        "tonalRamp": [
+          "oklch(0.15 0.0102 181.3)",
+          "oklch(0.26 0.0177 181.3)",
+          "oklch(0.37 0.0251 181.3)",
+          "oklch(0.48 0.0306 181.3)",
+          "oklch(0.60 0.0306 181.3)",
+          "oklch(0.72 0.0306 181.3)",
+          "oklch(0.84 0.0196 181.3)",
+          "oklch(0.95 0.0061 181.3)"
+        ],
+        "role": "secondary"
+      },
+      "on-secondary-container": {
+        "displayName": "Secondary container text",
+        "tonalRamp": [
+          "oklch(0.15 0.0113 181.8)",
+          "oklch(0.26 0.0196 181.8)",
+          "oklch(0.37 0.0278 181.8)",
+          "oklch(0.48 0.0339 181.8)",
+          "oklch(0.60 0.0339 181.8)",
+          "oklch(0.72 0.0339 181.8)",
+          "oklch(0.84 0.0217 181.8)",
+          "oklch(0.95 0.0068 181.8)"
+        ],
+        "role": "secondary"
+      },
+      "outline": {
+        "displayName": "Field outline",
+        "tonalRamp": [
+          "oklch(0.15 0.0041 182.6)",
+          "oklch(0.26 0.0071 182.6)",
+          "oklch(0.37 0.0102 182.6)",
+          "oklch(0.48 0.0123 182.6)",
+          "oklch(0.60 0.0123 182.6)",
+          "oklch(0.72 0.0123 182.6)",
+          "oklch(0.84 0.0079 182.6)",
+          "oklch(0.95 0.0025 182.6)"
+        ],
+        "role": "neutral"
+      },
+      "outline-variant": {
+        "displayName": "Soft outline",
+        "tonalRamp": [
+          "oklch(0.15 0.0042 177.9)",
+          "oklch(0.26 0.0074 177.9)",
+          "oklch(0.37 0.0105 177.9)",
+          "oklch(0.48 0.0127 177.9)",
+          "oklch(0.60 0.0127 177.9)",
+          "oklch(0.72 0.0127 177.9)",
+          "oklch(0.84 0.0081 177.9)",
+          "oklch(0.95 0.0025 177.9)"
+        ],
+        "role": "neutral"
+      },
+      "on-surface-variant": {
+        "displayName": "Supporting text",
+        "tonalRamp": [
+          "oklch(0.15 0.0045 182.2)",
+          "oklch(0.26 0.0077 182.2)",
+          "oklch(0.37 0.0110 182.2)",
+          "oklch(0.48 0.0134 182.2)",
+          "oklch(0.60 0.0134 182.2)",
+          "oklch(0.72 0.0134 182.2)",
+          "oklch(0.84 0.0086 182.2)",
+          "oklch(0.95 0.0027 182.2)"
+        ],
+        "role": "neutral"
+      }
+    },
+    "typographyMeta": {
+      "headline-large": {
+        "displayName": "Headline large",
+        "purpose": "The demo introduction."
+      },
+      "headline-small": {
+        "displayName": "Headline small",
+        "purpose": "Page introductions and the home panel."
+      },
+      "title-large": {
+        "displayName": "Title large",
+        "purpose": "Section headings and app bars."
+      },
+      "title-medium": {
+        "displayName": "Title medium",
+        "purpose": "Categories and role choices."
+      },
+      "body-large": {
+        "displayName": "Body large",
+        "purpose": "Introductory copy."
+      },
+      "body-medium": {
+        "displayName": "Body medium",
+        "purpose": "Descriptions and form guidance."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Shared elevated-button labels."
+      },
+      "nav-label": {
+        "displayName": "Navigation label",
+        "purpose": "Phone navigation labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "resting-surfaces",
+        "value": "none",
+        "purpose": "Shared app bars, cards and elevated buttons have zero elevation."
+      }
+    ],
+    "motion": [
+      {
+        "name": "material-button-state",
+        "value": "200ms",
+        "purpose": "Inherited Material button style transitions; the app does not define a separate motion scale."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "category-three-columns",
+        "value": "600px"
+      },
+      {
+        "name": "navigation-rail",
+        "value": "700px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The shared elevated action in light mode; Material supplies its state feedback.",
+      "html": "<button class=\"ds-button\">Start demo</button>",
+      "css": ".ds-button{font-family:Cairo,sans-serif;font-size:16px;font-weight:700;min-width:48px;min-height:52px;padding:12px 24px;border:0;border-radius:12px;background:#087F73;color:#FFFFFF;cursor:pointer;transition:background-color .2s;}.ds-button:hover{background-image:linear-gradient(#FFFFFF14,#FFFFFF14)}.ds-button:focus-visible,.ds-button:active{background-image:linear-gradient(#FFFFFF1A,#FFFFFF1A);outline:0}.ds-button:disabled{background:#102D401F;color:#102D4061;cursor:default}"
+    },
+    {
+      "name": "Home reporting button",
+      "kind": "button",
+      "refersTo": "button-home-report",
+      "description": "The gold Report action belongs inside the navy home panel.",
+      "html": "<div class=\"ds-home-panel\"><button class=\"ds-home-report\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>Report a problem</button></div>",
+      "css": ".ds-home-panel{padding:24px;background:#102D40;border-radius:16px}.ds-home-report{font-family:Cairo,sans-serif;display:inline-flex;align-items:center;gap:8px;min-width:48px;min-height:52px;padding:12px 24px;border:0;border-radius:12px;background:#D5AD56;color:#102D40;font-size:16px;font-weight:700;cursor:pointer}.ds-home-report:hover{background-image:linear-gradient(#102D4014,#102D4014)}.ds-home-report:focus-visible,.ds-home-report:active{background-image:linear-gradient(#102D401A,#102D401A);outline:0}"
+    },
+    {
+      "name": "Outlined button",
+      "kind": "button",
+      "refersTo": "button-outlined",
+      "description": "A secondary action with the shared outline and control radius.",
+      "html": "<button class=\"ds-outlined\">Use sample photo</button>",
+      "css": ".ds-outlined{font-family:Cairo,sans-serif;font-size:14px;font-weight:500;min-width:48px;min-height:48px;padding:12px 20px;border:1px solid #6F7977;border-radius:12px;color:#087F73;background:transparent;cursor:pointer}.ds-outlined:hover{background:#087F7314}.ds-outlined:focus-visible,.ds-outlined:active{background:#087F731A;outline:0}"
+    },
+    {
+      "name": "Text button",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "A low-emphasis action for view-all links, language changes and cancellation.",
+      "html": "<button class=\"ds-text-button\">View all</button>",
+      "css": ".ds-text-button{font-family:Cairo,sans-serif;font-size:14px;font-weight:500;min-width:48px;min-height:48px;padding:0 12px;border:0;border-radius:20px;color:#087F73;background:transparent;cursor:pointer}.ds-text-button:hover{background:#087F7314}.ds-text-button:focus-visible,.ds-text-button:active{background:#087F731A;outline:0}"
+    },
+    {
+      "name": "Description field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "A surface-filled text field with the shared focus outline.",
+      "html": "<label class=\"ds-field-label\">Problem description<textarea class=\"ds-field\" rows=\"4\" placeholder=\"For example: the streetlight beside the entrance is not working.\"></textarea></label>",
+      "css": ".ds-field-label{font-family:Cairo,sans-serif;display:grid;gap:8px;color:#102D40;font-size:14px;font-weight:700}.ds-field{font-family:Cairo,sans-serif;padding:16px;border:1px solid #BEC9C6;border-radius:12px;background:#FFFFFF;color:#102D40;font-size:16px;line-height:1.6;resize:vertical}.ds-field::placeholder{color:#3F4947}.ds-field:hover{border-color:#102D40}.ds-field:focus-visible{border:2px solid #087F73;outline:0}"
+    },
+    {
+      "name": "Resident navigation",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "The phone navigation keeps all four labels visible. The Flutter shell changes to a rail at 700 logical pixels.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main navigation\"><button class=\"ds-nav-item\" aria-current=\"page\"><span class=\"ds-nav-indicator\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 10 12 3l9 7v11h-6v-7H9v7H3Z\"/></svg></span>Home</button><button class=\"ds-nav-item\"><span class=\"ds-nav-indicator\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 3h14v18H5Z M8 8h8 M8 12h8 M8 16h5\"/></svg></span>Reports</button><button class=\"ds-nav-item\"><span class=\"ds-nav-indicator\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 17h14l-2-3V9a5 5 0 0 0-10 0v5Z M10 21h4\"/></svg></span>Alerts</button><button class=\"ds-nav-item\"><span class=\"ds-nav-indicator\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"7\" r=\"4\"/><path d=\"M4 21v-3a8 8 0 0 1 16 0v3\"/></svg></span>Account</button></nav>",
+      "css": ".ds-nav{display:flex;background:#FFFFFF;padding:8px;gap:8px}.ds-nav-item{font-family:Cairo,sans-serif;flex:1;display:grid;justify-items:center;gap:4px;min-height:64px;padding:0;border:0;background:transparent;color:#102D40;font-size:12px;font-weight:600;cursor:pointer}.ds-nav-indicator{display:grid;place-items:center;width:64px;height:32px;border-radius:16px}.ds-nav-item[aria-current=\"page\"] .ds-nav-indicator{background:#9EF2E4;color:#00201C}.ds-nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7}.ds-nav-item:hover .ds-nav-indicator{box-shadow:inset 0 0 0 40px #102D4014}.ds-nav-item:focus-visible{outline:0}.ds-nav-item:focus-visible .ds-nav-indicator,.ds-nav-item:active .ds-nav-indicator{box-shadow:inset 0 0 0 40px #102D401A}"
+    },
+    {
+      "name": "Category choice",
+      "kind": "chip",
+      "refersTo": "category-choice-selected",
+      "description": "Material choice chips wrap to fit the form and show a checkmark when selected.",
+      "html": "<div class=\"ds-choices\"><button class=\"ds-choice\" aria-pressed=\"true\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"m5 12 4 4L19 6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>Water</button><button class=\"ds-choice\" aria-pressed=\"false\">Other</button></div>",
+      "css": ".ds-choices{display:flex;flex-wrap:wrap;gap:8px}.ds-choice{font-family:Cairo,sans-serif;display:inline-flex;align-items:center;gap:8px;padding:12px 10px;border:1px solid #BEC9C6;border-radius:8px;background:transparent;color:#3F4947;font-size:14px;font-weight:500;cursor:pointer}.ds-choice[aria-pressed=\"true\"]{border-color:transparent;background:#CCE8E2;color:#05201C}.ds-choice:hover{background-image:linear-gradient(#102D4014,#102D4014)}.ds-choice:focus-visible,.ds-choice:active{background-image:linear-gradient(#102D401A,#102D401A);outline:0}"
+    },
+    {
+      "name": "Home report row",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "A flat report row opens tracking and keeps its written status visible.",
+      "html": "<button class=\"ds-report\"><span class=\"ds-report-title\">Streetlight beside the entrance is not working</span><span class=\"ds-report-detail\">Pending · Demo North</span></button>",
+      "css": ".ds-report{font-family:Cairo,sans-serif;display:grid;gap:8px;width:100%;padding:12px 16px;border:0;border-radius:12px;background:#FFFFFF;color:#102D40;text-align:start;cursor:pointer}.ds-report-title{font-size:16px;line-height:1.6}.ds-report-detail{font-size:14px;line-height:1.6;color:#3F4947}.ds-report:hover{background-image:linear-gradient(#102D4014,#102D4014)}.ds-report:focus-visible,.ds-report:active{background-image:linear-gradient(#102D401A,#102D401A);outline:0}"
+    },
+    {
+      "name": "FixCity wordmark",
+      "kind": "custom",
+      "description": "The implemented street-pin mark stays beside a left-to-right wordmark.",
+      "html": "<div class=\"ds-brand\" aria-label=\"FixCity\"><svg viewBox=\"0 0 48 48\" width=\"44\" height=\"44\" aria-hidden=\"true\"><rect width=\"48\" height=\"48\" rx=\"12\" fill=\"#102D40\"/><path fill=\"#D5AD56\" d=\"M24 8C15 8 11 14 11 21C11 29 24 40 24 40C24 40 37 29 37 21C37 14 33 8 24 8Z\"/><path fill=\"#102D40\" d=\"M21 15H27V20H31V25H27V31H21Z\"/></svg><span dir=\"ltr\">FixCity</span></div>",
+      "css": ".ds-brand{font-family:Cairo,sans-serif;display:inline-flex;align-items:center;gap:12px;color:#102D40;font-size:25px;font-weight:800}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The neighbourhood service desk",
+    "overview": "FixCity uses a compact Material 3 interface for reporting a problem and following a repair. Navy anchors the identity, muted gold marks the street-pin logo and the home reporting action, and teal carries the shared action style. Warm page backgrounds and plain surface panels keep forms and report lists easy to scan.\n\nCairo covers Arabic and English throughout the app. The public demo states that it uses synthetic data, has no government affiliation and sends no real reports. This is a private student initiative with its own identity. InstaPay supplies partnership context only; its branding is not part of this system.\n\nThis document records the shared rules in [theme.dart](app/lib/theme.dart), [brand.dart](app/lib/brand.dart) and the current Flutter screens. Values written as `px` represent Flutter logical pixels. The light Material container and outline colors come from the installed `ColorScheme.fromSeed` implementation; the app still reads those roles from its theme. Dark variants are explicit where the source overrides them. The sidecar translates components to HTML for inspection; its previews use Cairo when the host has that font available.",
+    "keyCharacteristics": [
+      "Report and Track remain visible actions with distinct labels.",
+      "Arabic and English share one type family and follow the locale's direction.",
+      "Flat surfaces, outlined fields and text labels carry the hierarchy.",
+      "Resident navigation stays separate from staff and district role access."
+    ],
+    "rules": [
+      {
+        "name": "The Action Hierarchy Rule",
+        "body": "Use the shared teal action style by default. The home reporting button uses gold within its navy panel; preserve that local pairing.",
+        "section": "colors"
+      },
+      {
+        "name": "The Status Text Rule",
+        "body": "Keep a written status beside its color. Call the shared status helpers with the current brightness instead of copying a status hex into a screen.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bilingual Type Rule",
+        "body": "Keep Cairo and the locale's text direction. Let content wrap and grow with the user's text scale; do not force labels into a fixed text height.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Surface Rule",
+        "body": "Keep resting page panels flat. Preserve the framework's focus, hover and pressed feedback when reusing Material controls.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do reuse the shared theme and Material controls before adding a local style.",
+      "Do keep Arabic and English labels, direction and text scaling intact.",
+      "Do pair report status colors with text and choose the correct dark variant.",
+      "Do keep the demo notice and original team attribution visible in their existing places."
+    ],
+    "donts": [
+      "Don't use government emblems or imply endorsement, affiliation or real report delivery.",
+      "Don't copy InstaPay's visual identity or describe it as a FixCity partner.",
+      "Don't turn local gray literals, small legacy captions or dialog radii into shared tokens.",
+      "Don't describe the source review or screenshots as a complete accessibility audit."
+    ]
+  }
+}

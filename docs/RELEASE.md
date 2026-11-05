@@ -46,6 +46,7 @@ The file and keystore extensions are ignored by Git. Keep a private backup; losi
 flutter build apk --release --dart-define-from-file=demo-config.json
 apksigner verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk
 shasum -a 256 build/app/outputs/flutter-apk/app-release.apk
+flutter build apk --release --split-per-abi --dart-define-from-file=demo-config.json
 ```
 
 The opt-in Android integration test uses the allowlisted synthetic backend. It creates one report, reviews it as staff, resolves it as the district team, and checks persisted history, notifications and Arabic tracking. It does not run in ordinary CI or touch the original team's backend:
@@ -56,5 +57,16 @@ flutter test integration_test/demo_flow_test.dart -d YOUR_ANDROID_DEVICE \
 ```
 
 Also check the signed release on a real device. Verify launch, network access, Arabic layout, back navigation, session persistence and retry handling. Do not describe camera/GPS or real-device support as verified from compilation alone.
+
+For a profile run with frame measurements, use the same workflow and its driver:
+
+```sh
+flutter drive --profile --no-dds --driver=test_driver/integration_test.dart \
+  --target=integration_test/demo_flow_test.dart -d YOUR_ANDROID_DEVICE \
+  --dart-define-from-file=demo-config.json --dart-define=RUN_HOSTED_SMOKE=true \
+  --dart-define=MEASURE_PERFORMANCE=true
+```
+
+The driver saves `build/integration_response_data.json`. Its keyboard is simulated. Use a physical phone for performance conclusions; emulator timing depends heavily on the graphics backend. The [5 November review](SECURITY-PERFORMANCE-REVIEW.md) records the current limits.
 
 Upload the signed APK and its SHA-256 checksum to a versioned GitHub Release. Record its source commit and the checks that actually ran. The demo APK uses synthetic illustrations and does not request location or camera access through its demo flow.

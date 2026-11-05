@@ -4,6 +4,8 @@ import 'package:fixcity/main.dart';
 import 'package:fixcity/demo.dart';
 import 'package:fixcity/report_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fixcity/theme.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +18,10 @@ Future<void> fillReport(WidgetTester tester) async {
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(
-    const MaterialApp(home: ReportPage(initialCategory: 'cat_pothole')),
+    MaterialApp(
+      theme: fixCityTheme(Brightness.light),
+      home: const ReportPage(initialCategory: 'cat_pothole'),
+    ),
   );
   await tester.pump();
   await tester.enterText(
@@ -50,6 +55,11 @@ void main() {
     return;
   }
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    final font = FontLoader('Cairo')
+      ..addFont(rootBundle.load('assets/fonts/Cairo.ttf'));
+    await font.load();
+  });
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());
 
@@ -78,11 +88,12 @@ void main() {
       await submit(tester);
       await tester.pumpAndSettle();
       await tester.pumpWidget(
-        const MaterialApp(
-          locale: Locale('ar'),
-          supportedLocales: [Locale('ar'), Locale('en')],
+        MaterialApp(
+          theme: fixCityTheme(Brightness.light),
+          locale: const Locale('ar'),
+          supportedLocales: const [Locale('ar'), Locale('en')],
           localizationsDelegates: GlobalMaterialLocalizations.delegates,
-          home: ReportPage(initialCategory: 'cat_pothole'),
+          home: const ReportPage(initialCategory: 'cat_pothole'),
         ),
       );
       await tester.pumpAndSettle();
@@ -117,7 +128,7 @@ void main() {
       await submit(tester);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('Report Submitted!'), findsNothing);
+      expect(find.text('Report submitted'), findsNothing);
       expect(find.text('A synthetic pothole needs repair.'), findsOneWidget);
       await submit(tester);
       await tester.pump();
@@ -148,7 +159,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(saves, 1);
-    expect(find.text('Report Submitted!'), findsOneWidget);
+    expect(find.text('Report submitted'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -173,7 +184,42 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
       expect(tester.takeException(), isNull);
-      expect(find.text('Report Submitted!'), findsNothing);
+      expect(find.text('Report submitted'), findsNothing);
+    },
+  );
+  testWidgets(
+    'Arabic dark confirmation and long code fit a narrow large-text screen',
+    (tester) async {
+      await initializeBackend(
+        (request) => request.url.path == '/rest/v1/rpc/create_report'
+            ? jsonResponse({'report_code': '0123456789ABCDEF0123456789ABCDEF'})
+            : unexpectedRequest(request),
+      );
+      await fillReport(tester);
+      tester.view.physicalSize = const Size(360, 800);
+      tester.platformDispatcher.textScaleFactorTestValue = 1.4;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: fixCityTheme(Brightness.dark),
+          locale: const Locale('ar'),
+          supportedLocales: const [Locale('ar'), Locale('en')],
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
+          home: const ReportPage(initialCategory: 'cat_pothole'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('إرسال البلاغ'));
+      await tester.tap(find.text('إرسال البلاغ'));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('مراجعة البلاغ'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.text('إرسال').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('تم إرسال البلاغ'), findsOneWidget);
+      expect(find.text('0123456789ABCDEF0123456789ABCDEF'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     },
   );
 }

@@ -19,24 +19,20 @@ class SettingsPage extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: isDarkMode,
       builder: (context, dark, _) {
-        final bgColor = dark ? const Color(0xFF0D0D0D) : kBg;
-        final cardColor = dark ? const Color(0xFF1E1E1E) : kWhite;
+        final bgColor = Theme.of(context).scaffoldBackgroundColor;
+        final cardColor = Theme.of(context).colorScheme.surface;
         final textColor = dark ? kWhite : kDark;
         final subColor = dark ? Colors.grey.shade400 : kGrey;
 
         return Scaffold(
           backgroundColor: bgColor,
           appBar: AppBar(
-            backgroundColor: kBlue,
             title: Text(
               isAr ? 'الإعدادات' : 'Settings',
-              style: const TextStyle(
-                color: kWhite,
-                fontWeight: FontWeight.w700,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            centerTitle: true,
-            automaticallyImplyLeading: false,
+            centerTitle: false,
+            automaticallyImplyLeading: true,
           ),
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
@@ -48,6 +44,18 @@ class SettingsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _SettingsCard(
+                  color: cardColor,
+                  children: [
+                    SwitchListTile(
+                      title: Text(isAr ? 'مظهر داكن' : 'Dark appearance'),
+                      secondary: const Icon(Icons.dark_mode_outlined),
+                      value: dark,
+                      onChanged: (value) => isDarkMode.value = value,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
                 // ── Language ──────────────────────────────────────────────
                 _SectionHeader(label: isAr ? 'اللغة' : 'Language', dark: dark),
                 const SizedBox(height: 10),
@@ -61,7 +69,7 @@ class SettingsPage extends StatelessWidget {
                       trailing: appLocale.value.languageCode == 'ar'
                           ? const Icon(
                               Icons.check_circle,
-                              color: kRed,
+                              color: kPrimary,
                               size: 20,
                             )
                           : null,
@@ -77,7 +85,7 @@ class SettingsPage extends StatelessWidget {
                       trailing: appLocale.value.languageCode == 'en'
                           ? const Icon(
                               Icons.check_circle,
-                              color: kRed,
+                              color: kPrimary,
                               size: 20,
                             )
                           : null,
@@ -105,15 +113,18 @@ class SettingsPage extends StatelessWidget {
                         subtitle: isAr
                             ? 'الخروج من حسابك'
                             : 'Sign out of your account',
-                        trailing: const Icon(Icons.chevron_right, color: kRed),
-                        textColor: kRed,
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: kPrimary,
+                        ),
+                        textColor: kPrimary,
                         subColor: subColor,
                         onTap: () async {
                           await Supabase.instance.client.auth.signOut();
                           if (context.mounted)
                             Navigator.of(
                               context,
-                            ).pushReplacementNamed('/login');
+                            ).pushNamedAndRemoveUntil('/login', (_) => false);
                         },
                       ),
                     ],
@@ -133,7 +144,7 @@ class SettingsPage extends StatelessWidget {
                     _InfoTile(
                       icon: Icons.info_outline,
                       title: isAr ? 'الإصدار' : 'Version',
-                      value: '1.0.0 demo',
+                      value: '1.1.0 demo',
                       textColor: textColor,
                       subColor: subColor,
                     ),
@@ -146,13 +157,12 @@ class SettingsPage extends StatelessWidget {
                       subColor: subColor,
                     ),
                     _Divider(dark: dark),
-                    _TapTile(
+                    _InfoTile(
                       icon: Icons.code_outlined,
-                      title: isAr ? 'المستودع' : 'Repository',
-                      subtitle: 'github.com/moatazahmedshaker/Fixcity',
+                      title: isAr ? 'المصدر' : 'Original repo',
+                      value: 'github.com/moatazahmedshaker/Fixcity',
                       textColor: textColor,
                       subColor: subColor,
-                      onTap: () {},
                     ),
                   ],
                 ),
@@ -281,7 +291,13 @@ class _InfoTile extends StatelessWidget {
             ),
           ),
         ),
-        Text(value, style: TextStyle(fontSize: 12, color: subColor)),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: TextStyle(fontSize: 14, color: subColor),
+          ),
+        ),
       ],
     ),
   );

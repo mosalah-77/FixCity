@@ -3,8 +3,8 @@
 Open the [browser demo](https://mosalah-77.github.io/FixCity/). Choose English or Arabic at the top. Use fictional descriptions only; the sample reports and illustrations are synthetic.
 
 1. Select **Start demo**, then **Citizen**. Two example reports are already present.
-2. Choose **Roads**, write a short fictional description, select the damaged-road illustration and **Demo North**, then submit. Keep the tracking code. Success appears only after the backend saves the report.
-3. Open **Demo menu → Staff review**. Select the pencil button beside your report, add a review note and move it to **In Progress**.
+2. Choose **Roads**, write a short fictional description, select **Demo North** and the damaged-road illustration, then submit. Keep the tracking code. Success appears only after the backend saves the report.
+3. Open **Demo menu → Staff review**. Select your report, add a review note and move it to **In Progress**.
 4. Open **Demo menu → District team**. Open the same report, add a repair note and a repaired-road illustration, then submit the update. The report becomes **Resolved**.
 5. Return to **Citizen → Reports**. Open the report and choose **Track this report**. You should see the resolution and three history entries. **Alerts** contains the submission and status notifications.
 6. Reload. Your session should retain its workspace. **Reset my demo** removes only your own examples and reports; it has a one-minute cooldown.
@@ -28,6 +28,6 @@ No real citizen information, contact requests or government endorsement. Up to 2
 
 If the demo cannot load, retry once and check the Supabase project status before sharing its link. Do not enter real incident data as a test. Keep a short screen recording of the walkthrough after verifying the published version; a recording is supporting evidence and does not prove live availability.
 
-## Offline visual summary
+## Recording the walkthrough
 
-[Watch the 26-second captured-screen walkthrough](evidence/2026-11-04/visual-walkthrough.mp4). It shows the published entry screen, synthetic repair evidence, a resolution after reloading and the saved timeline. This is a sequence of actual captured screens, not a continuous interaction recording. The live demo and the test record provide the functional evidence.
+Use the [Android recording guide](RECORDING.md) to capture the full workflow in one continuous take. A replacement video of the revised app is pending. The older captured-screen sequence remains in the historical evidence folder and is not a demo of this release.

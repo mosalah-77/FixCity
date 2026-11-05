@@ -1,6 +1,6 @@
 # FixCity
 
-**Team graduation project | Badr University in Cairo | Business Information Systems**
+Team graduation project · Business Information Systems · Badr University in Cairo
 
 FixCity is a Flutter prototype for reporting infrastructure problems in Egypt. A citizen can describe a problem, choose a location, attach a photo and track the report. Separate screens support municipal staff and district officials.
 
@@ -16,15 +16,15 @@ See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance and the limits of individual
 
 I helped develop the concept and planned the reporting flow. With five colleagues, I contributed to technical direction, AI-assisted implementation, debugging and presentations. I hand-wrote portions of the frontend. Most of the team's code was produced with AI assistance, and we used a shared GitHub account for much of the work.
 
-I present this project as evidence of product thinking and collaborative prototyping. I do not claim sole authorship of its code.
+My contribution was shared with the team. This portfolio copy documents that work and the repairs I have since directed and reviewed with AI assistance.
 
 ## Try the reporting workflow
 
-[Browser demo](https://mosalah-77.github.io/FixCity/) · [Android releases](https://github.com/mosalah-77/FixCity/releases) · [Two-minute walkthrough](docs/DEMO.md) · [Captured-screen video](docs/evidence/2026-11-04/visual-walkthrough.mp4)
+[Browser demo](https://mosalah-77.github.io/FixCity/) · [Android releases](https://github.com/mosalah-77/FixCity/releases) · [Two-minute walkthrough](docs/DEMO.md)
 
 Start a demo workspace, submit a fictional report, review it as staff, add repair evidence as the district team, then return to the citizen's tracking page. The report, status history and in-app notifications are saved in a separate Supabase project. Each visitor sees only their own synthetic workspace.
 
-The demo keeps the team's Flutter interface and Arabic/English flow. Sample illustrations replace camera uploads. There is no government affiliation, real incident delivery, SMS service or cash value attached to points. Data expires after seven days. The free backend can pause after inactivity; check the link before sharing it in an application.
+The demo builds on the team's Flutter app and supports Arabic and English. Its revised interface puts reporting and tracking first, with separate screens for staff review and repair updates. Sample illustrations replace camera uploads. There is no government affiliation, real incident delivery, SMS service or cash value attached to points. Data expires after seven days. The free backend can pause after inactivity; check the link before sharing it in an application.
 
 ## Work added to this portfolio copy
 
@@ -35,8 +35,10 @@ In November 2026, I used Codex to help turn the source snapshot into a reproduci
 - Required repair evidence, private media rules for the separate normal-app path, and bounded demo accounts with expiry cleanup.
 - Fixes for password handling, confirmation signup, unread notifications, stale tracking results, failed saves and small-screen layouts.
 - A test suite, pinned builds and release documentation.
+- A revised interface with four main destinations, Arabic typography, a desktop navigation rail and a new logo. The [design notes and logo options](docs/REDESIGN.md) explain those choices.
+- A security review with fixes for concurrent media deletion and stale profile navigation, plus smaller Android downloads and bounded photo decoding. The [review record](docs/SECURITY-PERFORMANCE-REVIEW.md) explains the evidence and remaining checks.
 
-The [bug review](docs/BUG-REVIEW.md) separates reproduced defects, tests and remaining checks. The [backend guide](BACKEND-SETUP.md) describes access rules and limits. This is project experience developed with AI assistance; it does not establish production municipal use or sole authorship of the original app.
+The [bug review](docs/BUG-REVIEW.md) separates reproduced defects, tests and remaining checks. The [backend guide](BACKEND-SETUP.md) describes access rules and limits. This remains a student-project prototype developed with AI assistance. It has not been used for municipal operations.
 
 ## Run locally
 

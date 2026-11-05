@@ -41,16 +41,6 @@ Future<String> uploadReportImage(SupabaseClient client, Uint8List bytes) async {
   return 'storage:$path';
 }
 
-Future<void> discardUnusedMedia(SupabaseClient client, String? media) async {
-  if (media == null || !media.startsWith('storage:')) return;
-  try {
-    // RLS refuses deletion if an uncertain save already attached this object.
-    await client.storage.from('files').remove([media.substring(8)]);
-  } on StorageException {
-    // An abandoned object can be retried by scheduled orphan cleanup.
-  }
-}
-
 class ReportMedia extends StatefulWidget {
   final String media;
   final double height;
@@ -94,10 +84,12 @@ class _ReportMediaState extends State<ReportMedia> {
         label: sampleMedia[widget.media],
         image: true,
         child: Container(
-          height: widget.height,
+          constraints: BoxConstraints(minHeight: widget.height),
+          padding: const EdgeInsets.all(16),
           width: double.infinity,
           color: repaired ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -106,10 +98,14 @@ class _ReportMediaState extends State<ReportMedia> {
                 color: repaired ? Colors.green.shade700 : Colors.brown,
               ),
               const SizedBox(height: 8),
-              Text(sampleMedia[widget.media]!, textAlign: TextAlign.center),
+              Text(
+                sampleMedia[widget.media]!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Color(0xFF102D40)),
+              ),
               const Text(
                 'Synthetic illustration / رسم تجريبي',
-                style: TextStyle(fontSize: 11),
+                style: TextStyle(fontSize: 12, color: Color(0xFF102D40)),
               ),
             ],
           ),
@@ -139,8 +135,13 @@ class _ReportMediaState extends State<ReportMedia> {
             height: widget.height,
             child: const Center(child: CircularProgressIndicator()),
           );
-        return Image.network(
-          snapshot.data!,
+        return Image(
+          image: ResizeImage(
+            NetworkImage(snapshot.data!),
+            width: 1280,
+            height: 1280,
+            policy: ResizeImagePolicy.fit,
+          ),
           height: widget.height,
           width: double.infinity,
           fit: BoxFit.cover,

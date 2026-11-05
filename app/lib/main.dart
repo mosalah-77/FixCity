@@ -18,6 +18,8 @@ import 'governor/governor_dashboard_page.dart';
 import 'governor/governor_report_page.dart';
 import 'theme.dart';
 import 'settings_page.dart';
+import 'achievements_page.dart';
+import 'profile_page.dart';
 
 const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
 const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
@@ -61,128 +63,8 @@ class MyApp extends StatelessWidget {
                 child: child!,
               ),
               themeMode: dark ? ThemeMode.dark : ThemeMode.light,
-              darkTheme: ThemeData(
-                useMaterial3: true,
-                brightness: Brightness.dark,
-                colorScheme: const ColorScheme.dark(
-                  primary: kRed,
-                  onPrimary: Colors.white,
-                  secondary: kBlue,
-                  onSecondary: Colors.white,
-                  surface: Color(0xFF1E1E1E),
-                  onSurface: Colors.white,
-                  error: Color(0xFFEF4444),
-                  onError: Colors.white,
-                ),
-                scaffoldBackgroundColor: const Color(0xFF0D0D0D),
-                cardColor: const Color(0xFF1E1E1E),
-                appBarTheme: const AppBarTheme(
-                  backgroundColor: Color(0xFF1A1A2E),
-                  foregroundColor: Colors.white,
-                  centerTitle: true,
-                  elevation: 0,
-                ),
-                elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kRed,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 24,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                ),
-                inputDecorationTheme: InputDecorationTheme(
-                  filled: true,
-                  fillColor: const Color(0xFF2A2A2A),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF444444),
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: kBlue, width: 2),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                ),
-              ),
-              theme: ThemeData(
-                useMaterial3: true,
-                colorScheme: const ColorScheme.light(
-                  primary: kRed,
-                  onPrimary: Colors.white,
-                  secondary: kBlue,
-                  onSecondary: Colors.white,
-                  surface: Colors.white,
-                  onSurface: kDark,
-                  error: Color(0xFFEF4444),
-                  onError: Colors.white,
-                ),
-                scaffoldBackgroundColor: kBg,
-                appBarTheme: const AppBarTheme(
-                  backgroundColor: kBlue,
-                  foregroundColor: Colors.white,
-                  centerTitle: true,
-                  elevation: 0,
-                ),
-                elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kRed,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 24,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                ),
-                textButtonTheme: TextButtonThemeData(
-                  style: TextButton.styleFrom(foregroundColor: kRed),
-                ),
-                inputDecorationTheme: InputDecorationTheme(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFCBD5E1),
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: kBlue, width: 2),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                ),
-                progressIndicatorTheme: const ProgressIndicatorThemeData(
-                  color: kRed,
-                ),
-              ),
+              darkTheme: fixCityTheme(Brightness.dark),
+              theme: fixCityTheme(Brightness.light),
               navigatorObservers: [routeObserver],
               initialRoute: demoMode ? '/' : '/splash',
               routes:
@@ -205,10 +87,8 @@ class MyApp extends StatelessWidget {
                         const MainScaffold(initialIndex: 1),
                     '/notifications': (context) =>
                         const MainScaffold(initialIndex: 2),
-                    '/achievements': (context) =>
-                        const MainScaffold(initialIndex: 3),
-                    '/profile': (context) =>
-                        const MainScaffold(initialIndex: 4),
+                    '/achievements': (context) => const AchievementsPage(),
+                    '/profile': (context) => const ProfilePage(),
                     '/admin': (context) => demoMode
                         ? const AdminDashboardPage()
                         : const AdminLoginPage(),

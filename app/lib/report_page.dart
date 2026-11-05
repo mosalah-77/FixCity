@@ -51,153 +51,153 @@ const List<District> kDistricts = [
     nameAr: 'الياسمين – شرق الأكاديمية',
     nameEn: 'Yasmin – East Academy',
     governorName: '',
-    governorPhone: '01000000000',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الأربع مجاورات والميراج',
     nameEn: 'Al-Arba Mogarawet & Mirage',
-    governorName: 'خالد عقل علي عبد الستار',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'المستثمرين الشمالية والرحاب',
     nameEn: 'North Mostasmerin & Rehab',
-    governorName: 'محمد فتحي محمد نور الدين',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'شمال الرحاب',
     nameEn: 'North Rehab',
-    governorName: 'محمد عبد الله محمد',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الشباب الشمالي',
     nameEn: 'North Shabab',
-    governorName: 'محمد فؤاد أمين',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الشباب الجنوبي',
     nameEn: 'South Shabab',
-    governorName: 'محمد فكري فتحي',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'البنفسج',
     nameEn: 'Al-Banafseg',
-    governorName: 'أحمد فتحي',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'القرنفل',
     nameEn: 'Al-Qaranful',
-    governorName: 'خالد سيد رضا',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   // ── التجمع الثالث ──
   District(
     nameAr: 'النقابات',
     nameEn: 'Al-Niqabat',
-    governorName: 'محمد فتحي السيد',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'المحليات',
     nameEn: 'Al-Mahalliyat',
-    governorName: 'سامح محمد محمود',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'بيت الوطن 1-4',
     nameEn: 'Beit Al-Watan 1-4',
-    governorName: 'إيهاب صالح أمين',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'بيت الوطن 5-8',
     nameEn: 'Beit Al-Watan 5-8',
-    governorName: 'محمد أحمد مراد',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'تمر حنة',
     nameEn: 'Tamar Hanna',
-    governorName: 'صفوت شعبان موسى',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الأندلس',
     nameEn: 'Al-Andalus',
-    governorName: 'محمد أحمد صالح',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'حي الشباب',
     nameEn: 'Hay Al-Shabab',
-    governorName: 'عصام محمد أحمد',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'حي الجولف',
     nameEn: 'Golf District',
-    governorName: 'حسين أبو سريع',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'المنطقة الصناعية',
     nameEn: 'Industrial Zone',
-    governorName: 'سيد النجار',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   // ── التجمع الخامس ──
   District(
     nameAr: 'النرجس',
     nameEn: 'Al-Narjis',
-    governorName: 'وليد بكير أحمد',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'اللوتس',
     nameEn: 'Al-Lotus',
-    governorName: 'سمير عبد المأمون شحاتة',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'المستثمرين الجنوبية',
     nameEn: 'South Mostasmerin',
-    governorName: 'شريف مكرم غبريال',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'مركز المدينة',
     nameEn: 'City Center',
-    governorName: 'رضا السيد سعد',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الحي الخامس والشويفات',
     nameEn: 'District 5 & Shweifat',
-    governorName: 'وائل عبد الراضي إسماعيل',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'جنوب الأكاديمية',
     nameEn: 'South Academy',
-    governorName: 'إيهاب حسن حسن',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الحي الرابع',
     nameEn: 'Fourth District',
-    governorName: 'محمد زكي عبد النبي',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
   District(
     nameAr: 'الحي الثالث',
     nameEn: 'Third District',
-    governorName: 'محمد سلامة الجزار',
-    governorPhone: '01000000000',
+    governorName: '',
+    governorPhone: '',
   ),
 ];
 
@@ -357,8 +357,8 @@ class ReportPageState extends State<ReportPage> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -379,10 +379,10 @@ class ReportPageState extends State<ReportPage> {
             const SizedBox(height: 16),
             Text(
               isAr ? 'اختر مصدر الصورة' : 'Choose photo source',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A2E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 20),
@@ -394,23 +394,23 @@ class ReportPageState extends State<ReportPage> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                        color: kPrimary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Column(
                         children: [
                           const Icon(
                             Icons.camera_alt_outlined,
-                            color: Color(0xFFCC0000),
+                            color: kPrimary,
                             size: 32,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             isAr ? 'الكاميرا' : 'Camera',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFFCC0000),
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -441,7 +441,9 @@ class ReportPageState extends State<ReportPage> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade600,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -460,18 +462,17 @@ class ReportPageState extends State<ReportPage> {
       final pickedFile = await ImagePicker().pickImage(
         source: source,
         maxWidth: 2048,
+        maxHeight: 2048,
         imageQuality: 85,
       );
       if (pickedFile == null || !mounted) return;
       final bytes = await pickedFile.readAsBytes();
       imageContentType(bytes);
       if (!mounted) return;
-      final old = _uploadedMedia;
       setState(() {
         _selectedImageData = bytes;
         _uploadedMedia = null;
       });
-      await discardUnusedMedia(supabase, old);
     } catch (_) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
@@ -526,8 +527,6 @@ class ReportPageState extends State<ReportPage> {
       if (mounted) setState(() => _locationLoading = false);
     }
   }
-
-  // ── SMS confirmation ──────────────────────────────────────────────────────
 
   // ── Submit ────────────────────────────────────────────────────────────────
 
@@ -612,29 +611,33 @@ class ReportPageState extends State<ReportPage> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: kRed.withValues(alpha: 0.1),
+                  color: kPrimary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.send_outlined, color: kRed, size: 28),
+                child: const Icon(
+                  Icons.send_outlined,
+                  color: kPrimary,
+                  size: 28,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
-                isAr ? 'تأكيد إرسال البلاغ' : 'Confirm Submission',
-                style: const TextStyle(
+                isAr ? 'مراجعة البلاغ' : 'Review your report',
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: kDark,
+                  color: Theme.of(ctx).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 isAr
-                    ? 'هل أنت متأكد من إرسال هذا البلاغ؟'
-                    : 'Are you sure you want to submit this report?',
+                    ? 'راجع الفئة والحي قبل الإرسال.'
+                    : 'Check the category and district before sending.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.grey.shade500,
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -643,7 +646,7 @@ class ReportPageState extends State<ReportPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F7FA),
+                  color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -684,7 +687,7 @@ class ReportPageState extends State<ReportPage> {
                     child: ElevatedButton(
                       onPressed: () => Navigator.of(ctx).pop(true),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: kRed,
+                        backgroundColor: kPrimary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -780,17 +783,20 @@ class ReportPageState extends State<ReportPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                isAr ? 'تم الإرسال بنجاح!' : 'Report Submitted!',
-                style: const TextStyle(
+                isAr ? 'تم إرسال البلاغ' : 'Report submitted',
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: kDark,
+                  color: Theme.of(ctx).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 isAr ? 'كود البلاغ الخاص بك:' : 'Your report code:',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 12),
               Container(
@@ -799,7 +805,7 @@ class ReportPageState extends State<ReportPage> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
+                  color: Theme.of(ctx).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: kBlue),
                 ),
@@ -809,20 +815,23 @@ class ReportPageState extends State<ReportPage> {
                     Flexible(
                       child: SelectableText(
                         code,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: kRed,
+                          color: Theme.of(ctx).colorScheme.onPrimaryContainer,
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
+                    IconButton(
+                      tooltip: isAr ? 'نسخ كود البلاغ' : 'Copy report code',
+                      onPressed: () {
                         Clipboard.setData(ClipboardData(text: code));
                         ScaffoldMessenger.of(ctx).showSnackBar(
                           SnackBar(
-                            content: Text(isAr ? 'تم النسخ' : 'Copied!'),
+                            content: Text(
+                              isAr ? 'تم نسخ الكود' : 'Report code copied',
+                            ),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -830,10 +839,10 @@ class ReportPageState extends State<ReportPage> {
                           ),
                         );
                       },
-                      child: const Icon(
+                      icon: const Icon(
                         Icons.copy_outlined,
                         size: 18,
-                        color: kRed,
+                        color: kPrimary,
                       ),
                     ),
                   ],
@@ -844,7 +853,10 @@ class ReportPageState extends State<ReportPage> {
                 isAr
                     ? 'احفظ هذا الكود لمتابعة بلاغك'
                     : 'Save this code to track your report',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -869,16 +881,14 @@ class ReportPageState extends State<ReportPage> {
     final isAr = lang == 'ar';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: kBlue,
-        foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
           t('report_page_title', lang: lang),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: _isLoading
           ? const _ReportSkeleton()
@@ -889,6 +899,25 @@ class ReportPageState extends State<ReportPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      isAr
+                          ? 'أخبرنا بما يحتاج إلى إصلاح'
+                          : 'Tell us what needs fixing',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isAr
+                          ? 'الحقول التالية مطلوبة. ستراجع التفاصيل قبل الإرسال.'
+                          : 'All sections are required. You can review the details before sending.',
+                    ),
+                    const SizedBox(height: 28),
+                    _SectionLabel(
+                      label: isAr
+                          ? '1. تفاصيل المشكلة'
+                          : '1. Describe the problem',
+                    ),
+                    const SizedBox(height: 12),
                     // ── 1. Description ─────────────────────────────────
                     _SectionLabel(label: t('problem_desc', lang: lang)),
                     const SizedBox(height: 8),
@@ -896,8 +925,8 @@ class ReportPageState extends State<ReportPage> {
                       controller: _descriptionController,
                       label: '',
                       hint: isAr
-                          ? 'صف المشكلة بالتفصيل...'
-                          : 'Describe the problem in detail...',
+                          ? 'مثال: عمود إنارة لا يعمل بجوار المدخل.'
+                          : 'For example: the streetlight beside the entrance is not working.',
                       icon: Icons.description_outlined,
                       maxLines: 4,
                     ),
@@ -924,6 +953,14 @@ class ReportPageState extends State<ReportPage> {
                     ),
                     const SizedBox(height: 24),
 
+                    const Divider(),
+                    const SizedBox(height: 24),
+                    _SectionLabel(
+                      label: isAr
+                          ? '2. المكان والصورة'
+                          : '2. Add the place and photo',
+                    ),
+                    const SizedBox(height: 12),
                     // ── 2. District ────────────────────────────────────
                     _SectionLabel(label: isAr ? 'اسم الحي' : 'District'),
                     const SizedBox(height: 8),
@@ -952,11 +989,11 @@ class ReportPageState extends State<ReportPage> {
                           height: _selectedImageData != null ? null : 120,
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: _selectedImageData != null
-                                  ? kRed
+                                  ? kPrimary
                                   : Colors.grey.shade300,
                               width: _selectedImageData != null ? 2 : 1.5,
                             ),
@@ -966,8 +1003,13 @@ class ReportPageState extends State<ReportPage> {
                                   borderRadius: BorderRadius.circular(11),
                                   child: Stack(
                                     children: [
-                                      Image.memory(
-                                        _selectedImageData!,
+                                      Image(
+                                        image: ResizeImage(
+                                          MemoryImage(_selectedImageData!),
+                                          width: 1280,
+                                          height: 1280,
+                                          policy: ResizeImagePolicy.fit,
+                                        ),
                                         width: double.infinity,
                                         fit: BoxFit.cover,
                                       ),
@@ -977,7 +1019,7 @@ class ReportPageState extends State<ReportPage> {
                                         child: Container(
                                           padding: const EdgeInsets.all(4),
                                           decoration: const BoxDecoration(
-                                            color: kRed,
+                                            color: kPrimary,
                                             shape: BoxShape.circle,
                                           ),
                                           child: const Icon(
@@ -1005,7 +1047,9 @@ class ReportPageState extends State<ReportPage> {
                                           : 'Tap to choose a photo',
                                       style: TextStyle(
                                         fontSize: 13,
-                                        color: Colors.grey.shade400,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ],
@@ -1030,17 +1074,20 @@ class ReportPageState extends State<ReportPage> {
                                     height: 14,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: kRed,
+                                      color: kPrimary,
                                     ),
                                   )
                                 : const Icon(
                                     Icons.my_location,
                                     size: 16,
-                                    color: kRed,
+                                    color: kPrimary,
                                   ),
                             label: Text(
                               isAr ? 'موقعي الحالي' : 'My location',
-                              style: const TextStyle(fontSize: 12, color: kRed),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ),
                       ],
@@ -1073,12 +1120,12 @@ class ReportPageState extends State<ReportPage> {
                                   point: _selectedLocation,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: kRed.withValues(alpha: 0.15),
+                                      color: kPrimary.withValues(alpha: 0.15),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
                                       Icons.location_pin,
-                                      color: kRed,
+                                      color: kPrimary,
                                       size: 32,
                                     ),
                                   ),
@@ -1105,6 +1152,18 @@ class ReportPageState extends State<ReportPage> {
                     ),
                     const SizedBox(height: 32),
 
+                    const Divider(),
+                    const SizedBox(height: 24),
+                    _SectionLabel(
+                      label: isAr ? '3. مراجعة وإرسال' : '3. Review and send',
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isAr
+                          ? 'تأكد من أن الموقع والصورة يوضحان المشكلة.'
+                          : 'Check that the location and photo show the problem clearly.',
+                    ),
+                    const SizedBox(height: 16),
                     // ── Submit ─────────────────────────────────────────
                     if (_submitError != null)
                       Padding(
@@ -1150,8 +1209,8 @@ class _DistrictDropdown extends StatelessWidget {
         maxChildSize: 0.85,
         expand: false,
         builder: (_, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
@@ -1175,16 +1234,16 @@ class _DistrictDropdown extends StatelessWidget {
                   children: [
                     const Icon(
                       Icons.location_city_outlined,
-                      color: kRed,
+                      color: kPrimary,
                       size: 20,
                     ),
                     const SizedBox(width: 10),
                     Text(
                       isAr ? 'اختر الحي' : 'Select a District',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: kDark,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -1215,7 +1274,7 @@ class _DistrictDropdown extends StatelessWidget {
                           vertical: 14,
                         ),
                         color: isSelected
-                            ? kRed.withValues(alpha: 0.05)
+                            ? kPrimary.withValues(alpha: 0.05)
                             : Colors.transparent,
                         child: Row(
                           children: [
@@ -1228,11 +1287,17 @@ class _DistrictDropdown extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: isSelected ? kRed : kDark,
+                                      color: isSelected
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  if (!demoMode)
+                                  if (!demoMode && d.governorName.isNotEmpty)
                                     Row(
                                       children: [
                                         Icon(
@@ -1245,7 +1310,9 @@ class _DistrictDropdown extends StatelessWidget {
                                           d.governorName,
                                           style: TextStyle(
                                             fontSize: 11,
-                                            color: Colors.grey.shade500,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                         const SizedBox(width: 12),
@@ -1259,7 +1326,9 @@ class _DistrictDropdown extends StatelessWidget {
                                           d.governorPhone,
                                           style: TextStyle(
                                             fontSize: 11,
-                                            color: Colors.grey.shade500,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -1270,7 +1339,7 @@ class _DistrictDropdown extends StatelessWidget {
                             if (isSelected)
                               const Icon(
                                 Icons.check_circle,
-                                color: kRed,
+                                color: kPrimary,
                                 size: 20,
                               ),
                           ],
@@ -1294,10 +1363,10 @@ class _DistrictDropdown extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected != null ? kRed : Colors.grey.shade300,
+            color: selected != null ? kPrimary : Colors.grey.shade300,
             width: selected != null ? 2 : 1.5,
           ),
         ),
@@ -1305,7 +1374,7 @@ class _DistrictDropdown extends StatelessWidget {
           children: [
             Icon(
               Icons.location_city_outlined,
-              color: selected != null ? kRed : Colors.grey.shade400,
+              color: selected != null ? kPrimary : Colors.grey.shade400,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -1316,14 +1385,14 @@ class _DistrictDropdown extends StatelessWidget {
                       children: [
                         Text(
                           isAr ? selected!.nameAr : selected!.nameEn,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: kDark,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 3),
-                        if (!demoMode)
+                        if (!demoMode && selected!.governorName.isNotEmpty)
                           Row(
                             children: [
                               Icon(
@@ -1336,7 +1405,9 @@ class _DistrictDropdown extends StatelessWidget {
                                 selected!.governorName,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey.shade500,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -1350,7 +1421,9 @@ class _DistrictDropdown extends StatelessWidget {
                                 selected!.governorPhone,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: Colors.grey.shade500,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -1361,13 +1434,13 @@ class _DistrictDropdown extends StatelessWidget {
                       isAr ? 'اختر الحي' : 'Select a district',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey.shade500,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
             ),
             Icon(
               Icons.keyboard_arrow_down_rounded,
-              color: selected != null ? kRed : Colors.grey.shade400,
+              color: selected != null ? kPrimary : Colors.grey.shade400,
               size: 22,
             ),
           ],
@@ -1390,60 +1463,24 @@ class _AIClassifyButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: isLoading ? null : onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 16),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1A1A2E), Color(0xFF1A3A5C)],
-          ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF1A1A2E).withValues(alpha: 0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isLoading)
-              const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            else
-              const Icon(
-                Icons.auto_awesome,
-                color: Color(0xFF185FA5),
-                size: 18,
-              ),
-            const SizedBox(width: 10),
-            Text(
-              isLoading
-                  ? (isAr ? 'جارٍ اقتراح الفئة...' : 'Choosing a category...')
-                  : (isAr ? 'اقتراح الفئة' : 'Suggest a category'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+  Widget build(BuildContext context) => Align(
+    alignment: AlignmentDirectional.centerStart,
+    child: TextButton.icon(
+      onPressed: isLoading ? null : onTap,
+      icon: isLoading
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.auto_fix_high_outlined),
+      label: Text(
+        isLoading
+            ? (isAr ? 'جارٍ اقتراح الفئة...' : 'Choosing a category...')
+            : (isAr ? 'اقتراح الفئة' : 'Suggest a category'),
       ),
-    );
-  }
+    ),
+  );
 }
 
 // ── Category Grid ──────────────────────────────────────────────────────────
@@ -1481,94 +1518,24 @@ class _CategoryGrid extends StatelessWidget {
   };
 
   @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 3,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      children: categories.map((cat) {
-        final isSelected = selected == cat;
-        final isAISuggested = aiSuggestion == cat;
-        final icon = _meta[cat]?['icon'] as IconData? ?? Icons.help_outline;
-        final color = _meta[cat]?['color'] as Color? ?? Colors.grey;
-
-        return GestureDetector(
-          onTap: () => onSelect(cat),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected
-                    ? color
-                    : (isAISuggested
-                          ? const Color(0xFF185FA5)
-                          : Colors.grey.shade200),
-                width: isSelected ? 2 : 1.5,
-              ),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: color.withValues(alpha: 0.15),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : [],
-            ),
-            child: Stack(
-              children: [
-                if (isAISuggested && !isSelected)
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF185FA5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.auto_awesome,
-                        color: Colors.white,
-                        size: 8,
-                      ),
-                    ),
-                  ),
-                // Centered icon + label
-                Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        icon,
-                        color: isSelected ? color : Colors.grey.shade400,
-                        size: 26,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        t(cat, lang: lang),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? color : Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+  Widget build(BuildContext context) => Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: [
+      for (final category in categories)
+        ChoiceChip(
+          avatar: Icon(
+            _meta[category]?['icon'] as IconData? ?? Icons.help_outline,
+            size: 20,
           ),
-        );
-      }).toList(),
-    );
-  }
+          label: Text(t(category, lang: lang)),
+          selected: selected == category,
+          onSelected: (_) => onSelect(category),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+          materialTapTargetSize: MaterialTapTargetSize.padded,
+        ),
+    ],
+  );
 }
 
 // ── Skeleton ───────────────────────────────────────────────────────────────
@@ -1657,13 +1624,16 @@ class _ReportSkeletonState extends State<_ReportSkeleton>
           Center(
             child: Column(
               children: [
-                const CircularProgressIndicator(color: Color(0xFFCC0000)),
+                const CircularProgressIndicator(color: kPrimary),
                 const SizedBox(height: 12),
                 Text(
                   Localizations.localeOf(context).languageCode == 'ar'
                       ? 'جارٍ إرسال البلاغ...'
                       : 'Submitting report...',
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -1682,10 +1652,10 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     label,
-    style: const TextStyle(
+    style: TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.w700,
-      color: Color(0xFF1A1A2E),
+      color: Theme.of(context).colorScheme.onSurface,
     ),
   );
 }
@@ -1701,16 +1671,19 @@ class _ConfirmRow extends StatelessWidget {
         children: [
           Text(
             '$label: ',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF64748B),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF1A1A2E)),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),

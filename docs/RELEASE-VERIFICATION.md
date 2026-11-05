@@ -1,5 +1,14 @@
 # FixCity release verification
 
+## 5 November 2026: version 1.1.0
+
+The redesigned app passed 47 demo widget tests, 34 normal-app tests (three demo-only skips), 68 database checks, both release builds and the Android profile workflow. The analyzer reported 93 informational findings and no errors or warnings. All four APKs have the expected release signature; ZIP alignment and 64-bit ELF segment alignment pass the 16 KB checks.
+
+The [security and performance review](SECURITY-PERFORMANCE-REVIEW.md) documents the two repaired defects, repository scan, dependency results and emulator measurements. [Machine-readable checks](evidence/2026-11-05/checks.json) and [APK hashes, sizes and signatures](evidence/2026-11-05/android-artifacts.json) accompany it. A physical Android test and a new continuous recording remain outstanding.
+
+The entries below describe the earlier 1.0.0 release. Their artifact hashes and video are historical.
+
+
 Verified 4 November 2026; handoff completed 5 November (Cairo).
 
 [Browser demo](https://mosalah-77.github.io/FixCity/) · [Signed Android APK release](https://github.com/mosalah-77/FixCity/releases/tag/v1.0.0-demo.1) · [Captured-screen summary](evidence/2026-11-04/visual-walkthrough.mp4)

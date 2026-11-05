@@ -19,7 +19,6 @@ class _LoginPageState extends State<LoginPage> {
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
 
-
   Future<void> _login() async {
     setState(() => _isLoading = true);
     try {
@@ -27,7 +26,8 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      if (mounted) Navigator.of(context).pushReplacementNamed('/');
+      if (mounted)
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
     } on AuthException catch (e) {
       if (mounted) _showError(e.message);
     } catch (e) {
@@ -37,12 +37,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg),
-      backgroundColor: Colors.red.shade700,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   @override
@@ -61,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
     final wide = MediaQuery.of(context).size.width > 700;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: wide ? _wideLayout(isAr, lang) : _narrowLayout(isAr, lang),
       ),
@@ -69,17 +71,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _wideLayout(bool isAr, String lang) {
-    return Row(children: [
-      Expanded(child: FixHeroPanel(isAr: isAr)),
-      Expanded(child: _formCard(isAr, lang, wide: true)),
-    ]);
+    return Row(
+      children: [
+        Expanded(child: FixHeroPanel(isAr: isAr)),
+        Expanded(child: _formCard(isAr, lang, wide: true)),
+      ],
+    );
   }
 
   Widget _narrowLayout(bool isAr, String lang) {
     return SingleChildScrollView(
-      child: Column(children: [
-        _formCard(isAr, lang),
-      ]),
+      child: Column(children: [_formCard(isAr, lang)]),
     );
   }
 
@@ -94,13 +96,37 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               FixMobileLogo(isAr: isAr),
-              Text(isAr ? 'مرحباً بعودتك' : 'Welcome back',
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: kDark, letterSpacing: -0.5)),
+              Text(
+                isAr ? 'مرحباً بعودتك' : 'Welcome back',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  letterSpacing: -0.5,
+                ),
+              ),
               const SizedBox(height: 6),
-              Text(isAr ? 'سجّل الدخول للمتابعة' : 'Sign in to your FixCity account',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade500)),
+              Text(
+                isAr
+                    ? 'سجّل الدخول للمتابعة'
+                    : 'Sign in to your FixCity account',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 32),
-              FixField(controller: _emailController, label: t('email', lang: lang), hint: 'you@email.com', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, textInputAction: TextInputAction.next, focusNode: _emailFocus, onSubmitted: () => FocusScope.of(context).requestFocus(_passwordFocus)),
+              FixField(
+                controller: _emailController,
+                label: t('email', lang: lang),
+                hint: 'you@email.com',
+                icon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                focusNode: _emailFocus,
+                onSubmitted: () =>
+                    FocusScope.of(context).requestFocus(_passwordFocus),
+              ),
               const SizedBox(height: 16),
               FixField(
                 controller: _passwordController,
@@ -112,32 +138,58 @@ class _LoginPageState extends State<LoginPage> {
                 onSubmitted: _login,
                 focusNode: _passwordFocus,
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.grey, size: 20),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: Colors.grey,
+                    size: 20,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
               const SizedBox(height: 24),
               _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: kRed))
-                  : FixGreenButton(label: t('login', lang: lang), onPressed: _login),
+                  ? const Center(
+                      child: CircularProgressIndicator(color: kPrimary),
+                    )
+                  : FixGreenButton(
+                      label: t('login', lang: lang),
+                      onPressed: _login,
+                    ),
               const SizedBox(height: 20),
-              Wrap(alignment: WrapAlignment.center, children: [
-                Text(isAr ? 'ليس لديك حساب؟ ' : "Don't have an account? ",
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamed('/signup'),
-                  child: Text(t('signup', lang: lang),
-                      style: const TextStyle(color: kRed, fontWeight: FontWeight.w600, fontSize: 13)),
-                ),
-              ]),
+              Wrap(
+                alignment: WrapAlignment.center,
+                children: [
+                  Text(
+                    isAr ? 'ليس لديك حساب؟ ' : "Don't have an account? ",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pushNamed('/signup'),
+                    child: Text(
+                      t('signup', lang: lang),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.horizontal(left: Radius.circular(24)),
       ),
       child: Column(
@@ -146,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
           Container(
             height: 4,
             decoration: const BoxDecoration(
-              gradient: LinearGradient(colors: [kRed, kBlue]),
+              gradient: LinearGradient(colors: [kPrimary, kBlue]),
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
           ),
@@ -174,54 +226,131 @@ class FixHeroPanel extends StatelessWidget {
         children: [
           Directionality(
             textDirection: TextDirection.ltr,
-            child: Row(children: [
-              Container(
-                width: 44, height: 44,
-                decoration: BoxDecoration(color: kRed, borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.location_pin, color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: 12),
-              RichText(text: TextSpan(
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white),
-                children: [const TextSpan(text: 'Fix'), TextSpan(text: 'City', style: TextStyle(color: kBlue))],
-              )),
-            ]),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: kPrimary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.location_pin,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                    children: [
+                      const TextSpan(text: 'Fix'),
+                      TextSpan(
+                        text: 'City',
+                        style: TextStyle(color: kBlue),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: kRed.withValues(alpha: 0.2),
-                border: Border.all(color: kBlue.withValues(alpha: 0.4)),
-                borderRadius: BorderRadius.circular(100),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: kPrimary.withValues(alpha: 0.2),
+                  border: Border.all(color: kBlue.withValues(alpha: 0.4)),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: kBlue,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      isAr
+                          ? 'منصة الخدمات البلدية'
+                          : 'Municipal Services Platform',
+                      style: const TextStyle(
+                        color: kBlue,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Container(width: 6, height: 6, decoration: const BoxDecoration(color: kBlue, shape: BoxShape.circle)),
-                const SizedBox(width: 8),
-                Text(isAr ? 'منصة الخدمات البلدية' : 'Municipal Services Platform',
-                    style: const TextStyle(color: kBlue, fontSize: 11, fontWeight: FontWeight.w600)),
-              ]),
-            ),
-            const SizedBox(height: 20),
-            RichText(text: TextSpan(
-              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: Colors.white, height: 1.15, letterSpacing: -1),
-              children: isAr
-                  ? [const TextSpan(text: 'أبلغ.\nتابع.\n'), TextSpan(text: 'احلّ.', style: TextStyle(color: kBlue))]
-                  : [const TextSpan(text: 'Report.\nTrack.\n'), TextSpan(text: 'Resolve.', style: TextStyle(color: kBlue))],
-            )),
-            const SizedBox(height: 20),
-            Text(
-              isAr ? 'ساعد في تحسين مدينتك من خلال الإبلاغ عن مشكلات البنية التحتية.' : 'Help improve your city by reporting infrastructure problems directly to the right authorities.',
-              style: const TextStyle(color: Colors.white60, fontSize: 14, height: 1.7),
-            ),
-          ]),
-          Row(children: [
-            _Stat(num: '2.4k', label: isAr ? 'بلاغ محلول' : 'Resolved'),
-            const SizedBox(width: 32),
-            _Stat(num: '48h', label: isAr ? 'متوسط الاستجابة' : 'Avg. Response'),
-            const SizedBox(width: 32),
-            _Stat(num: '98%', label: isAr ? 'الرضا' : 'Satisfaction'),
-          ]),
+              const SizedBox(height: 20),
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    height: 1.15,
+                    letterSpacing: -1,
+                  ),
+                  children: isAr
+                      ? [
+                          const TextSpan(text: 'أبلغ.\nتابع.\n'),
+                          TextSpan(
+                            text: 'احلّ.',
+                            style: TextStyle(color: kBlue),
+                          ),
+                        ]
+                      : [
+                          const TextSpan(text: 'Report.\nTrack.\n'),
+                          TextSpan(
+                            text: 'Resolve.',
+                            style: TextStyle(color: kBlue),
+                          ),
+                        ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                isAr
+                    ? 'ساعد في تحسين مدينتك من خلال الإبلاغ عن مشكلات البنية التحتية.'
+                    : 'Help improve your city by reporting infrastructure problems directly to the right authorities.',
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontSize: 14,
+                  height: 1.7,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              _Stat(num: '2.4k', label: isAr ? 'بلاغ محلول' : 'Resolved'),
+              const SizedBox(width: 32),
+              _Stat(
+                num: '48h',
+                label: isAr ? 'متوسط الاستجابة' : 'Avg. Response',
+              ),
+              const SizedBox(width: 32),
+              _Stat(num: '98%', label: isAr ? 'الرضا' : 'Satisfaction'),
+            ],
+          ),
         ],
       ),
     );
@@ -233,10 +362,23 @@ class _Stat extends StatelessWidget {
   const _Stat({required this.num, required this.label});
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(num, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.white)),
-      Text(label, style: const TextStyle(fontSize: 11, color: Colors.white38)),
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          num,
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: Colors.white38),
+        ),
+      ],
+    );
   }
 }
 
@@ -250,18 +392,42 @@ class FixMobileLogo extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 24),
       child: Directionality(
         textDirection: TextDirection.ltr,
-        child: Row(children: [
-          Container(
-            width: 38, height: 38,
-            decoration: BoxDecoration(color: const Color(0xFFCC0000), borderRadius: BorderRadius.circular(9)),
-            child: const Icon(Icons.location_pin, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 10),
-          RichText(text: const TextSpan(
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1A1A2E)),
-            children: [TextSpan(text: 'Fix'), TextSpan(text: 'City', style: TextStyle(color: Color(0xFFCC0000)))],
-          )),
-        ]),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: kPrimary,
+                borderRadius: BorderRadius.circular(9),
+              ),
+              child: const Icon(
+                Icons.location_pin,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 10),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                children: [
+                  TextSpan(text: 'Fix'),
+                  TextSpan(
+                    text: 'City',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -276,7 +442,6 @@ class FixField extends StatelessWidget {
   final Widget? suffixIcon;
   final int maxLines;
   final VoidCallback? onTap;
-
 
   const FixField({
     super.key,
@@ -300,40 +465,41 @@ class FixField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF334155))),
-      const SizedBox(height: 7),
-      TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
-        maxLines: obscureText ? 1 : maxLines,
-        textInputAction: textInputAction,
-        focusNode: focusNode,
-        onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
-        onTap: onTap,
-        style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A2E)),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: Colors.grey.shade300, fontSize: 14),
-          prefixIcon: Icon(icon, size: 18, color: Colors.grey.shade400),
-          suffixIcon: suffixIcon,
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5)),
-          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFCC0000), width: 2)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label.isNotEmpty) ...[
+          Text(label, style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 8),
+        ],
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          maxLines: obscureText ? 1 : maxLines,
+          textInputAction: textInputAction,
+          focusNode: focusNode,
+          onFieldSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
+          onTap: onTap,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon, size: 22),
+            suffixIcon: suffixIcon,
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
 class FixGreenButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
-  const FixGreenButton({super.key, required this.label, required this.onPressed});
+  const FixGreenButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -342,15 +508,19 @@ class FixGreenButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFCC0000),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         ),
-        child: Text(label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
       ),
     );
   }

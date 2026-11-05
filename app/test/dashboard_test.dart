@@ -3,6 +3,8 @@ import 'package:fixcity/home_page.dart';
 import 'package:fixcity/admin/admin_dashboard_page.dart';
 import 'package:fixcity/governor/governor_dashboard_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fixcity/theme.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,6 +12,11 @@ import 'support/backend.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    final font = FontLoader('Cairo')
+      ..addFont(rootBundle.load('assets/fonts/Cairo.ttf'));
+    await font.load();
+  });
   setUp(() => appLocale.value = const Locale('en'));
   tearDown(() async => Supabase.instance.dispose());
   for (final page in <Widget>[
@@ -40,6 +47,7 @@ void main() {
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
         await tester.pumpWidget(
           MaterialApp(
+            theme: fixCityTheme(Brightness.light),
             locale: const Locale('ar'),
             supportedLocales: const [Locale('ar'), Locale('en')],
             localizationsDelegates: GlobalMaterialLocalizations.delegates,
@@ -70,7 +78,9 @@ void main() {
           email: 'citizen@example.test',
           password: 'test',
         );
-        await tester.pumpWidget(MaterialApp(home: page));
+        await tester.pumpWidget(
+          MaterialApp(theme: fixCityTheme(Brightness.light), home: page),
+        );
         await tester.pumpAndSettle();
         expect(find.textContaining('Could not load'), findsOneWidget);
         expect(find.text('No reports found'), findsNothing);

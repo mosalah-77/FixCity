@@ -35,18 +35,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
     return response.cast<Map<String, dynamic>>();
   }
 
-  Color _statusColor(String s) {
-    switch (s) {
-      case 'pending':
-        return const Color(0xFFF59E0B);
-      case 'in_progress':
-        return const Color(0xFF1A56DB);
-      case 'resolved':
-        return kRed;
-      default:
-        return Colors.grey;
-    }
-  }
+  Color _statusColor(String status) => statusColor(
+    status,
+    dark: Theme.of(context).brightness == Brightness.dark,
+  );
 
   IconData _statusIcon(String s) {
     switch (s) {
@@ -164,16 +156,14 @@ class _MyReportsPageState extends State<MyReportsPage> {
     // ── Login guard ─────────────────────────────────────────────────────
     if (_supabase.auth.currentUser == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: kBlue,
-          foregroundColor: Colors.white,
           elevation: 0,
           title: Text(
             t('my_reports', lang: lang),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
-          centerTitle: true,
+          centerTitle: false,
           automaticallyImplyLeading: false,
         ),
         body: _GuestView(
@@ -188,16 +178,14 @@ class _MyReportsPageState extends State<MyReportsPage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: kBlue,
-        foregroundColor: Colors.white,
         elevation: 0,
         title: Text(
           t('my_reports', lang: lang),
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
-        centerTitle: true,
+        centerTitle: false,
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -219,7 +207,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                   const SizedBox(height: 12),
                   Text(
                     isAr ? 'حدث خطأ أثناء التحميل' : 'Something went wrong',
-                    style: TextStyle(color: Colors.grey.shade500),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
@@ -228,7 +218,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                     }),
                     child: Text(
                       isAr ? 'حاول مجدداً' : 'Try again',
-                      style: const TextStyle(color: kRed),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
@@ -240,7 +232,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
           if (reports.isEmpty) return _EmptyReports(isAr: isAr);
 
           return RefreshIndicator(
-            color: kRed,
+            color: kPrimary,
             onRefresh: () async => setState(() {}),
             child: ListView.builder(
               padding: EdgeInsets.fromLTRB(
@@ -263,9 +255,11 @@ class _MyReportsPageState extends State<MyReportsPage> {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade100),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                    ),
                   ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
@@ -298,10 +292,12 @@ class _MyReportsPageState extends State<MyReportsPage> {
                               children: [
                                 Text(
                                   problem.title,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    color: kDark,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -337,7 +333,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: kRed.withValues(alpha: 0.08),
+                                          color: kPrimary.withValues(
+                                            alpha: 0.08,
+                                          ),
                                           borderRadius: BorderRadius.circular(
                                             20,
                                           ),
@@ -347,7 +345,7 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                           children: [
                                             const Icon(
                                               Icons.check_circle,
-                                              color: kRed,
+                                              color: kPrimary,
                                               size: 10,
                                             ),
                                             const SizedBox(width: 3),
@@ -355,7 +353,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                               isAr ? 'تم الإصلاح' : 'Fixed',
                                               style: TextStyle(
                                                 fontSize: 9,
-                                                color: kRed,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -367,7 +367,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                       problem.reportCode,
                                       style: TextStyle(
                                         fontSize: 10,
-                                        color: Colors.grey.shade400,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                         letterSpacing: 0.5,
                                       ),
                                     ),
@@ -378,7 +380,9 @@ class _MyReportsPageState extends State<MyReportsPage> {
                                   '${date.day}/${date.month}/${date.year}',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.grey.shade400,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -416,10 +420,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        height: MediaQuery.of(context).size.height * 0.82,
-        decoration: const BoxDecoration(
-          color: Color(0xFFF5F7FA),
+      builder: (sheetContext) => Container(
+        height: MediaQuery.of(sheetContext).size.height * 0.82,
+        decoration: BoxDecoration(
+          color: Theme.of(sheetContext).colorScheme.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -454,10 +458,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
                       children: [
                         Text(
                           problem.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: kDark,
+                            color: Theme.of(sheetContext).colorScheme.onSurface,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -521,10 +525,10 @@ class _MyReportsPageState extends State<MyReportsPage> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           isAr ? 'صورة المشكلة' : 'Problem Photo',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: kDark,
+                            color: Theme.of(sheetContext).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -545,25 +549,25 @@ class _MyReportsPageState extends State<MyReportsPage> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: kRed.withValues(alpha: 0.08),
+                          color: kPrimary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
                           children: [
                             const Icon(
                               Icons.check_circle,
-                              color: kRed,
+                              color: kPrimary,
                               size: 18,
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              isAr
-                                  ? '✅ تم الإصلاح — صورة الإصلاح:'
-                                  : '✅ Fixed — After photo:',
-                              style: const TextStyle(
+                              isAr ? 'صورة الإصلاح' : 'Repair photo',
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: kRed,
+                                color: Theme.of(
+                                  sheetContext,
+                                ).colorScheme.primary,
                               ),
                             ),
                           ],
@@ -607,10 +611,12 @@ class _MyReportsPageState extends State<MyReportsPage> {
                       height: 48,
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.of(
-                            context,
-                          ).pushNamed('/track', arguments: problem.reportCode);
+                          final navigator = Navigator.of(sheetContext);
+                          navigator.pop();
+                          navigator.pushNamed(
+                            '/track',
+                            arguments: problem.reportCode,
+                          );
                         },
                         icon: const Icon(
                           Icons.manage_search_outlined,
@@ -620,8 +626,8 @@ class _MyReportsPageState extends State<MyReportsPage> {
                           isAr ? 'تابع هذا البلاغ' : 'Track this report',
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: kRed,
-                          side: const BorderSide(color: kRed),
+                          foregroundColor: kPrimary,
+                          side: const BorderSide(color: kPrimary),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -658,22 +664,22 @@ class _EmptyReports extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: const Color(0xFFCC0000).withValues(alpha: 0.08),
+                color: kPrimary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.folder_open_outlined,
                 size: 48,
-                color: Color(0xFFCC0000),
+                color: kPrimary,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               isAr ? 'لا توجد بلاغات بعد' : 'No reports yet',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A2E),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -684,7 +690,7 @@ class _EmptyReports extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey.shade400,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 height: 1.5,
               ),
             ),
@@ -699,7 +705,7 @@ class _EmptyReports extends StatelessWidget {
                   isAr ? 'تقديم أول بلاغ' : 'Submit your first report',
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFCC0000),
+                  backgroundColor: kPrimary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -759,7 +765,7 @@ class _MyReportsSkeletonState extends State<_MyReportsSkeleton>
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -823,7 +829,7 @@ class _DetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(children: children),
@@ -857,7 +863,7 @@ class _DetailRow extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontSize: 10,
-                      color: Colors.grey.shade400,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -868,10 +874,10 @@ class _DetailRow extends StatelessWidget {
                     ),
                     child: Text(
                       value,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A2E),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -915,26 +921,30 @@ class _GuestView extends StatelessWidget {
               width: 96,
               height: 96,
               decoration: BoxDecoration(
-                color: kRed.withValues(alpha: 0.08),
+                color: kPrimary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 48, color: kRed),
+              child: Icon(icon, size: 48, color: kPrimary),
             ),
             const SizedBox(height: 24),
             Text(
               isAr ? titleAr : titleEn,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: kDark,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               isAr ? subtitleAr : subtitleEn,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: kGrey, height: 1.6),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                height: 1.6,
+              ),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -942,7 +952,7 @@ class _GuestView extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.of(context).pushNamed('/login'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kRed,
+                  backgroundColor: kPrimary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(

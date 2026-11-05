@@ -71,6 +71,8 @@ select pg_temp.expect_error($q$select public.transition_report('20000000-0000-40
 select pg_temp.expect_error($q$select public.transition_report(gen_random_uuid(),current_setting('test.report')::uuid,'resolved','Done',null)$q$,'22023','resolution requires repair media');
 select pg_temp.expect_error($q$select public.transition_report(gen_random_uuid(),current_setting('test.report')::uuid,'resolved','   ','storage:00000000-0000-4000-8000-000000000003/repair.jpg')$q$,'22023','resolution requires nonblank note');
 select pg_temp.as_user(4);
+delete from storage.objects where name='00000000-0000-4000-8000-000000000004/repair.jpg';
+select pg_temp.check_true((select count(*)=1 from storage.objects where name='00000000-0000-4000-8000-000000000004/repair.jpg'), 'client cannot delete an upload while it may be attached');
 select public.transition_report(gen_random_uuid(),current_setting('test.report')::uuid,'resolved','Surface repaired','storage:00000000-0000-4000-8000-000000000004/repair.jpg');
 select pg_temp.check_true((select status='resolved' from public.reports), 'assigned district can resolve with evidence');
 reset role;

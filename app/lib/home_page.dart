@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'translations.dart';
-import 'main.dart';
+import 'brand.dart';
 import 'demo.dart';
+import 'main.dart';
+import 'theme.dart';
+import 'translations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,51 +13,20 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin, RouteAware {
-  final _supabase = Supabase.instance.client;
-  User? _user;
+class _HomePageState extends State<HomePage> with RouteAware {
+  final _client = Supabase.instance.client;
   StreamSubscription<AuthState>? _authSubscription;
-
-  int _totalReports = 0;
-  int _resolvedReports = 0;
-  int _pendingReports = 0;
-  int _catPothole = 0;
-  int _catTrash = 0;
-  int _catLighting = 0;
-  int _catSewage = 0;
-  int _catWater = 0;
-  int _catOther = 0;
-  bool _statsLoading = true;
-  bool _loadFailed = false;
-
-  // Animated counter targets
-  int _displayTotal = 0;
-  int _displayResolved = 0;
-  int _displayPending = 0;
-  late AnimationController _counterCtrl;
+  List<Map<String, dynamic>> _reports = [];
+  bool _loading = true, _loadFailed = false;
+  String? _loadedUserId;
 
   @override
   void initState() {
     super.initState();
-    _counterCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _counterCtrl.addListener(() {
-      if (mounted) {
-        setState(() {
-          _displayTotal = (_counterCtrl.value * _totalReports).round();
-          _displayResolved = (_counterCtrl.value * _resolvedReports).round();
-          _displayPending = (_counterCtrl.value * _pendingReports).round();
-        });
-      }
+    _authSubscription = _client.auth.onAuthStateChange.listen((data) {
+      if (data.session?.user.id != _loadedUserId) _loadReports();
     });
-    _user = _supabase.auth.currentUser;
-    _authSubscription = _supabase.auth.onAuthStateChange.listen((data) {
-      if (mounted) setState(() => _user = data.session?.user);
-    });
-    _loadStats();
+    _loadReports();
   }
 
   @override
@@ -67,864 +37,305 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  void didPopNext() {
-    // Called when returning to this page from another route
-    _refresh();
-  }
-
+  void didPopNext() => _loadReports();
   @override
   void dispose() {
     routeObserver.unsubscribe(this);
     _authSubscription?.cancel();
-    _counterCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _loadStats() async {
+  Future<void> _loadReports() async {
     if (!mounted) return;
+    final user = _client.auth.currentUser;
+    _loadedUserId = user?.id;
+    if (user == null) {
+      setState(() {
+        _reports = [];
+        _loading = false;
+        _loadFailed = false;
+      });
+      return;
+    }
     setState(() {
-      _statsLoading = true;
+      _loading = true;
       _loadFailed = false;
     });
     try {
-      final all = await _supabase
+      final rows = await _client
           .from('reports')
-          .select('id, status, category');
-      final list = (all as List).cast<Map<String, dynamic>>();
-      if (!mounted) return;
-
-      final total = list.length;
-      final resolved = list.where((r) => r['status'] == 'resolved').length;
-      final pending = list.where((r) => r['status'] == 'pending').length;
-
-      setState(() {
-        _totalReports = total;
-        _resolvedReports = resolved;
-        _pendingReports = pending;
-        _catPothole = list.where((r) => r['category'] == 'cat_pothole').length;
-        _catTrash = list.where((r) => r['category'] == 'cat_trash').length;
-        _catLighting = list
-            .where((r) => r['category'] == 'cat_lighting')
-            .length;
-        _catSewage = list.where((r) => r['category'] == 'cat_sewage').length;
-        _catWater = list.where((r) => r['category'] == 'cat_water').length;
-        _catOther = list.where((r) => r['category'] == 'cat_other').length;
-        _statsLoading = false;
-      });
-
-      // Animate counters from 0 to actual values
-      _counterCtrl.forward(from: 0);
+          .select(
+            'id,title,description,status,category,report_code,district,created_at',
+          )
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false);
+      if (mounted && _client.auth.currentUser?.id == user.id)
+        setState(() {
+          _reports = rows.cast<Map<String, dynamic>>();
+          _loading = false;
+        });
     } catch (_) {
       if (mounted)
         setState(() {
-          _statsLoading = false;
+          _loading = false;
           _loadFailed = true;
         });
     }
   }
 
-  Future<void> _refresh() async {
-    await _loadStats();
-  }
-
-  void _logout() async {
-    if (demoMode) {
-      Navigator.of(context).pushNamed('/demo');
-      return;
-    }
-    await _supabase.auth.signOut();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(t('snack_logout', lang: appLocale.value.languageCode)),
-          backgroundColor: kRed,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
-    }
-  }
-
-  void _toggleLang() {
-    setState(() {
-      appLocale.value = appLocale.value.languageCode == 'ar'
-          ? const Locale('en')
-          : const Locale('ar');
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_loadFailed)
-      return Scaffold(
-        appBar: AppBar(title: const Text('FixCity')),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Could not load reports / تعذر تحميل البلاغات'),
-              TextButton(
-                onPressed: _loadStats,
-                child: Text(
-                  appLocale.value.languageCode == 'ar'
-                      ? 'إعادة المحاولة'
-                      : 'Retry',
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    final lang = appLocale.value.languageCode;
-    final isAr = lang == 'ar';
-
+    final ar = Localizations.localeOf(context).languageCode == 'ar';
+    final lang = ar ? 'ar' : 'en';
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    const categories = [
+      ('cat_pothole', Icons.add_road_outlined),
+      ('cat_trash', Icons.delete_outline),
+      ('cat_lighting', Icons.lightbulb_outline),
+      ('cat_sewage', Icons.waves_outlined),
+      ('cat_water', Icons.water_drop_outlined),
+      ('cat_other', Icons.more_horiz),
+    ];
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      body: RefreshIndicator(
-        color: kRed,
-        onRefresh: _refresh,
-        child: CustomScrollView(
-          slivers: [
-            // ── App Bar ─────────────────────────────────────────────
-            SliverToBoxAdapter(
-              child: Container(
-                color: kDark,
-                child: SafeArea(
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            const Text(
-                              'FixCity',
-                              textDirection: TextDirection.ltr,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            _TopBarBtn(
-                              label: t('switch_lang', lang: lang),
-                              onTap: _toggleLang,
-                            ),
-                            Semantics(
-                              button: true,
-                              label: isAr
-                                  ? 'مراجعة فريق العمل'
-                                  : 'Staff review',
-                              child: _TopBarBtn(
-                                icon: Icons.admin_panel_settings_outlined,
-                                onTap: () =>
-                                    Navigator.of(context).pushNamed('/admin'),
-                              ),
-                            ),
-                            Semantics(
-                              button: true,
-                              label: isAr ? 'فريق الحي' : 'District team',
-                              child: _TopBarBtn(
-                                icon: Icons.location_city_outlined,
-                                onTap: () => Navigator.of(
-                                  context,
-                                ).pushNamed('/governor'),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          t('welcome_title', lang: lang),
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          t('welcome_subtitle', lang: lang),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const FittedBox(fit: BoxFit.scaleDown, child: FixCityWordmark()),
+        toolbarHeight: 76,
+        actions: [
+          if (!demoMode)
+            TextButton(
+              onPressed: () => appLocale.value = Locale(ar ? 'en' : 'ar'),
+              child: Text(ar ? 'English' : 'العربية'),
             ),
-
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(
-                20,
-                20,
-                20,
-                20 + MediaQuery.of(context).padding.bottom,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  // ── Greeting card ──────────────────────────────────
-                  if (_user != null && !demoMode) ...[
-                    _GreetingCard(
-                      email: _user!.email ?? '',
-                      isAr: isAr,
-                      onLogout: _logout,
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-
-                  // ── Live stats bar (animated) ───────────────────────
-                  _LiveStatsBar(
-                    total: _statsLoading ? 0 : _displayTotal,
-                    resolved: _statsLoading ? 0 : _displayResolved,
-                    pending: _statsLoading ? 0 : _displayPending,
-                    loading: _statsLoading,
-                    isAr: isAr,
-                  ),
-                  const SizedBox(height: 24),
-
-                  // ── Quick actions label ────────────────────────────
-                  _SectionHeader(
-                    label: isAr
-                        ? 'ماذا تريد أن تفعل؟'
-                        : 'What would you like to do?',
-                  ),
-                  const SizedBox(height: 12),
-
-                  // ── Category quick-launch grid ─────────────────────
-                  _CategoryGrid(isAr: isAr, lang: lang),
-                  const SizedBox(height: 12),
-
-                  // ── Action cards ───────────────────────────────────
-                  _ActionCard(
-                    icon: Icons.manage_search_outlined,
-                    iconBg: const Color(0xFF1A56DB),
-                    title: t('track_report', lang: lang),
-                    subtitle: t('track_subtitle', lang: lang),
-                    onTap: () => Navigator.of(context).pushNamed('/track'),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Login guard on My Reports
-                  if (_user == null)
-                    _ActionCard(
-                      icon: Icons.login_outlined,
-                      iconBg: const Color(0xFF7C3AED),
-                      title: t('login', lang: lang),
-                      subtitle: t('login_subtitle', lang: lang),
-                      onTap: () => Navigator.of(context).pushNamed('/login'),
-                    )
-                  else
-                    _ActionCard(
-                      icon: Icons.folder_outlined,
-                      iconBg: const Color(0xFFF59E0B),
-                      title: t('my_reports', lang: lang),
-                      subtitle: t('my_reports_subtitle', lang: lang),
-                      badge: _pendingReports > 0 ? _pendingReports : null,
-                      onTap: () =>
-                          Navigator.of(context).pushNamed('/my_reports'),
-                    ),
-
-                  const SizedBox(height: 28),
-
-                  // ── Category breakdown ─────────────────────────────
-                  _SectionHeader(
-                    label: isAr ? 'البلاغات حسب النوع' : 'Reports by Category',
-                  ),
-                  const SizedBox(height: 12),
-                  _CategoryBreakdown(
-                    pothole: _catPothole,
-                    trash: _catTrash,
-                    lighting: _catLighting,
-                    sewage: _catSewage,
-                    water: _catWater,
-                    other: _catOther,
-                    total: _totalReports,
-                    loading: _statsLoading,
-                    isAr: isAr,
-                    lang: lang,
-                  ),
-
-                  const SizedBox(height: 32),
-                ]),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Live Stats Bar ─────────────────────────────────────────────────────────
-
-class _LiveStatsBar extends StatelessWidget {
-  final int total, resolved, pending;
-  final bool loading, isAr;
-  const _LiveStatsBar({
-    required this.total,
-    required this.resolved,
-    required this.pending,
-    required this.loading,
-    required this.isAr,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          _StatCell(
-            value: total,
-            label: isAr ? 'إجمالي البلاغات' : 'Total Reports',
-            color: Colors.white,
-            loading: loading,
+          IconButton(
+            tooltip: ar ? 'تحديث البلاغات' : 'Refresh reports',
+            onPressed: _loading ? null : _loadReports,
+            icon: const Icon(Icons.refresh),
           ),
-          _Div(),
-          _StatCell(
-            value: resolved,
-            label: isAr ? 'تم حلها' : 'Resolved',
-            color: const Color(0xFF185FA5),
-            loading: loading,
-          ),
-          _Div(),
-          _StatCell(
-            value: pending,
-            label: isAr ? 'قيد الانتظار' : 'Pending',
-            color: const Color(0xFFF59E0B),
-            loading: loading,
-          ),
+          const SizedBox(width: 8),
         ],
       ),
-    );
-  }
-}
-
-class _StatCell extends StatelessWidget {
-  final int value;
-  final String label;
-  final Color color;
-  final bool loading;
-  const _StatCell({
-    required this.value,
-    required this.label,
-    required this.color,
-    required this.loading,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Column(
+      body: RefreshIndicator(
+        onRefresh: _loadReports,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
           children: [
-            loading
-                ? Container(
-                    width: 40,
-                    height: 22,
-                    decoration: BoxDecoration(
-                      color: Colors.white12,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  )
-                : Text(
-                    '$value',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: color,
-                    ),
-                  ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 10, color: Colors.white38),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Div extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Container(width: 1, height: 36, color: Colors.white10);
-}
-
-// ── Category Quick-Launch Grid ─────────────────────────────────────────────
-
-class _CategoryGrid extends StatelessWidget {
-  final bool isAr;
-  final String lang;
-  const _CategoryGrid({required this.isAr, required this.lang});
-
-  static const _cats = [
-    {
-      'key': 'cat_pothole',
-      'icon': Icons.warning_amber_rounded,
-      'color': Color(0xFFF59E0B),
-    },
-    {
-      'key': 'cat_trash',
-      'icon': Icons.delete_outline,
-      'color': Color(0xFFEF4444),
-    },
-    {
-      'key': 'cat_lighting',
-      'icon': Icons.bolt_outlined,
-      'color': Color(0xFF6366F1),
-    },
-    {
-      'key': 'cat_sewage',
-      'icon': Icons.water_damage_outlined,
-      'color': Color(0xFF8B5CF6),
-    },
-    {
-      'key': 'cat_water',
-      'icon': Icons.water_drop_outlined,
-      'color': Color(0xFF0EA5E9),
-    },
-    {'key': 'cat_other', 'icon': Icons.more_horiz, 'color': Color(0xFF64748B)},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          isAr ? 'بلّغ عن مشكلة' : 'Report a Problem',
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1A1A2E),
-          ),
-        ),
-        const SizedBox(height: 12),
-        GridView(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            mainAxisExtent: 80 + MediaQuery.textScalerOf(context).scale(28),
-          ),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: _cats.map((cat) {
-            final icon = cat['icon'] as IconData;
-            final color = cat['color'] as Color;
-            final key = cat['key'] as String;
-            return GestureDetector(
-              onTap: () =>
-                  Navigator.of(context).pushNamed('/report', arguments: key),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade100),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(icon, color: color, size: 24),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Text(
-                        t(key, lang: lang),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF334155),
-                        ),
-                      ),
-                    ),
-                  ],
+            if (_loadFailed) ...[
+              Text(
+                ar
+                    ? 'تعذر تحميل البلاغات. حاول مرة أخرى.'
+                    : 'Could not load reports. Please try again.',
+              ),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton(
+                  onPressed: _loadReports,
+                  child: Text(ar ? 'إعادة المحاولة' : 'Retry'),
                 ),
               ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-}
-
-// ── Section Header ─────────────────────────────────────────────────────────
-
-class _SectionHeader extends StatelessWidget {
-  final String label;
-  const _SectionHeader({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: const TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w800,
-        color: Color(0xFF1A1A2E),
-      ),
-    );
-  }
-}
-
-// ── Category Breakdown ─────────────────────────────────────────────────────
-
-class _CategoryBreakdown extends StatelessWidget {
-  final int pothole, trash, lighting, sewage, water, other, total;
-  final bool loading, isAr;
-  final String lang;
-  const _CategoryBreakdown({
-    required this.pothole,
-    required this.trash,
-    required this.lighting,
-    required this.sewage,
-    required this.water,
-    required this.other,
-    required this.total,
-    required this.loading,
-    required this.isAr,
-    required this.lang,
-  });
-
-  static const _cats = [
-    {
-      'key': 'cat_pothole',
-      'icon': Icons.warning_amber_rounded,
-      'color': Color(0xFFF59E0B),
-    },
-    {
-      'key': 'cat_trash',
-      'icon': Icons.delete_outline,
-      'color': Color(0xFFEF4444),
-    },
-    {
-      'key': 'cat_lighting',
-      'icon': Icons.bolt_outlined,
-      'color': Color(0xFF6366F1),
-    },
-    {
-      'key': 'cat_sewage',
-      'icon': Icons.water_damage_outlined,
-      'color': Color(0xFF8B5CF6),
-    },
-    {
-      'key': 'cat_water',
-      'icon': Icons.water_drop_outlined,
-      'color': Color(0xFF0EA5E9),
-    },
-    {'key': 'cat_other', 'icon': Icons.more_horiz, 'color': Color(0xFF64748B)},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final counts = [pothole, trash, lighting, sewage, water, other];
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: List.generate(_cats.length, (i) {
-          final cat = _cats[i];
-          final icon = cat['icon'] as IconData;
-          final color = cat['color'] as Color;
-          final key = cat['key'] as String;
-          final count = counts[i];
-          final fraction = total > 0 ? count / total : 0.0;
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 12),
+            ],
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: kDark,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    ar ? 'ما المشكلة في منطقتك؟' : 'What needs fixing?',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Icon(icon, color: color, size: 18),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 8),
+                  Text(
+                    ar
+                        ? 'أضف تفاصيل المشكلة، ثم تابع بلاغك حتى اكتمال الإصلاح.'
+                        : 'Report a local problem and follow its progress through to repair.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFFD7E4EB),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            t(key, lang: lang),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF1A1A2E),
-                            ),
-                          ),
-                          loading
-                              ? Container(
-                                  width: 24,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                )
-                              : Text(
-                                  '$count',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: color,
-                                  ),
-                                ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: loading ? 0.0 : fraction),
-                          duration: const Duration(milliseconds: 1000),
-                          curve: Curves.easeOut,
-                          builder: (_, val, __) => LinearProgressIndicator(
-                            value: val,
-                            minHeight: 6,
-                            backgroundColor: Colors.grey.shade100,
-                            valueColor: AlwaysStoppedAnimation<Color>(color),
-                          ),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kAccent,
+                          foregroundColor: kDark,
                         ),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/report'),
+                        icon: const Icon(Icons.add),
+                        label: Text(ar ? 'بلّغ عن مشكلة' : 'Report a problem'),
+                      ),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: Color(0xFF8097A4)),
+                        ),
+                        onPressed: () => Navigator.pushNamed(context, '/track'),
+                        icon: const Icon(Icons.search),
+                        label: Text(ar ? 'متابعة بلاغ' : 'Track a report'),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-// ── Sub-widgets ────────────────────────────────────────────────────────────
-
-class _TopBarBtn extends StatelessWidget {
-  final String? label;
-  final IconData? icon;
-  final VoidCallback onTap;
-  const _TopBarBtn({this.label, this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        child: icon != null
-            ? Icon(icon, color: Colors.white, size: 18)
-            : Text(
-                label!,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+                ],
               ),
-      ),
-    );
-  }
-}
-
-class _GreetingCard extends StatelessWidget {
-  final String email;
-  final bool isAr;
-  final VoidCallback onLogout;
-  const _GreetingCard({
-    required this.email,
-    required this.isAr,
-    required this.onLogout,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFCC0000), Color(0xFF185FA5)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.person, color: Colors.white, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isAr ? 'مرحباً!' : 'Hello!',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  email,
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+            const SizedBox(height: 28),
+            Text(
+              ar ? 'اختر نوع المشكلة' : 'Choose a problem type',
+              style: theme.textTheme.titleLarge,
             ),
-          ),
-          TextButton(
-            onPressed: onLogout,
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
-            child: Text(
-              isAr ? 'خروج' : 'Logout',
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconBg;
-  final String title, subtitle;
-  final int? badge;
-  final VoidCallback onTap;
-  const _ActionCard({
-    required this.icon,
-    required this.iconBg,
-    required this.title,
-    required this.subtitle,
-    this.badge,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: iconBg.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(icon, color: iconBg, size: 26),
-                  ),
-                  if (badge != null)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '$badge',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w800,
+            const SizedBox(height: 12),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 600 ? 3 : 2;
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    for (final category in categories)
+                      SizedBox(
+                        width:
+                            (constraints.maxWidth - (columns - 1) * 12) /
+                            columns,
+                        child: Material(
+                          color: scheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              '/report',
+                              arguments: category.$1,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    category.$2,
+                                    color: scheme.primary,
+                                    size: 28,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    t(category.$1, lang: lang),
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A1A2E),
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
                   ],
+                );
+              },
+            ),
+            const SizedBox(height: 28),
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              children: [
+                Text(
+                  ar ? 'آخر بلاغاتك' : 'Your latest reports',
+                  style: theme.textTheme.titleLarge,
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(context, '/my_reports'),
+                  child: Text(ar ? 'عرض الكل' : 'View all'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (_loading)
+              const LinearProgressIndicator()
+            else if (_loadFailed)
+              const SizedBox.shrink()
+            else if (_reports.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  ar
+                      ? 'لم ترسل بلاغاً بعد. ابدأ باختيار نوع المشكلة أعلاه.'
+                      : 'No reports yet. Choose a problem type above to get started.',
+                ),
+              )
+            else ...[
+              Text(
+                ar
+                    ? '${_reports.length} بلاغات · ${_reports.where((r) => r['status'] == 'resolved').length} تم حلها'
+                    : '${_reports.length} reports · ${_reports.where((r) => r['status'] == 'resolved').length} resolved',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey.shade300),
+              const SizedBox(height: 12),
+              for (final report in _reports.take(3)) ...[
+                Material(
+                  color: scheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    title: Text(
+                      report['description']?.toString() ??
+                          report['title']?.toString() ??
+                          '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        '${statusLabel(report['status'] as String? ?? 'pending', lang)} · ${report['district'] ?? ''}',
+                      ),
+                    ),
+                    leading: Icon(
+                      report['status'] == 'resolved'
+                          ? Icons.task_alt
+                          : Icons.assignment_outlined,
+                      color: scheme.primary,
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: report['report_code'] == null
+                        ? null
+                        : () => Navigator.pushNamed(
+                            context,
+                            '/track',
+                            arguments: report['report_code'],
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ],
-          ),
+            if (demoMode) ...[
+              const SizedBox(height: 20),
+              Text(
+                ar
+                    ? 'تريد تجربة ما يحدث بعد الإرسال؟ افتح قائمة التجربة واختر فريق المراجعة.'
+                    : 'Want to see what happens after submission? Open the demo menu and choose Staff review.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

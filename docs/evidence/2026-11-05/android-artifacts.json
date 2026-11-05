@@ -1,0 +1,109 @@
+[
+  {
+    "file": "fixcity-demo-1.1.0-arm64.apk",
+    "bytes": 19865706,
+    "sha256": "0066039e046465f7def8ee13c22e7876241029abb048dd1f4cda3ff399b878ed",
+    "certificate_sha256": "8f91e74f97befa4db2de30fff60985327100800f4f08021397c43949520037bd",
+    "signature_v2": true,
+    "zip_alignment_16kb": true,
+    "elf_64bit_load_segments": [
+      {
+        "library": "lib/arm64-v8a/libapp.so",
+        "load_alignment": 65536
+      },
+      {
+        "library": "lib/arm64-v8a/libdatastore_shared_counter.so",
+        "load_alignment": 16384
+      },
+      {
+        "library": "lib/arm64-v8a/libflutter.so",
+        "load_alignment": 65536
+      }
+    ],
+    "package": "dev.mosalah.fixcity",
+    "version": "1.1.0",
+    "min_sdk": 24,
+    "backup_disabled": true,
+    "cleartext_disabled": true
+  },
+  {
+    "file": "fixcity-demo-1.1.0-armv7.apk",
+    "bytes": 17492808,
+    "sha256": "3facfaf334611bc0616b553b3ff24786078639b15d1713b6ed94d13c385c6004",
+    "certificate_sha256": "8f91e74f97befa4db2de30fff60985327100800f4f08021397c43949520037bd",
+    "signature_v2": true,
+    "zip_alignment_16kb": true,
+    "elf_64bit_load_segments": [],
+    "package": "dev.mosalah.fixcity",
+    "version": "1.1.0",
+    "min_sdk": 24,
+    "backup_disabled": true,
+    "cleartext_disabled": true
+  },
+  {
+    "file": "fixcity-demo-1.1.0-x86_64.apk",
+    "bytes": 21037961,
+    "sha256": "57f43a77cb89a2e328b5dc3f015ff45a86325b7209223f21a044d5dfeb643ebb",
+    "certificate_sha256": "8f91e74f97befa4db2de30fff60985327100800f4f08021397c43949520037bd",
+    "signature_v2": true,
+    "zip_alignment_16kb": true,
+    "elf_64bit_load_segments": [
+      {
+        "library": "lib/x86_64/libapp.so",
+        "load_alignment": 65536
+      },
+      {
+        "library": "lib/x86_64/libdatastore_shared_counter.so",
+        "load_alignment": 16384
+      },
+      {
+        "library": "lib/x86_64/libflutter.so",
+        "load_alignment": 65536
+      }
+    ],
+    "package": "dev.mosalah.fixcity",
+    "version": "1.1.0",
+    "min_sdk": 24,
+    "backup_disabled": true,
+    "cleartext_disabled": true
+  },
+  {
+    "file": "fixcity-demo-1.1.0.apk",
+    "bytes": 55362911,
+    "sha256": "2fce5fbf9d11172544698ba39e1b59f46eb028118f846f342573456a75cc6775",
+    "certificate_sha256": "8f91e74f97befa4db2de30fff60985327100800f4f08021397c43949520037bd",
+    "signature_v2": true,
+    "zip_alignment_16kb": true,
+    "elf_64bit_load_segments": [
+      {
+        "library": "lib/arm64-v8a/libapp.so",
+        "load_alignment": 65536
+      },
+      {
+        "library": "lib/arm64-v8a/libdatastore_shared_counter.so",
+        "load_alignment": 16384
+      },
+      {
+        "library": "lib/arm64-v8a/libflutter.so",
+        "load_alignment": 65536
+      },
+      {
+        "library": "lib/x86_64/libapp.so",
+        "load_alignment": 65536
+      },
+      {
+        "library": "lib/x86_64/libdatastore_shared_counter.so",
+        "load_alignment": 16384
+      },
+      {
+        "library": "lib/x86_64/libflutter.so",
+        "load_alignment": 65536
+      }
+    ],
+    "package": "dev.mosalah.fixcity",
+    "version": "1.1.0",
+    "min_sdk": 24,
+    "backup_disabled": true,
+    "cleartext_disabled": true
+  }
+]

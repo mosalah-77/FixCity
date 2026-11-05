@@ -1,7 +1,7 @@
 name: fixcity
 description: A problem reporting multi-platform project.
 publish_to: 'none' 
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: '>=3.9.0 <4.0.0'
@@ -38,3 +38,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo.ttf

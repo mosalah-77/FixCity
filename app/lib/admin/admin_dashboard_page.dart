@@ -58,18 +58,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
   }
 
-  Color _statusColor(String s) {
-    switch (s) {
-      case 'pending':
-        return const Color(0xFFF59E0B);
-      case 'in_progress':
-        return const Color(0xFF1A56DB);
-      case 'resolved':
-        return kRed;
-      default:
-        return Colors.grey;
-    }
-  }
+  Color _statusColor(String status) => statusColor(
+    status,
+    dark: Theme.of(context).brightness == Brightness.dark,
+  );
 
   String _statusLabel(String s) {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
@@ -154,108 +146,25 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         }
       },
       child: Scaffold(
-        backgroundColor: kBg,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: kDark,
-          foregroundColor: Colors.white,
           elevation: 0,
-          title: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: kRed,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: const Icon(
-                    Icons.location_pin,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                    children: [
-                      TextSpan(text: 'Fix'),
-                      TextSpan(
-                        text: 'City',
-                        style: TextStyle(color: Color(0xFF185FA5)),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'Admin',
-                    style: TextStyle(fontSize: 11, color: Colors.white70),
-                  ),
-                ),
-              ],
-            ),
+          title: Text(
+            Localizations.localeOf(context).languageCode == 'ar'
+                ? 'مراجعة البلاغات'
+                : 'Staff review',
           ),
           actions: [
-            // Pending badge
-            if (pending > 0)
-              Stack(
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications_outlined,
-                      color: Colors.white,
-                      size: 22,
-                    ),
-                    onPressed: null,
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      width: 14,
-                      height: 14,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '$pending',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             IconButton(
-              icon: const Icon(Icons.refresh_outlined, size: 20),
+              tooltip: Localizations.localeOf(context).languageCode == 'ar'
+                  ? 'تحديث'
+                  : 'Refresh reports',
+              icon: const Icon(Icons.refresh_outlined),
               onPressed: _loadReports,
             ),
             IconButton(
-              icon: const Icon(Icons.logout_outlined, size: 20),
+              tooltip: demoMode ? 'Demo menu' : 'Sign out',
+              icon: const Icon(Icons.logout_outlined),
               onPressed: _logout,
             ),
           ],
@@ -264,9 +173,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           children: [
             // Filter chips with live counts
             Container(
-              color: kDark,
+              color: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Wrap(
+                spacing: 8,
                 runSpacing: 8,
                 children: [
                   _StatChip(
@@ -314,18 +224,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
             // District filter
             Container(
-              color: kDark,
+              color: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: DropdownButtonFormField<String>(
                 value: _filterDistrict,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.location_city_outlined,
-                    color: Colors.white54,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     size: 18,
                   ),
                   filled: true,
-                  fillColor: Colors.white10,
+                  fillColor: Theme.of(context).colorScheme.surface,
                   contentPadding: const EdgeInsets.symmetric(
                     vertical: 8,
                     horizontal: 12,
@@ -335,8 +245,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-                dropdownColor: const Color(0xFF1A1A2E),
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                dropdownColor: Theme.of(context).colorScheme.surface,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 14,
+                ),
                 items: districts
                     .map(
                       (d) => DropdownMenuItem(
@@ -348,7 +261,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                     ? 'كل الأحياء'
                                     : 'All Districts')
                               : d,
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     )
@@ -375,13 +290,17 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                             Localizations.localeOf(context).languageCode == 'ar'
                                 ? 'لا توجد بلاغات'
                                 : 'No reports found',
-                            style: TextStyle(color: Colors.grey.shade400),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
                     )
                   : RefreshIndicator(
-                      color: kRed,
+                      color: kPrimary,
                       onRefresh: _loadReports,
                       child: ListView.builder(
                         padding: EdgeInsets.fromLTRB(
@@ -402,11 +321,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           return Container(
                             margin: const EdgeInsets.only(bottom: 10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: Colors.grey.shade100),
+                              border: Border.all(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.outlineVariant,
+                              ),
                             ),
                             child: ListTile(
+                              onTap: () async {
+                                await Navigator.of(
+                                  context,
+                                ).pushNamed('/admin/report/${data['id']}');
+                                if (mounted) await _loadReports();
+                              },
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
                                 vertical: 8,
@@ -426,10 +355,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               ),
                               title: Text(
                                 problem.title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
-                                  color: kDark,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                               subtitle: Column(
@@ -452,7 +383,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                         child: Text(
                                           _statusLabel(problem.status),
                                           style: TextStyle(
-                                            fontSize: 10,
+                                            fontSize: 12,
                                             color: sc,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -465,16 +396,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                         Text(
                                           data['district'],
                                           style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey.shade400,
+                                            fontSize: 12,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       if (hasFixPhoto) ...[
                                         const SizedBox(width: 6),
-                                        const Icon(
+                                        Icon(
                                           Icons.photo_camera,
                                           size: 12,
-                                          color: kRed,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
                                         ),
                                       ],
                                     ],
@@ -483,23 +418,36 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                   Text(
                                     '${date.year}/${date.month}/${date.day}',
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.grey.shade400,
+                                      fontSize: 12,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
                               ),
                               trailing: IconButton(
+                                tooltip:
+                                    Localizations.localeOf(
+                                          context,
+                                        ).languageCode ==
+                                        'ar'
+                                    ? 'فتح البلاغ'
+                                    : 'Open report',
                                 icon: Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF5F7FA),
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surface,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.edit_outlined,
                                     size: 18,
-                                    color: kRed,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                                 onPressed: () async {
@@ -537,40 +485,11 @@ class _StatChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? color.withValues(alpha: 0.2)
-              : Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: selected ? color.withValues(alpha: 0.5) : Colors.transparent,
-          ),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: color,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: color.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ChoiceChip(
+      label: Text('$label ($value)'),
+      selected: selected,
+      onSelected: (_) => onTap(),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
     );
   }
 }
@@ -616,7 +535,7 @@ class _DashboardSkeletonState extends State<_DashboardSkeleton>
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Row(

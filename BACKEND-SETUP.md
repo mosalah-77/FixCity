@@ -5,7 +5,7 @@ The versioned schema in `supabase/migrations/202611040001_fixcity.sql` reconstru
 ## Provisioning
 
 1. Create a free Supabase project. Keep the database password outside Git. Disable automatic table exposure and enable automatic row security; the migration grants only the permissions needed by the app.
-2. Apply both numbered migrations in order with the Supabase CLI or SQL editor. `platform-stub.sql` is **only for the disposable PostgreSQL test container**; never upload it to Supabase.
+2. Apply all numbered migrations in order with the Supabase CLI or SQL editor. `platform-stub.sql` is **only for the disposable PostgreSQL test container**; never upload it to Supabase.
 3. Enable anonymous sign-in for the demo. Disable the Email provider and leave every other sign-in provider off in this demo-only project. Anonymous sign-in remains enabled. The hosted free-project dashboard shows a read-only anonymous limit of 30 per hour per IP; the separate database guard adds 100 new anonymous identities per rolling 24 hours and 500 retained anonymous identities globally. The checked-in `config.toml` describes local settings; it does not change a hosted project's dashboard settings.
 4. Set the site URL to the published demo URL and keep redirects restricted to the actual demo and local development URL. Public builds use only the project URL and publishable/anon client key. Never embed a service-role key, database password or management token.
 5. Before public release, verify anonymous abuse controls and quotas. Supabase recommends CAPTCHA for anonymous sign-in; if enabled, wire its challenge token into the app before release. API rate limits are not a substitute for CAPTCHA or a total resource budget. The first release uses database caps and the platform IP limit; it has no CAPTCHA challenge. These bounds limit stored data, not all request/egress abuse. Review usage while sharing the demo; stop anonymous signup if abusive traffic appears.
@@ -26,9 +26,9 @@ The public demo uses synthetic sample illustrations, not uploads or real officia
 
 ## Private media outside the demo
 
-The `files` bucket is private, restricted to JPEG/PNG and 5 MiB. Normal users upload under their own user-ID folder with a new filename. Reports store `storage:<path>`, not a public URL; the client obtains short-lived signed URLs only for authorized reads. A user cannot attach another person's upload. Staff may attach their own repair evidence to a report they can manage. Referenced files cannot be deleted, even after the uploader loses staff access. There is no object-update policy: use new immutable names.
+The `files` bucket is private, restricted to JPEG/PNG and 5 MiB. Normal users upload under their own user-ID folder with a new filename. Reports store `storage:<path>`, not a public URL; the client obtains short-lived signed URLs only for authorized reads. A user cannot attach another person's upload. Staff may attach their own repair evidence to a report they can manage. Clients cannot delete or overwrite images, including unused uploads. This prevents a concurrent delete from removing evidence as a report attaches it. Unused uploads require trusted maintenance with report writes stopped and references rechecked; no automatic orphan cleanup is installed. Keep this in mind before enabling real accounts and uploads.
 
-Storage upload and SQL are separate operations. Keep a successful upload for a retry when a save response is uncertain. Delete only unreferenced abandoned uploads, using the storage policy; a successful report reference prevents accidental cleanup. Signed URLs remain usable for their short lifetime after access is revoked. Public demo uploads stay disabled.
+Storage upload and SQL are separate operations. Keep a successful upload for a retry when a save response is uncertain. Leave cleanup to trusted maintenance as described above. Signed URLs remain usable for their short lifetime after access is revoked. Public demo uploads stay disabled.
 
 ## Reproduce the SQL checks
 
@@ -52,7 +52,7 @@ References: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/ro
 
 Project `goohgkzuggxxqpcnikjn` is a new free project in Paris. `app/demo-config.json` contains its public URL and publishable client key. These values identify the backend; they do not bypass access policies. No privileged key is in the app.
 
-The local suite has 67 checks, including concurrency at the final signup slot and cleanup that preserves active demo sessions. The separate `python3 supabase/tests/hosted-smoke.py --run` check uses two real anonymous Auth sessions and the public REST API. It deliberately creates only synthetic demo records, refuses any other project URL, keeps tokens in memory, and lets its records expire normally.
+The local suite includes concurrency at the final signup slot and cleanup that preserves active demo sessions. The separate `python3 supabase/tests/hosted-smoke.py --run` check uses two real anonymous Auth sessions and the public REST API. It deliberately creates only synthetic demo records, refuses any other project URL, keeps tokens in memory, and lets its records expire normally.
 
 Cron setup for this dedicated project:
 
@@ -66,3 +66,5 @@ select cron.schedule('fixcity-expired-demos', '17 * * * *',
 ```
 
 Supabase documents [SQL cleanup for anonymous users](https://supabase.com/docs/guides/auth/auth-anonymous) and [Cron scheduling](https://supabase.com/docs/guides/cron/quickstart). The extra active-workspace condition prevents deleting a visitor who renewed their demo. Check Cron history after enabling it. Free projects may pause after inactivity; no always-on availability is promised.
+
+On 5 November, migration `202611050001_retain_report_media.sql` was also applied to the hosted demo. The SQL editor confirmed that the client deletion policy was absent. This migration changes permissions only; it does not delete stored data.

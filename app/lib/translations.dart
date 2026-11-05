@@ -6,10 +6,10 @@ const Map<String, Map<String, String>> _localizedValues = {
     'admin_tooltip': 'دخول المشرفين',
     'logout': 'تسجيل الخروج',
     'snack_logout': 'تم تسجيل الخروج',
-    
+
     // --- Home Page ---
-    'welcome_title': 'مرحباً بكم في منصة البلاغات الموحدة',
-    'welcome_subtitle': 'ساعدنا في جعل مدينتك أفضل مكان للعيش',
+    'welcome_title': 'مرحباً بك في FixCity',
+    'welcome_subtitle': 'بلّغ عن مشكلة وتابع إصلاحها',
     'submit_report': 'تقديم بلاغ',
     'report_subtitle': 'أبلغ عن مشكلة في المرافق العامة',
     'track_report': 'متابعة البلاغات',
@@ -27,7 +27,7 @@ const Map<String, Map<String, String>> _localizedValues = {
     'full_name': 'الاسم الكامل',
     'phone': 'رقم الهاتف',
     'have_account': 'لديك حساب بالفعل؟ سجل الدخول',
-    
+
     // --- Report Page ---
     'report_page_title': 'تقديم بلاغ جديد',
     'problem_desc': 'وصف المشكلة',
@@ -38,11 +38,11 @@ const Map<String, Map<String, String>> _localizedValues = {
     'success_message': 'تم إرسال البلاغ بنجاح! الكود: ',
     'error_message': 'فشل الإرسال: ',
     'fill_fields_error': 'يرجى تعبئة جميع الحقول المطلوبة',
-    'cat_pothole': 'مشاكل الطرق',
-    'cat_trash': 'مشاكل النظافة',
-    'cat_lighting': 'مشاكل الكهرباء',
-    'cat_sewage': 'مشاكل الصرف الصحي',
-    'cat_water': 'مشاكل المياه',
+    'cat_pothole': 'الطرق',
+    'cat_trash': 'النظافة',
+    'cat_lighting': 'الإنارة',
+    'cat_sewage': 'الصرف الصحي',
+    'cat_water': 'المياه',
     'cat_other': 'أخرى',
     'pick_image': 'إرفاق صورة',
     'problem_title': 'عنوان المشكلة',
@@ -56,7 +56,7 @@ const Map<String, Map<String, String>> _localizedValues = {
     'report_status': 'حالة البلاغ',
     'admin_reply': 'رد المسؤول',
     'not_found': 'لم يتم العثور على بلاغ بهذا الكود',
-    
+
     // --- Statuses (Database values) ---
     'pending': 'قيد الانتظار',
     'in_progress': 'جارٍ العمل',
@@ -72,7 +72,7 @@ const Map<String, Map<String, String>> _localizedValues = {
 
     // --- Home Page ---
     'welcome_title': 'Welcome to Fixcity',
-    'welcome_subtitle': 'Help us make your city a better place',
+    'welcome_subtitle': 'Report a problem and follow the repair',
     'submit_report': 'Submit Report',
     'report_subtitle': 'Report a public utility issue',
     'track_report': 'Track Reports',
@@ -89,11 +89,11 @@ const Map<String, Map<String, String>> _localizedValues = {
     'password': 'Password',
     'full_name': 'Full Name',
     'phone': 'Phone Number',
-    'have_account': 'Already have an account? Login',
+    'have_account': 'Already have an account? Log in',
 
     // --- Report Page ---
-    'report_page_title': 'Submit New Report',
-    'problem_desc': 'Problem Description',
+    'report_page_title': 'New report',
+    'problem_desc': 'Problem description',
     'problem_type': 'Problem Type (Roads, Lighting, etc.)',
     'location_link': 'Location Link (Google Maps)',
     'get_location': 'Get Current Location',
@@ -107,17 +107,17 @@ const Map<String, Map<String, String>> _localizedValues = {
     'cat_sewage': 'Sewage',
     'cat_water': 'Water',
     'cat_other': 'Other',
-    'pick_image': 'Attach Image',
+    'pick_image': 'Attach a photo',
     'problem_title': 'Problem Title',
-    'select_category': 'Select Category',
-    'location_title': 'Set Location',
+    'select_category': 'Choose a category',
+    'location_title': 'Set location',
 
     // --- Track Page ---
-    'track_page_title': 'Track Report Status',
-    'enter_code': 'Enter Report Code',
+    'track_page_title': 'Track a report',
+    'enter_code': 'Enter report code',
     'search_btn': 'Search',
     'report_status': 'Status',
-    'admin_reply': 'Admin Reply',
+    'admin_reply': 'Staff reply',
     'not_found': 'No report found with this code',
 
     // --- Statuses ---

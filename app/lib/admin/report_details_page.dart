@@ -117,19 +117,15 @@ class _ReportDetailsPageState extends State<ReportDetailsPage> {
       final file = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         maxWidth: 2048,
+        maxHeight: 2048,
         imageQuality: 85,
       );
       if (file == null || !mounted) return;
       final bytes = await file.readAsBytes();
       if (!mounted) return;
       final media = await uploadReportImage(_client, bytes);
-      if (!mounted) {
-        await discardUnusedMedia(_client, media);
-        return;
-      }
-      final old = _repairMedia;
+      if (!mounted) return;
       setState(() => _repairMedia = media);
-      await discardUnusedMedia(_client, old);
     } catch (_) {
       if (mounted)
         setState(
@@ -210,7 +206,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage> {
   Widget build(BuildContext context) {
     final row = _report;
     return Scaffold(
-      backgroundColor: kBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(_ar ? 'تفاصيل البلاغ' : 'Report Details'),
         actions: [
@@ -288,7 +284,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage> {
                                 ),
                                 child: const Icon(
                                   Icons.location_pin,
-                                  color: kRed,
+                                  color: kPrimary,
                                   size: 36,
                                 ),
                               ),
