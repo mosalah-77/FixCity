@@ -1,10 +1,36 @@
 # FixCity release verification
 
+## Current release: 1.1.1, finalized 6 November 2026
+
+[Browser demo](https://mosalah-77.github.io/FixCity/) · [Signed Android APKs](https://github.com/mosalah-77/FixCity/releases/tag/v1.1.1-demo.1) · [90-second Android recording](https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1.mp4)
+
+Application source: `3720902ec81ab8504faefa4331ca3b55064d7753`, version 1.1.1+3. The 6 November documentation and media update does not change the app binary. Original team and developer credits are preserved in [ATTRIBUTION.md](../ATTRIBUTION.md).
+
+| Check | Evidence and date |
+| --- | --- |
+| Flutter suites | 54 demo tests and 41 normal-app tests passed on 5 November; three demo-only skips in normal mode. |
+| Static analysis | No errors or warnings; 97 informational diagnostics on 5 November. |
+| Database | Workflow, permissions, rollback, concurrent retries, update-media access and history boundaries passed on 5 November. The log contains 77 labelled PASS notices plus expected-rejection assertions. |
+| Hosted API | Real anonymous Auth/REST checks passed the four states, first-update media, idempotence, workspace isolation and privilege denial on 5 November. |
+| Live browser | First-update photo, staff handoff/read-only state, district start, progress without resolution and repair-photo completion passed on 5 November. |
+| Android distribution | Four signed APKs built; 1.1.1 installed over the emulator app with data retained. On 6 November all four public asset digests matched the local APKs. |
+| Deployment | [GitHub Actions run 42083578860](https://github.com/mosalah-77/FixCity/actions/runs/42083578860) passed. The published version endpoint returned 1.1.1/build 3 on 6 November. |
+| Code review | Independent review found no remaining blocking findings after regression and security repairs. |
+| Recording | Mohamed's 6 November Android-emulator capture shows submission, pending tracking, staff handoff, district start and repair-photo resolution. The resolved district queue is visible before it ends at the role menu. |
+
+The [artifact record](evidence/2026-11-06/release.json) contains sizes and hashes. APKs are unchanged from the 5 November release. The recording's public MP4 preserves its 1080 × 2400 display, sequence and speed; compression and audio removal are the only presentation changes. The original WebM is retained privately. The clip does not show a final citizen-tracking revisit, an Arabic switch or physical hardware.
+
+The updated Android integration script was not rerun for 1.1.1. The earlier 1.1.0 emulator profile results below must not be presented as new performance measurements. Physical-device testing, ordinary-account hosted camera/GPS/private uploads, backup restoration and production-load behavior remain unverified. Free hosting and anonymous-request limits can affect availability. FixCity is a portfolio prototype with no municipal connection.
+
+## Earlier verification records
+
+The remaining sections preserve the earlier releases' results and decisions. Their source revisions, counts and media are historical. The current workflow has four states and separate staff/district responsibilities, as described above and in [the backend guide](../BACKEND-SETUP.md).
+
 ## 5 November 2026: version 1.1.0
 
 The redesigned app passed 47 demo widget tests, 34 normal-app tests (three demo-only skips), 68 database checks, both release builds and the Android profile workflow. The analyzer reported 93 informational findings and no errors or warnings. All four APKs have the expected release signature; ZIP alignment and 64-bit ELF segment alignment pass the 16 KB checks.
 
-The [security and performance review](SECURITY-PERFORMANCE-REVIEW.md) documents the two repaired defects, repository scan, dependency results and emulator measurements. [Machine-readable checks](evidence/2026-11-05/checks.json) and [APK hashes, sizes and signatures](evidence/2026-11-05/android-artifacts.json) accompany it. A physical Android test and a new continuous recording remain outstanding.
+The [security and performance review](SECURITY-PERFORMANCE-REVIEW.md) documents the two repaired defects, repository scan, dependency results and emulator measurements. [Machine-readable checks](evidence/2026-11-05/checks.json) and [APK hashes, sizes and signatures](evidence/2026-11-05/android-artifacts.json) accompany it. A physical Android test and a new continuous recording were outstanding at this stage; the 6 November recording is linked above.
 
 The entries below describe the earlier 1.0.0 release. Their artifact hashes and video are historical.
 
@@ -47,6 +73,8 @@ The visual summary is a 26-second sequence of actual captured screens, not a con
 ## Decisions and tradeoffs
 
 The following is the complete chronological decision record from implementation and review. Historical statements about main being untouched describe that stage; the later publication decision supersedes them.
+
+The 1.1.1 release supersedes decision 4's shared role behavior: one component is still reused, with distinct staff and district actions and server permissions. The 6 November continuous Android recording supersedes decision 20's captured-screen fallback as the current portfolio video. Neither update changes the limits concerning municipal use or physical-device verification.
 
 1. Ruling: Implement natively in the clean dedicated codex/fixcity-demo branch — user authorised work on this branch and avoiding another worktree/approval conserves time; main and remote remain untouched — changes share this checkout, so do not allow concurrent editors.
 2. Task 1: Ruling: notification read means the successfully loaded batch (max 50), not viewport intersection — existing UI has no per-row visibility tracking, and unseen later records must retain the unread badge — loaded but unscrolled rows are considered read.

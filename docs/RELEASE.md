@@ -2,6 +2,8 @@
 
 Pinned Flutter: **3.35.7**, git commit `adc901062556672b4138e18a4dc62a4be8f4b3c2`. Dart **3.9.2**; Java **17**. Android application ID: `dev.mosalah.fixcity`.
 
+Current application release: [1.1.1+3](https://github.com/mosalah-77/FixCity/releases/tag/v1.1.1-demo.1), built from `3720902ec81ab8504faefa4331ca3b55064d7753`. The 6 November documentation and recording update does not change the app binary. [Release verification](RELEASE-VERIFICATION.md) records what ran and what remains untested.
+
 ## Verify
 
 From `app/`:
@@ -49,7 +51,7 @@ shasum -a 256 build/app/outputs/flutter-apk/app-release.apk
 flutter build apk --release --split-per-abi --dart-define-from-file=demo-config.json
 ```
 
-The opt-in Android integration test uses the allowlisted synthetic backend. It creates one report, reviews it as staff, resolves it as the district team, and checks persisted history, notifications and Arabic tracking. It does not run in ordinary CI or touch the original team's backend:
+The opt-in Android integration test uses the allowlisted synthetic backend. It creates one report, hands it off with a staff photo, starts and resolves district repair, and checks persisted history, notifications and Arabic tracking. It does not run in ordinary CI or touch the original team's backend. The script was updated for 1.1.1 but has not been rerun for that version; the live browser, hosted API and user-recorded Android flow were checked separately:
 
 ```sh
 flutter test integration_test/demo_flow_test.dart -d YOUR_ANDROID_DEVICE \
@@ -70,3 +72,5 @@ flutter drive --profile --no-dds --driver=test_driver/integration_test.dart \
 The driver saves `build/integration_response_data.json`. Its keyboard is simulated. Use a physical phone for performance conclusions; emulator timing depends heavily on the graphics backend. The [5 November review](SECURITY-PERFORMANCE-REVIEW.md) records the current limits.
 
 Upload the signed APK and its SHA-256 checksum to a versioned GitHub Release. Record its source commit and the checks that actually ran. The demo APK uses synthetic illustrations and does not request location or camera access through its demo flow.
+
+Keep recordings in release assets so source checkouts stay small. Preserve the original take privately; use H.264 MP4 with fast-start metadata for the public copy. Document any cuts, speed changes or audio removal. The current recording has no cuts or speed changes and omits the source audio track.

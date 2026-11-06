@@ -4,11 +4,15 @@ The interface puts reporting and tracking first. Navy and muted gold come from t
 
 Home now starts with Report and Track, followed by the six problem categories and recent reports. The reporting form groups its existing fields into a numbered sequence and explains what is required. Resident navigation has four destinations, with a bottom bar on phones and a rail from 700 logical pixels. Account contains Profile, Settings and Badges. Staff and district access remains separate through labelled sign-in rows in normal mode and role choices in the demo menu.
 
+Version 1.1.1 separates their actions as well. Staff checks a pending report and sends it to the district, then sees a read-only handoff message. The district starts repair, adds progress notes or resolves it with evidence. Both roles can attach a photo on their first update. Each photo appears with its own history entry so an inspection image is not mistaken for a completed repair.
+
 The shared theme defines light and dark surfaces, type, fields and controls. Status colors have separate dark variants and keep their text labels. The demo entry explains that the records are synthetic, that FixCity has no government affiliation and that it sends no real reports.
 
 The [design system](../DESIGN.md) records the implemented Flutter rules. The [logo comparison](brand/index.html) includes the [street pin used in the app](brand/01-street-pin.svg), [city and repair](brand/02-city-repair.svg), and [neighbourhood](brand/03-neighbourhood.svg) alternatives.
 
 ## Screenshots
+
+[Watch the Android recording](https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1.mp4) for the current workflow. It was captured in the emulator on 6 November 2026 and preserves the full 90-second sequence.
 
 - [Desktop](../.impeccable/review/desktop.png)
 - [Mobile](../.impeccable/review/mobile.png)

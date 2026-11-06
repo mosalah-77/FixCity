@@ -3,6 +3,8 @@
 Date: 4 November 2026
 Status: approved by Mohamed on 4 November 2026. Android APK plus browser delivery selected. Mohamed additionally authorised finding and fixing bugs in the main Flutter app. Implementation and verification follow; approval does not claim that deployment already works.
 
+Historical design for the first release. The approved [5 November handoff design](2026-11-05-staff-handoff.md) adds a separate assigned state and distinct staff/district actions. Current release evidence is in [release verification](../../RELEASE-VERIFICATION.md).
+
 ## Purpose
 
 Make the existing six-person graduation project easy to try and technically explainable. A reviewer should be able to report a fictional infrastructure problem, see it enter a staff queue, move it through a district workflow, and see the resolution from the citizen view. Persist the work in a real, separate demo backend so it survives reloads. Demonstrate software workflow and engineering decisions; do not claim municipal adoption, actual repairs or production readiness.

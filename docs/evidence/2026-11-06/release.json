@@ -1,0 +1,74 @@
+{
+  "release": "v1.1.1-demo.1",
+  "version": "1.1.1+3",
+  "application_source": "3720902ec81ab8504faefa4331ca3b55064d7753",
+  "verification_date": "2026-11-06",
+  "apk_verification": "GitHub public asset digests matched all four local signed APKs",
+  "assets": [
+    {
+      "name": "fixcity-demo-1.1.1-arm64.apk",
+      "size_bytes": 19865770,
+      "sha256": "4e36c2d3c5d44a0680919be59f75031d700fa8add1cecd45bf5aefbd27599b26",
+      "url": "https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1-arm64.apk"
+    },
+    {
+      "name": "fixcity-demo-1.1.1-armv7.apk",
+      "size_bytes": 17509256,
+      "sha256": "ab4281a5562727bd71a59c1263949502a1be8e200ea79442dbe31f5ad79c8f2d",
+      "url": "https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1-armv7.apk"
+    },
+    {
+      "name": "fixcity-demo-1.1.1-x86_64.apk",
+      "size_bytes": 21038025,
+      "sha256": "37b93484beb0f224db45d5802058e09d56680e71bf87ba40c2ff2b94bce456e1",
+      "url": "https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1-x86_64.apk"
+    },
+    {
+      "name": "fixcity-demo-1.1.1.apk",
+      "size_bytes": 55379359,
+      "sha256": "cca59fa07f7a310736e20a6782bc6de73f64191724db9700ac8f1e6278c4bd77",
+      "url": "https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1.apk"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size_bytes": 375,
+      "sha256": "2e18d86083d22c18f387ddb7a5ca3f686c9301227585f5d944686715ed779314",
+      "url": "https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/SHA256SUMS.txt"
+    }
+  ],
+  "recording": {
+    "name": "fixcity-demo-1.1.1.mp4",
+    "duration_seconds": 89.958008,
+    "width": 1080,
+    "height": 2400,
+    "codec": "H.264",
+    "size_bytes": 7917498,
+    "sha256": "1ee3db54585da9e3e4ce995002f2699d1ba1040abcf285e062673f5963f4a4fc",
+    "source_sha256": "f29f1b93ec66fccd14784a39b090675547acc7b400d71254249fe2706bad7cb0",
+    "capture": "Mohamed recorded the Android emulator on 6 November 2026",
+    "conversion": "Video-only H.264 MP4, no cuts or speed changes; source audio omitted. Original WebM retained privately.",
+    "url": "https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1.mp4",
+    "github_digest_verified": true,
+    "frame_count": 2030,
+    "source_frame_count": 2030
+  },
+  "checks": {
+    "demo_tests": 54,
+    "normal_app_tests": 41,
+    "normal_demo_only_skips": 3,
+    "analyzer_errors": 0,
+    "analyzer_warnings": 0,
+    "analyzer_infos": 97,
+    "automated_check_date": "2026-11-05",
+    "database": "77 labelled PASS notices plus expected-rejection assertions; concurrency and isolation checks passed",
+    "hosted_api": "four-stage workflow, update-photo history, idempotence, separate visitors and privilege denial passed",
+    "live_browser": "first staff photo, handoff, read-only staff, district start, progress without resolution, repair-photo resolution passed",
+    "android_1_1_1_integration_script": "updated, not rerun",
+    "ci_run": "https://github.com/mosalah-77/FixCity/actions/runs/42083578860"
+  },
+  "limits": [
+    "Physical Android hardware and performance unverified",
+    "Normal-account hosted camera/GPS/private uploads unverified",
+    "Free backend and public map tiles have no availability guarantee"
+  ]
+}

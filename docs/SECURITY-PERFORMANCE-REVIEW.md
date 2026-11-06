@@ -2,6 +2,10 @@
 
 Reviewed on 5 November 2026 for the 1.1.0 portfolio release. The review covers this repository and its isolated synthetic backend. The original team's backend was not accessed.
 
+The 1.1.1 workflow update was reviewed later on 5 November. It adds server-enforced staff handoff and district repair permissions, validates photos on every update and applies report-access rules to history attachments. SQL regressions cover skipped review, staff attempts to resolve, district boundaries, update-photo access, retries and the reserved final history slot. Hosted Auth/REST and live browser checks passed. A fresh publishable-source scan identified only the existing public client key. No dependency changed. The measurements below remain the 1.1.0 measurements; performance was not reprofiled for 1.1.1.
+
+On 6 November, the public 1.1.1 APK hashes matched the signed local artifacts. The user's emulator recording was reviewed before release. This documentation/media update changes no app code or backend permissions. [Current release evidence](RELEASE-VERIFICATION.md) records the remaining limits.
+
 ## Security findings and repairs
 
 | Finding | Repair and evidence |

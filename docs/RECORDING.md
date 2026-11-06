@@ -1,5 +1,7 @@
 # Record an Android walkthrough
 
+The current [90-second recording](https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1.mp4) was captured by Mohamed on 6 November 2026 and accompanies version 1.1.1. The steps below are for recording a future update. The public copy is a silent MP4 with the original sequence and speed; the source WebM is retained privately.
+
 Aim for a continuous two-minute recording with a short pause after each result. Use the signed release build and fictional details. The emulator's built-in recorder captures its Android display, without the Mac desktop or mouse pointer.
 
 ## Start and save

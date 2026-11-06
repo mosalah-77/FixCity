@@ -1,5 +1,7 @@
 # FixCity Android and browser demo implementation plan
 
+Historical implementation plan for version 1.0.0. The later [staff-handoff plan](2026-11-05-staff-handoff.md) supersedes its three-state workflow. Current publication and limits are recorded in [release verification](../../RELEASE-VERIFICATION.md).
+
 > **For agentic workers:** Use superpowers:executing-plans to implement this plan task by task. Mohamed approved implementation and an app bug review on 4 November 2026. Native execution keeps the closely related Flutter/backend work in one context; obtain a fresh branch review before release.
 
 **Goal:** Release a reproducible, attributed FixCity demo that completes the reporting workflow on Android and in a browser.

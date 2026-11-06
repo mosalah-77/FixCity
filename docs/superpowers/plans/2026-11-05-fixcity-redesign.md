@@ -22,4 +22,8 @@ Preserve attribution, both languages, all routes and backend validation. No new 
 - [x] Improve report form hierarchy and staff report selection. Preserve existing validation, retries and status history. Update the relevant tests and integration selectors if behavior changes.
 - [x] Apply Humanizer to README, changed app copy and new documentation. Retain original authors, source links and qualifications about the prototype.
 - [x] Run both widget suites, analyzer, database checks, web and Android builds. Inspect rendered Arabic/English and light/dark screens. Obtain a fresh whole-change review and address material findings.
-- [ ] Publish the verified web build, prepare the signed APK and a concise visual handoff. Record exactly what passed and what still needs physical-device testing.
+- [x] Publish the verified web build, prepare the signed APK and a concise visual handoff. Record exactly what passed and what still needs physical-device testing.
+
+## Completion
+
+Version 1.1.0 was published on 5 November; version 1.1.1 adds the approved staff/district handoff and update photos. The 6 November Android recording accompanies the current release. [Release verification](../../RELEASE-VERIFICATION.md) records checks, source revisions and physical-device limits. This design task is complete; no further redesign is scheduled.

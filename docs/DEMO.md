@@ -28,6 +28,8 @@ No real citizen information, contact requests or government endorsement. Up to 2
 
 If the demo cannot load, retry once and check the Supabase project status before sharing its link. Do not enter real incident data as a test. Keep a short screen recording of the walkthrough after verifying the published version; a recording is supporting evidence and does not prove live availability.
 
-## Recording the walkthrough
+## Android recording
 
-Use the [Android recording guide](RECORDING.md) to capture the full workflow in one continuous take. A replacement video of the revised app is pending. The older captured-screen sequence remains in the historical evidence folder and is not a demo of this release.
+[Watch the 90-second recording](https://github.com/mosalah-77/FixCity/releases/download/v1.1.1-demo.1/fixcity-demo-1.1.1.mp4), captured by Mohamed on 6 November 2026. It shows citizen submission and pending tracking, staff handoff, district repair and the resolved district queue. It ends at the role menu; it does not show a final citizen-tracking revisit or an Arabic switch.
+
+The video preserves the full sequence and original speed. A silent H.264 MP4 copy makes it smaller and easier to play; the original WebM is retained privately. The [recording guide](RECORDING.md) remains available for future updates. The older captured-screen sequence is historical evidence for version 1.0.0, not this release.

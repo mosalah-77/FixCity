@@ -2,6 +2,8 @@
 
 Review started 4 November 2026 on branch `codex/fixcity-demo`, from portfolio snapshot `5bcbc4f`. The app code and any new repairs must be distinguished from the original team's contribution. Findings below are open until a test or runtime check verifies the fix.
 
+Current release: 1.1.1, source `3720902`. The sections below are chronological; test counts and status descriptions in earlier entries describe those revisions. The [release record](RELEASE-VERIFICATION.md) summarizes the current version.
+
 | Finding | Source evidence | User effect | Verification planned | Status |
 |---|---|---|---|---|
 | Report side effects happen before persistence | report_page.dart awards points/inserts notification before inserting reports | Failed submission can appear successful in notifications and rewards | Failed-write and retry transaction tests | Fixed; SQL/widget regressions pass |
@@ -71,3 +73,15 @@ The final web build renders OpenStreetMap tiles in Chrome. Reset confirmation re
 Android API 35 arm64 emulator: the opt-in integration test passed the full live-backend cycle in 37 seconds after compilation. It entered a fictional report through the UI, submitted staff and district updates, and checked the saved resolved status, three history entries and three notifications. It then displayed the persisted repair note on the citizen tracking page and switched to Arabic without a Flutter exception. This tests a debug integration build on an emulator; it is distinct from signed-release compilation and physical-device testing.
 
 Publication verified: GitHub Actions run [41893078618](https://github.com/mosalah-77/FixCity/actions/runs/41893078618) passed app checks, database checks and Pages deployment for source `c227667`. The published site created a workspace, saved staff and district transitions, and retained the resolved status, both illustrations and three history entries after a deep-link reload. The public APK from release `v1.0.0-demo.1` was downloaded again and matched the uploaded checksum. See [release verification](RELEASE-VERIFICATION.md) for limits and the decision record.
+
+## First-update photos and separate responsibilities, 5 November
+
+The shared detail screen and backend allowed photos only at resolution. Staff and district users also had the same transitions, apart from district scope. Six new widget regressions failed against the old implementation; a database regression also demonstrated that a district could skip staff review.
+
+The corrected workflow is pending, assigned, in progress and resolved. Staff reviews and hands off reports. District users start repairs, post progress without closing, and resolve with a new repair photo. The UI and normal-account SQL permissions enforce those responsibilities. Demo role choices simulate the workflow inside the visitor's own workspace.
+
+Photos are optional on earlier updates and saved in `status_updates.photo_url`. Resolution also sets the report's final repair photo. The timeline displays each attachment with its update. Failed saves retain the note, selected photo and retry key. History has a 100-entry cap with the last slot reserved for resolution.
+
+Verification: 54 demo tests and 41 normal-app tests passed, with three demo-only skips in normal mode. Analysis found 97 informational items and no errors or warnings. The SQL suite, including isolation, concurrent retry and history-boundary cases, and the hosted Auth/REST workflow passed. The published browser completed first-photo handoff, read-only staff review, district start, a progress note and final resolution. Existing records were preserved.
+
+The signed 1.1.1 APK was installed over the emulator app. Mohamed's 6 November recording shows submission, staff handoff, district start and repair-photo resolution on Android. The updated automated Android integration script was not rerun. Physical devices and normal-account hosted uploads remain separate checks.

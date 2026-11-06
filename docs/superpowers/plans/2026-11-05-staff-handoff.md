@@ -23,12 +23,14 @@ First-update photos survive reload and retries. Staff cannot close reports, and 
 - [x] Write failing widget and SQL regressions for first-update evidence, role actions, progress notes, private media and retry handling.
 - [x] Add a migration with `assigned`, `status_updates.photo_url`, permitted transitions and actor labels. Preserve the RPC signature and locking/idempotency. Extend authorized media reads to history attachments.
 - [x] Update the shared detail screen, district wrapper, status labels/filtering, tracking history and workflow tests. Explain handoff and recording steps in the docs.
-- [ ] Run demo/normal Flutter suites, SQL suites, analysis, and the Android workflow. Review the diff, then publish the tested migration and updated demo/APKs under existing release authorization.
+- [x] Run demo/normal Flutter suites, SQL suites and analysis; review the diff and publish the tested migration and updated demo/APKs. Verify the live workflow and record the Android checks that actually ran.
 
 ## Progress
 
 Initial source is 43a8edc. Root cause: the UI and database forbid photos except at resolution; both roles share transitions, differing only in report scope.
 
-54 demo tests and 41 normal-mode tests pass (3 demo-only skips). Analysis has 97 informational findings, no errors or warnings. SQL workflow, concurrency, isolation, update-media access and cap/resolution boundary checks pass. Independent read-only review found no remaining blocking issues. The tested migration is applied to the isolated hosted demo; Android packaging and live verification are in progress.
+54 demo tests and 41 normal-mode tests passed on 5 November (3 demo-only skips). Analysis had 97 informational findings, no errors or warnings. SQL workflow, concurrency, isolation, update-media access and cap/resolution boundary checks passed. Independent read-only review found no remaining blocking issues. The tested migration is applied to the isolated hosted demo; signed 1.1.1 APKs are published and the live browser workflow passed.
 
 The real hosted Auth/REST smoke test passed all four stages, update-photo history, separate visitor isolation and privilege-denial checks. Signed version 1.1.1+3 is installed over the emulator app with data retained. Publishable-source secret scanning flagged only the existing Supabase publishable key; private signing files remain Git-ignored. No new dependency was added.
+
+GitHub Actions run 42083578860 passed and the live site reports 1.1.1/build 3. Mohamed's 6 November recording shows the Android report, handoff and repair sequence. The updated automated Android integration script was not rerun; physical-device and normal-account camera/GPS/upload tests remain unverified. See [release verification](../../RELEASE-VERIFICATION.md).

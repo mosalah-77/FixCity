@@ -26,3 +26,5 @@ The upstream README states MIT licensing. No standalone LICENSE file was present
 ## November 2026 demo extension
 
 Mohamed directed the portfolio demonstration work with Codex assistance: a new synthetic Supabase schema, isolated visitor workspaces, atomic report operations, app bug fixes, regression tests, and Android/web build preparation. These additions are recorded separately in the `codex/fixcity-demo` commits. They do not replace the original developer credits or establish sole authorship of the graduation project.
+
+The extension also includes the November interface redesign, staff/district workflow separation, per-update evidence and security/performance repairs. Mohamed captured the Android walkthrough on 6 November 2026. Codex assisted with reviewing the recording, preparing a smaller silent MP4 and updating the release documentation; the recording's sequence and speed were preserved.

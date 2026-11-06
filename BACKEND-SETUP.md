@@ -16,17 +16,18 @@ The public demo uses synthetic sample illustrations, not uploads or real officia
 
 ## Permissions and consistency
 
-- Normal citizens can read their own reports. Normal staff can read and transition reports across districts; district accounts can operate only on their assigned district.
+- Normal citizens can read their own reports. Normal staff can read across districts and hand pending reports to the selected district. District accounts can start, update and resolve repairs only in their assigned district. Staff cannot complete repairs using the staff role alone.
 - Anonymous demo users can simulate all three personas only inside their own workspace. Ordinary staff cannot browse demo workspaces. Client routes and persona buttons grant no database privileges.
 - Profile updates are restricted to name, phone and SMS preference columns. Auth signup copies name/phone metadata but ignores any supplied roles or points. Roles and district assignments require a privileged operator; do not expose them through signup or public RPCs.
-- `create_report` saves the report, initial history, notification, ten points and retry result in one transaction. `transition_report` saves status, history and notification together. No client-side points or notification inserts remain once the Flutter migration is complete.
+- `create_report` saves the report, initial history, notification, ten points and retry result in one transaction. `transition_report` saves status, history, the update's photo and notification together. The client does not insert points or notifications separately.
 - Retry IDs are unique per actor. Identical retries return the original result; changed payloads with the same ID are rejected. Per-user row locks serialize report limits and simultaneous retries.
-- Transitions are `pending → in_progress → resolved`. Every change needs a note, and resolution needs repair media. Invalid transitions and failed final writes roll back the operation.
+- Transitions are `pending → assigned → in_progress → resolved`. The UI labels `assigned` as "Sent to district". An `in_progress → in_progress` update records progress without closing the report. Every update needs a note; photos are optional until resolution, which requires repair media. Invalid transitions and failed final writes roll back the operation.
+- `status_updates.photo_url` retains each update's evidence. Only resolution changes the report's final `fix_photo_url`. History is capped at 100 entries; non-final updates stop at 99 so one slot remains for resolution.
 - Tracking codes are not public credentials. Searching a code still obeys the caller's report permissions.
 
 ## Private media outside the demo
 
-The `files` bucket is private, restricted to JPEG/PNG and 5 MiB. Normal users upload under their own user-ID folder with a new filename. Reports store `storage:<path>`, not a public URL; the client obtains short-lived signed URLs only for authorized reads. A user cannot attach another person's upload. Staff may attach their own repair evidence to a report they can manage. Clients cannot delete or overwrite images, including unused uploads. This prevents a concurrent delete from removing evidence as a report attaches it. Unused uploads require trusted maintenance with report writes stopped and references rechecked; no automatic orphan cleanup is installed. Keep this in mind before enabling real accounts and uploads.
+The `files` bucket is private, restricted to JPEG/PNG and 5 MiB. Normal users upload under their own user-ID folder with a new filename. Reports store `storage:<path>`, not a public URL; the client obtains short-lived signed URLs only for authorized reads. A user cannot attach another person's upload. Staff may attach inspection evidence during handoff; district users may attach progress and repair evidence for reports they can manage. Reading an update's attachment requires permission to read its report. Clients cannot delete or overwrite images, including unused uploads. This prevents a concurrent delete from removing evidence as a report attaches it. Unused uploads require trusted maintenance with report writes stopped and references rechecked; no automatic orphan cleanup is installed. Keep this in mind before enabling real accounts and uploads.
 
 Storage upload and SQL are separate operations. Keep a successful upload for a retry when a save response is uncertain. Leave cleanup to trusted maintenance as described above. Signed URLs remain usable for their short lifetime after access is revoked. Public demo uploads stay disabled.
 
@@ -68,3 +69,5 @@ select cron.schedule('fixcity-expired-demos', '17 * * * *',
 Supabase documents [SQL cleanup for anonymous users](https://supabase.com/docs/guides/auth/auth-anonymous) and [Cron scheduling](https://supabase.com/docs/guides/cron/quickstart). The extra active-workspace condition prevents deleting a visitor who renewed their demo. Check Cron history after enabling it. Free projects may pause after inactivity; no always-on availability is promised.
 
 On 5 November, migration `202611050001_retain_report_media.sql` was also applied to the hosted demo. The SQL editor confirmed that the client deletion policy was absent. This migration changes permissions only; it does not delete stored data.
+
+Migration `202611050002_staff_handoff.sql` was applied on the same day. It adds the assigned state, role-specific transitions and history photos. Existing in-progress/resolved reports remain valid; existing final repair photos are also attached to their resolved history entries. The hosted Auth/REST check and live browser workflow passed after migration. See [release verification](docs/RELEASE-VERIFICATION.md).
